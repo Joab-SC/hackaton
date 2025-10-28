@@ -1,6 +1,6 @@
 defmodule Participante do
 
-  defstruct id: "", nombre: "", apellido: "", cedula: "",
+  defstruct id: "", rol: "PARTICIPANTE", nombre: "", apellido: "", cedula: "",
   correo: "", teléfono: "", usuario: "", contrasena: "", id_equipo: ""
 
   def crear_participante(id, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo) do

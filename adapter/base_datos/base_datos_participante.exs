@@ -6,14 +6,14 @@ defmodule Bd_Participante do
         String.split(lista, "\n")
         |>Enum.map(fn linea ->
         case String.split(linea, ",") do
-          ["id","Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
+          ["id","Rol", "Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
           [id,nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
-            %Participante{id: id, nombre: nombre, apellido: apellido, cedula: cedula,
+            %Participante{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
             correo: correo, telefono: telefono, usuario: usuario, id_equipo: id_equipo}
           _ -> []
         end
       end)
-      |> Enum.map(fn x -> x  end)
+      |> Enum.filter(fn x -> x  end)
 
       {:error, reason} ->
         IO.puts("AMO A JOAB, PAPASOTE  RICO  #{reason}")
@@ -27,10 +27,10 @@ defmodule Bd_Participante do
         lista_elem = String.split(lista, "\n")
         |>Enum.map(fn linea ->
         case String.split(linea, ",") do
-          ["id","Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
+          ["id","Rol","Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
           [id,nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
           if id == id_participante do
-            %Participante{id: id, nombre: nombre, apellido: apellido, cedula: cedula,
+            %Participante{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
             correo: correo, telefono: telefono, usuario: usuario, id_equipo: id_equipo}
           else
             nil
@@ -51,9 +51,9 @@ defmodule Bd_Participante do
     end
   end
 
-  def escribir_participante(nombre_archivo, %Participante{id: id, nombre: nombre, apellido: apellido, cedula: cedula,
+  def escribir_participante(nombre_archivo, %Participante{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
   correo: correo, telefono: telefono, usuario: usuario, contrasena: contrasena, id_equipo: id_equipo}) do
-    File.write(nombre_archivo, "\n#{id}, #{nombre}, #{apellido}, #{cedula}, #{correo}, #{telefono}, #{usuario}, #{contrasena}, #{id_equipo}", [:append, :utf8])
+    File.write(nombre_archivo, "\n#{id},#{rol},#{nombre},#{apellido},#{cedula},#{correo},#{telefono},#{usuario},#{contrasena},#{id_equipo}", [:append, :utf8])
   end
 
 

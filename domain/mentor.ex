@@ -1,6 +1,6 @@
 defmodule Mentor do
 
-  defstruct rol: "MENTOR", nombre: "", apellido: "", cedula: "",
+  defstruct id: "", rol: "MENTOR", nombre: "", apellido: "", cedula: "",
   correo: "", teléfono: "", usuario: "", contrasena: ""
 
   def crear_mentor(nombre, apellido, cedula, correo, telefono, usuario, contrasena) do
