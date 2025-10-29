@@ -80,8 +80,7 @@ defmodule ServicioHackathon do
   # 5. OBTENER PARTICIPANTES DE UN EQUIPO
   # =======================================================
   def obtener_participantes_equipo(archivo_usuarios, id_equipo) do
-    Bd_Usuario.leer_participantes(archivo_usuarios)
-    |> Enum.filter(fn u -> u.id_equipo == id_equipo end)
+    Bd_Usuario.leer_participantes_equipo(archivo_usuarios, id_equipo)
   end
 
   # =======================================================

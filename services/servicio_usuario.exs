@@ -10,7 +10,8 @@ defmodule ServicioUsuario do
          :ok <- Usuario.validar_rol(rol),
          :ok <- Usuario.validar_correo(correo),
          :ok <- validar_usuario_unico(nombre_archivo, usuario),
-         :ok <- validar_cedula_unica(nombre_archivo, cedula) do
+         :ok <- validar_cedula_unica(nombre_archivo, cedula),
+         :ok <- validar_id_unic0(nombre_archivo, id) do
 
       nuevo_usuario = Usuario.crear_usuario(id, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo)
       Bd_Usuario.escribir_usuario(nombre_archivo, nuevo_usuario)
@@ -51,7 +52,7 @@ defmodule ServicioUsuario do
     end
   end
 
-  defp validar_cedula_unica(nombre_archivo, id) do
+  defp validar_id_unico(nombre_archivo, id) do
     if Enum.any?(Bd_Usuario.leer_usuarios(nombre_archivo), fn u -> u.id == id end) do
       {:error, "Ya existe un usuario con este id."}
     else
