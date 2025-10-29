@@ -73,4 +73,46 @@ defmodule Bd_equipo do
     end
   end
 
+  def escribir_equipo(nombre_archivo, %Equipo{id: id, nombre: nombre, tema: tema}) do
+    File.write(nombre_archivo, "\n#{id},#{nombre},#{tema}", [:append, :utf8])
+  end
+
+  def borrar_equipo(nombre_archivo, id_a_borrar) do
+    case File.read(nombre_archivo) do
+      {:ok, contenido} ->
+        lineas = String.split(contenido, "\n", trim: true)
+
+        [cabecera | datos] = lineas
+
+        nuevos_datos =
+          Enum.reject(datos, fn linea ->
+            case String.split(linea, ",") do
+              [id | _] -> id == id_a_borrar
+              _ -> false
+            end
+          end)
+
+        nuevo_contenido = Enum.join([cabecera | nuevos_datos], "\n")
+
+        case File.write(nombre_archivo, nuevo_contenido, [:utf8]) do
+          :ok ->
+            IO.puts("Equipo con id #{id_a_borrar} eliminado correctamente.")
+            :ok
+
+          {:error, reason} ->
+            IO.puts("Error al escribir archivo: #{reason}")
+            {:error, reason}
+        end
+
+      {:error, reason} ->
+        IO.puts("Error al leer archivo: #{reason}")
+        {:error, reason}
+    end
+  end
+
+  def actualizar_equipo(nombre_archivo, equipo) do
+    borrar_equipo(nombre_archivo, equipo.id)
+    escribir_equipo(nombre_archivo,equipo)
+  end
+  
 end
