@@ -1,1 +1,2 @@
-Nombre,Descripción,Categoria,Estado,Equipo,Historial
+id,Nombre,Descripción,Categoria,Estado,id_equipo,Fecha_creacion
+

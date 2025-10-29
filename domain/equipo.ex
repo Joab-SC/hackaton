@@ -1,9 +1,9 @@
 defmodule Equipo do
 
-  defstruct id: "", nombre: "", participantes: []
+  defstruct id: "", nombre: "",  tema: ""
 
-  def crear_equipo(id, nombre, participantes) do
-    %Equipo{id: id, nombre: nombre, participantes: participantes}
+  def crear_equipo(id, nombre, tema, participantes) do
+    %Equipo{id: id, nombre: nombre,  tema: tema}
   end
-  
+
 end

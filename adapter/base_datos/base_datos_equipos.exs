@@ -6,9 +6,9 @@ defmodule Bd_equipo do
         String.split(lista, "\n")
         |>Enum.map(fn linea ->
         case String.split(linea, ",") do
-          ["id","nombre"] -> nil
+          ["id","Nombre", "Tema"] -> nil
           [id,nombre] ->
-            %Equipo{id: id, nombre: nombre}
+            %Equipo{id: id, nombre: nombre, tema: tema}
           _ -> []
         end
       end)
@@ -50,10 +50,10 @@ defmodule Bd_equipo do
         lista_elem = String.split(lista, "\n")
         |>Enum.map(fn linea ->
         case String.split(linea, ",") do
-          ["id","nombre"] -> nil
+          ["id","Nombre", "Tema"] -> nil
           [id,nombre] ->
           if id == id_equipo do
-           %Equipo{id: id, nombre: nombre}
+           %Equipo{id: id, nombre: nombre, tema: tema}
           else
             nil
           end
