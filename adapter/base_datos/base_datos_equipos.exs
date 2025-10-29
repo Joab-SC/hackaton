@@ -12,7 +12,7 @@ defmodule Bd_equipo do
           _ -> []
         end
       end)
-      |> Enum.map(fn x -> x  end)
+      |> Enum.filter(fn x -> x  end)
 
       {:error, reason} ->
         IO.puts("AMO A JOAB, PAPASOTE  RICO  #{reason}")
@@ -36,7 +36,7 @@ defmodule Bd_equipo do
           _ -> []
         end
       end)
-      |> Enum.map(fn x -> x  end)
+      |> Enum.filter(fn x -> x  end)
 
       {:error, reason} ->
         IO.puts("AMO A LAURA, MAMASOTA  RICA  #{reason}")
