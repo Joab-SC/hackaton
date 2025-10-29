@@ -40,7 +40,7 @@ defmodule Bd_equipo do
       |> Enum.filter(& &1)
 
       case lista_elem do
-        [participante | _] -> participante
+        [equipo | _] -> equipo
         [] -> nil
       end
 

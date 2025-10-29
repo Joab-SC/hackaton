@@ -19,6 +19,36 @@ defmodule Bd_mensaje do
     end
   end
 
+  def leer_mensaje(nombre_archivo, id_mensaje) do
+    case File.read(nombre_archivo) do
+      {:ok, lista} ->
+        lista_elem = String.split(lista, "\n")
+        |>Enum.map(fn linea ->
+        case String.split(linea, ",") do
+          ["id","Tipo_mensaje","Tipo_receptor","id_receptor","Contenido","id_equipo","Timestamp","id_proyecto"] -> nil
+          [id,tipo_mensaje,tipo_receptor,id_receptor,contenido,id_equipo,timestamp,id_proyecto] ->
+          if id == id_mensaje do
+           %Mensaje{id: id, tipo_mensaje: String.to_atom(tipo_mensaje), tipo_receptor: String.to_atom(tipo_receptor), id_receptor: id_receptor, contenido: contenido, id_equipo: id_equipo timestamp: timestamp, id_proyecto: id_proyecto}
+          else
+            nil
+          end
+          _ -> []
+        end
+      end)
+      |> Enum.filter(& &1)
+
+      case lista_elem do
+        [mensaje| _] -> mensaje
+        [] -> nil
+      end
+
+      {:error, reason} ->
+        IO.puts("AMO A JOAB, PAPASOTE  RICO  #{reason}")
+        []
+    end
+  end
+
+
    def escribir_mensaje(nombre_archivo, %Mensaje{id: id, tipo_mensaje: tipo_mensaje, tipo_receptor: tipo_receptor, id_receptor: id_receptor, contenido: contenido, timestamp: timestamp, id_proyecto: id_proyecto}) do
     File.write(nombre_archivo, "\n#{id},#{Atom.to_string(tipo_mensaje)},#{Atom.to_string(tipo_receptor)},#{id_receptor},#{contenido},#{timestamp},#{id_proyecto}", [:append, :utf8])
   end
