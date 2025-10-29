@@ -1,14 +1,14 @@
-defmodule Bd_Participante do
+defmodule Bd_Usuario do
 
-  def leer_participantes(nombre_archivo) do
+  def leer_usuarios(nombre_archivo) do
     case File.read(nombre_archivo) do
       {:ok, lista} ->
         String.split(lista, "\n")
         |>Enum.map(fn linea ->
         case String.split(linea, ",") do
           ["id","Rol", "Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
-          [id,nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
-            %Participante{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
+          [id,rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
+            %Usuario{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
             correo: correo, telefono: telefono, usuario: usuario, id_equipo: id_equipo}
           _ -> []
         end
@@ -21,17 +21,27 @@ defmodule Bd_Participante do
     end
   end
 
-  def leer_participante(nombre_archivo, id_participante) do
+  def leer_participantes(nombre_archivo) do
+    leer_usuarios(nombre_archivo)
+    |> Enum.filter(fn usuario -> usuario.rol == "PARTICIPANTE" end)
+  end
+
+  def leer_mentores(nombre_archivo) do
+    leer_usuarios(nombre_archivo)
+    |> Enum.filter(fn usuario -> usuario.rol == "MENTOR" end)
+  end
+
+  def leer_usuario(nombre_archivo, id_participante) do
     case File.read(nombre_archivo) do
       {:ok, lista} ->
         lista_elem = String.split(lista, "\n")
         |>Enum.map(fn linea ->
         case String.split(linea, ",") do
           ["id","Rol","Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
-          [id,nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
+          [id, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
           if id == id_participante do
-            %Participante{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
-            correo: correo, telefono: telefono, usuario: usuario, id_equipo: id_equipo}
+            %Usuario{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
+            correo: correo, telefono: telefono, usuario: usuario, contrasena: contrasena, id_equipo: id_equipo}
           else
             nil
           end
@@ -51,13 +61,13 @@ defmodule Bd_Participante do
     end
   end
 
-  def escribir_participante(nombre_archivo, %Participante{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
+  def escribir_usuario(nombre_archivo, %Usuario{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
   correo: correo, telefono: telefono, usuario: usuario, contrasena: contrasena, id_equipo: id_equipo}) do
     File.write(nombre_archivo, "\n#{id},#{rol},#{nombre},#{apellido},#{cedula},#{correo},#{telefono},#{usuario},#{contrasena},#{id_equipo}", [:append, :utf8])
   end
 
 
-  def borrar_participante(nombre_archivo, id_a_borrar) do
+  def borrar_usuario(nombre_archivo, id_a_borrar) do
     case File.read(nombre_archivo) do
       {:ok, lista} ->
         lineas = String.split(lista, "\n", trim: true)
@@ -77,7 +87,7 @@ defmodule Bd_Participante do
 
         case File.write(nombre_archivo, nuevo_contenido, [:utf8]) do
           :ok ->
-            IO.puts("Participante con id #{id_a_borrar} eliminado correctamente.")
+            IO.puts("Usuario con id #{id_a_borrar} eliminado correctamente.")
             :ok
 
           {:error, reason} ->
@@ -92,8 +102,8 @@ defmodule Bd_Participante do
   end
 
 
-  def actualizar_participante(nombre_archivo, participante) do
-    borrar_participante(nombre_archivo, participante.id)
-    escribir_participante(nombre_archivo, participante)
+  def actualizar_usuario(nombre_archivo, usuario) do
+    borrar_usuario(nombre_archivo, usuario.id)
+    escribir_usuario(nombre_archivo, usuario)
   end
 end
