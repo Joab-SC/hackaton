@@ -63,7 +63,7 @@ defmodule Bd_equipo do
       |> Enum.filter(& &1)
 
       case lista_elem do
-        [participante | _] -> participante
+        [equipo | _] -> equipo
         [] -> nil
       end
 
@@ -114,5 +114,5 @@ defmodule Bd_equipo do
     borrar_equipo(nombre_archivo, equipo.id)
     escribir_equipo(nombre_archivo,equipo)
   end
-  
+
 end
