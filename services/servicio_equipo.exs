@@ -5,11 +5,11 @@ defmodule ServicioEquipo do
   # -------------------------
   # REGISTRAR EQUIPO
   # -------------------------
-  def registrar_equipo(nombre_archivo, id, nombre, tema) do
+  def registrar_equipo(nombre_archivo, nombre, tema) do
     with :ok <- Equipo.validar_campos_obligatorios(id, nombre, tema),
          :ok <- validar_nombre_unico(nombre_archivo, nombre) do
-
-      nuevo_equipo = Equipo.crear_equipo(id, nombre, tema)
+      nuevo_equipo = Equipo.crear_equipo(GeneradorID.generar_id_unico("eqp", fn nuevo_id ->
+        Enum.any?(Bd_equipos.leer_equipos(nombre_archivo), fn u -> u.id == nuevo_id end)end), nombre, tema)
       Bd_equipo.escribir_equipo(nombre_archivo, nuevo_equipo)
       {:ok, nuevo_equipo}
 

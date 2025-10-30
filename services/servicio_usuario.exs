@@ -5,15 +5,22 @@ defmodule ServicioUsuario do
   # -------------------------
   # REGISTRO DE USUARIO
   # -------------------------
-  def registrar_usuario(nombre_archivo, id, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo) do
+  def registrar_usuario(nombre_archivo, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo) do
+
     with :ok <- Usuario.validar_campos_obligatorios(rol, nombre, apellido, cedula, correo, usuario, contrasena),
          :ok <- Usuario.validar_rol(rol),
          :ok <- Usuario.validar_correo(correo),
          :ok <- validar_usuario_unico(nombre_archivo, usuario),
-         :ok <- validar_cedula_unica(nombre_archivo, cedula),
-         :ok <- validar_id_unic0(nombre_archivo, id) do
+         :ok <- validar_cedula_unica(nombre_archivo, cedula) do
+         pref = cond do
+          rol == "ADMIN" -> "adm"
+          rol == "PARTICIPANTE" -> "ptc"
+          rol == "MENTOR" -> "mtr"
+        end
+        id = Generador_id.unico(pref, fn nuevo_id ->
+          Enum.any?(Bd_Usuario.leer_usuarios(nombre_archivo), fn u -> u.id == nuevo_id end) end)
 
-      nuevo_usuario = Usuario.crear_usuario(id, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo)
+      nuevo_usuario = Usuario.crear_usuario(id, rol, nombre, apellido, cedula, correo, telefono, usuario, Encriptador.hash_contrasena(contrasena), id_equipo)
       Bd_Usuario.escribir_usuario(nombre_archivo, nuevo_usuario)
       {:ok, nuevo_usuario}
     else
@@ -27,7 +34,7 @@ defmodule ServicioUsuario do
   def autenticar_usuario(nombre_archivo, usuario, contrasena) do
     usuarios = Bd_Usuario.leer_usuarios(nombre_archivo)
 
-    case Enum.find(usuarios, fn u -> u.usuario == usuario && u.contrasena == contrasena end) do
+    case Enum.find(usuarios, fn u -> u.usuario == usuario && Encriptador.verificar_contrasena(contrasena, usuario.contrasena) end) do
       nil -> {:error, "Usuario o contraseña incorrectos."}
       u -> {:ok, u}
     end
@@ -52,13 +59,6 @@ defmodule ServicioUsuario do
     end
   end
 
-  defp validar_id_unico(nombre_archivo, id) do
-    if Enum.any?(Bd_Usuario.leer_usuarios(nombre_archivo), fn u -> u.id == id end) do
-      {:error, "Ya existe un usuario con este id."}
-    else
-      :ok
-    end
-  end
 
   # -------------------------
   # CONSULTAS Y OPERACIONES
