@@ -1,6 +1,6 @@
 defmodule GeneradorID do
   def generar_id_unico(prefijo, fun_existente?) do
-     = generar_id(prefijo)
+    id = generar_id(prefijo)
 
     if fun_existente?.(id) do
       generar_id_unico(prefijo, fun_existente?)
