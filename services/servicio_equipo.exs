@@ -1,4 +1,4 @@
-defmodule ServicioEquipo do
+defmodule Hackaton.Services.ServicioEquipo do
   alias Equipo
   alias Bd_equipo
 

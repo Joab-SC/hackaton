@@ -1,3 +1,3 @@
-defmodule Canal do
+defmodule Hackaton.Doman.Canal do
 
 end

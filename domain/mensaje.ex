@@ -1,4 +1,4 @@
-defmodule Mensaje do
+defmodule Hackaton.Domain.Mensaje do
 
   defstruct id: "", tipo_mensaje: "", tipo_receptor: "", id_receptor: "", contenido: "", id_equipo: "", timestamp: "", id_proyecto: ""
 
