@@ -1,4 +1,4 @@
-defmodule Bd_Usuario do
+defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
 
   def leer_usuarios(nombre_archivo) do
     case File.read(nombre_archivo) do

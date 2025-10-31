@@ -1,4 +1,4 @@
-defmodule Bd_equipo do
+defmodule Hackaton.Adapter.BaseDatos.BdEquipos do
 
   def leer_equipos(nombre_archivo) do
     case File.read(nombre_archivo) do

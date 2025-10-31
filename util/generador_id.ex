@@ -1,4 +1,4 @@
-defmodule GeneradorID do
+defmodule Hackaton.Util.GeneradorID do
   def generar_id_unico(prefijo, fun_existente?) do
     id = generar_id(prefijo)
 

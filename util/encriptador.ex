@@ -1,4 +1,4 @@
-defmodule Encriptador do
+defmodule Hackaton.Util.Encriptador do
 
   # Convierte la contraseña en un hash irreversible
   def hash_contrasena(contrasena) do

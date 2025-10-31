@@ -1,4 +1,4 @@
-defmodule Bd_mensaje do
+defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
   def leer_mensajes(nombre_archivo) do
     case File.read(nombre_archivo) do
       {:ok, lista} ->
