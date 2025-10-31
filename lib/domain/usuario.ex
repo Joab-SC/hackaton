@@ -22,7 +22,7 @@ defmodule Hackaton.Domain.Usuario do
         contrasena,
         id_equipo
       ) do
-    %Usuario{
+    %__MODULE__{
       id: id,
       rol: rol,
       nombre: nombre,

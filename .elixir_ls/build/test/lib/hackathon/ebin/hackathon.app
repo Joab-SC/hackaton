@@ -1,0 +1,13 @@
+{application,hackathon,
+             [{modules,['Elixir.Hackaton.Domain.Equipo',
+                        'Elixir.Hackaton.Domain.Mensaje',
+                        'Elixir.Hackaton.Domain.Proyecto',
+                        'Elixir.Hackaton.Domain.Usuario',
+                        'Elixir.Hackaton.Doman.Canal',
+                        'Elixir.Hackaton.Util.Encriptador',
+                        'Elixir.Hackaton.Util.GeneradorID']},
+              {optional_applications,[]},
+              {applications,[kernel,stdlib,elixir,logger]},
+              {description,"hackathon"},
+              {registered,[]},
+              {vsn,"0.1.0"}]}.
