@@ -1,4 +1,4 @@
-defmodule Usuario do
+defmodule Hackaton.Domain.Usuario do
   defstruct id: "",
             rol: "",
             nombre: "",

@@ -1,4 +1,4 @@
-defmodule ServicioUsuario do
+defmodule Hackaton.Services.ServicioUsuario do
   alias Bd_Usuario
   alias Usuario
 

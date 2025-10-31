@@ -1,4 +1,4 @@
-defmodule ServicioHackathon do
+defmodule Hackaton.Services.ServicioHackathon do
   @moduledoc """
   Servicio general que coordina la interacción entre usuarios, equipos y otras entidades
   del sistema de la Hackathon.

@@ -1,4 +1,4 @@
-defmodule Equipo do
+defmodule Hackaton.Domain.Equipo do
 
   defstruct id: "", nombre: "",  tema: ""
 

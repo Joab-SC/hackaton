@@ -1,4 +1,4 @@
-defmodule Proyecto do
+defmodule Hackaton.Domain.Proyecto do
 
   defstruct id: "", nombre: "", descripcion: "", categoria: "", estado: "", id_equipo: "", fecha_creacion: ""
 
