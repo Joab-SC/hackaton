@@ -34,7 +34,7 @@ defmodule ServicioUsuario do
   def autenticar_usuario(nombre_archivo, usuario, contrasena) do
     usuarios = Bd_Usuario.leer_usuarios(nombre_archivo)
 
-    case Enum.find(usuarios, fn u -> u.usuario == usuario && Encriptador.verificar_contrasena(contrasena, usuario.contrasena) end) do
+    case Enum.find(usuarios, fn u -> u.usuario == usuario && Encriptador.verificar_contrasena(contrasena, u.contrasena) end) do
       nil -> {:error, "Usuario o contraseña incorrectos."}
       u -> {:ok, u}
     end
