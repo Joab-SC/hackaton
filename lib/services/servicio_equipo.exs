@@ -1,6 +1,7 @@
 defmodule Hackaton.Services.ServicioEquipo do
   alias Hackaton.Domain.Equipo
   alias Hackaton.Adapter.BaseDatos.BdEquipo
+  alias Hackaton.Util.GeneradorID
 
   # -------------------------
   # REGISTRAR EQUIPO
