@@ -62,7 +62,6 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
       Enum.filter(leer_mensajes(nombre_archivo), fn mensaje -> mensaje.tipo_mensaje == tipo_buscar and mensaje.id_receptor == id_receptor_buscar end)
   end
 
-
   def filtrar_mensajes(nombre_archivo, tipo_buscar) when tipo_buscar in [:avance, :chat, :consulta, :retroalimentacion, :anuncio] do
     Enum.filter(leer_mensajes(nombre_archivo), fn mensaje -> mensaje.tipo_mensaje == tipo_buscar end)
   end
@@ -70,6 +69,5 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
   def filtrar_mensajes(nombre_archivo, tipo_receptor) when tipo_receptor in [:equipo, :sala, :usuario, :todos] do
     Enum.filter(leer_mensajes(nombre_archivo), fn mensaje -> mensaje.tipo_receptor== tipo_receptor end)
   end
-
 
 end
