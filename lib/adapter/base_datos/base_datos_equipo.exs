@@ -7,7 +7,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdEquipo do
         |>Enum.map(fn linea ->
         case String.split(linea, ",") do
           ["id","Nombre", "Tema"] -> nil
-          [id,nombre] ->
+          [id,nombre, tema] ->
             %Equipo{id: id, nombre: nombre, tema: tema}
           _ -> []
         end
@@ -28,7 +28,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdEquipo do
         |>Enum.map(fn linea ->
         case String.split(linea, ",") do
           ["id","Nombre", "Tema"] -> nil
-          [id,nombre] ->
+          [id,nombre, tema] ->
           if id == id_equipo do
            %Equipo{id: id, nombre: nombre, tema: tema}
           else
@@ -49,6 +49,36 @@ defmodule Hackaton.Adapter.BaseDatos.BdEquipo do
         []
     end
   end
+
+  def leer_equipo_nombre(nombre_archivo, nombre_equipo) do
+    case File.read(nombre_archivo) do
+      {:ok, lista} ->
+        lista_elem = String.split(lista, "\n")
+        |>Enum.map(fn linea ->
+        case String.split(linea, ",") do
+          ["id","Nombre", "Tema"] -> nil
+          [id,nombre, tema] ->
+          if nombre == nombre_equipo do
+           %Equipo{id: id, nombre: nombre, tema: tema}
+          else
+            nil
+          end
+          _ -> []
+        end
+      end)
+      |> Enum.filter(& &1)
+
+      case lista_elem do
+        [equipo | _] -> equipo
+        [] -> nil
+      end
+
+      {:error, reason} ->
+        IO.puts("AMO A JOAB, PAPASOTE  RICO  #{reason}")
+        []
+    end
+  end
+
 
   def escribir_equipo(nombre_archivo, %Equipo{id: id, nombre: nombre, tema: tema}) do
     File.write(nombre_archivo, "\n#{id},#{nombre},#{tema}", [:append, :utf8])

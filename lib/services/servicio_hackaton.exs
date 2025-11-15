@@ -9,52 +9,51 @@ defmodule Hackaton.Services.ServicioHackathon do
     - Listar equipos y sus miembros
     - Buscar equipos por nombre o ID
   """
-alias Hackaton.Adapter.BaseDatos.{BdEquipo, BdUsuario}
+  alias Hackaton.Services.{ServicioEquipo, ServicioMensaje, ServicioProyecto, ServicioUsuario}
 
-  # =======================================================
-  # 1. ASIGNAR PARTICIPANTE A EQUIPO  (/join)
-  # =======================================================
-  def asignar_participante_a_equipo(archivo_usuarios, archivo_equipos, id_participante, id_equipo) do
-    equipo = BdEquipo.leer_equipo(archivo_equipos, id_equipo)
-    participante = BdUsuario.leer_usuario(archivo_usuarios, id_participante)
 
-    cond do
-      equipo == nil ->
-        {:error, "El equipo con id #{id_equipo} no existe."}
+  def registrar_usuario(nombre_archivo, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo) do
+    ServicioUsuario.registrar_usuario(nombre_archivo, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo)
+  end
 
-      participante == nil ->
-        {:error, "El participante con id #{id_participante} no existe."}
+  def iniciar_sesion(nombre_archivo, usuario, contrasena) do
+    ServicioUsuario.iniciar_sesion(nombre_archivo, usuario, contrasena)
+  end
 
-      participante.rol != "PARTICIPANTE" ->
-        {:error, "Solo los usuarios con rol PARTICIPANTE pueden unirse a equipos."}
 
-      participante.id_equipo != "" ->
-        {:error, "El participante ya pertenece a un equipo."}
 
-      true ->
-        actualizado = %{participante | id_equipo: id_equipo}
-        BdUsuario.actualizar_usuario(archivo_usuarios, actualizado)
-        {:ok, actualizado}
+  def unirse_por_nombre(archivo_usuarios, archivo_equipos, id_participante, nombre_equipo) do
+    equipo_ = ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
+    case equipo_ do
+      {:error, reason} -> {:error, reason}
+      {:ok, equipo} -> asignar_participante_a_equipo(archivo_usuarios, archivo_equipos, id_participante, equipo.id)
     end
   end
+
+
+
+
+
+
 
   # =======================================================
   # 2. QUITAR PARTICIPANTE DE EQUIPO
   # =======================================================
   def quitar_participante_de_equipo(archivo_usuarios, id_participante) do
-    participante = BdUsuario.leer_usuario(archivo_usuarios, id_participante)
+    participante = ServicioUsuario.obtener_usuario(archivo_usuarios, id_participante)
 
-    cond do
-      participante == nil ->
-        {:error, "El participante con id #{id_participante} no existe."}
+    case participante do
+      {:error, reason} ->
+        {:error, reason}
 
-      participante.id_equipo == "" ->
-        {:error, "El participante no pertenece a ningún equipo."}
-
-      true ->
-        actualizado = %{participante | id_equipo: ""}
-        BdUsuario.actualizar_usuario(archivo_usuarios, actualizado)
-        {:ok, actualizado}
+      {:ok, usuario} ->
+        if participante.id_equipo == "" do
+          {:error, "El participante no pertenece a ningún equipo."}
+        else
+          actualizado = %{participante | id_equipo: ""}
+          ServicioUsuario.actualizar_usuario(archivo_usuarios, actualizado)
+          {:ok, actualizado}
+        end
     end
   end
 
@@ -62,49 +61,74 @@ alias Hackaton.Adapter.BaseDatos.{BdEquipo, BdUsuario}
   # 3. LISTAR EQUIPOS REGISTRADOS (/teams)
   # =======================================================
   def listar_equipos(archivo_equipos) do
-    BdEquipo.leer_equipos(archivo_equipos)
-    |> Enum.map(fn e -> %{id: e.id, nombre: e.nombre, tema: e.tema} end)
+    ServicioEquipo.obtener_equipos(archivo_equipos)
   end
 
   # =======================================================
   # 4. BUSCAR EQUIPO POR NOMBRE (para /join)
   # =======================================================
-  def buscar_equipo_por_nombre(archivo_equipos, nombre_equipo) do
-    BdEquipo.leer_equipos(archivo_equipos)
-    |> Enum.find(fn e -> String.downcase(e.nombre) == String.downcase(nombre_equipo) end)
-  end
+
 
   # =======================================================
   # 5. OBTENER PARTICIPANTES DE UN EQUIPO
   # =======================================================
-  def obtener_participantes_equipo(archivo_usuarios, id_equipo) do
-    BdUsuario.leer_participantes_equipo(archivo_usuarios, id_equipo)
+  def obtener_participantes_equipo(archivo_equipos, archivo_usuarios, nombre_equipo, :nombre) do
+    equipo = ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
+
+    case equipo do
+      {:error, reason} -> {:error, reason}
+      _ -> ServicioUsuario.obtener_participantes_equipo(archivo_usuarios, equipo.id)
+    end
+  end
+
+  def obtener_participantes_equipo(archivo_usuarios, id_equipo, :id_equipo) do
+    ServicioUsuario.obtener_participantes_equipo(archivo_usuarios, id_equipo)
   end
 
   # =======================================================
   # 6. OBTENER EQUIPO Y SUS MIEMBROS
   # =======================================================
-  def obtener_equipo_con_miembros(archivo_usuarios, archivo_equipos, id_equipo) do
-    equipo = BdEquipo.leer_equipo(archivo_equipos, id_equipo)
+  def obtener_equipo_con_miembros(archivo_usuarios, archivo_equipos, nombre) do
+    equipo = ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
 
-    if equipo do
-      miembros = obtener_participantes_equipo(archivo_usuarios, id_equipo)
-      {:ok, %{equipo: equipo, miembros: miembros}}
-    else
-      {:error, "El equipo con id #{id_equipo} no existe."}
+    case equipo do
+      {:error, reason} -> {:error, reason}
+      {:ok, equipo} ->
+        miembros = obtener_participantes_equipo(archivo_usuarios, equipo.id, :id_equipo)
+        {:ok, %{equipo: equipo, miembros: miembros}}
     end
   end
 
-  # =======================================================
-  # 7. COMANDO /JOIN (versión con nombre de equipo)
-  # =======================================================
-  def unirse_por_nombre(archivo_usuarios, archivo_equipos, id_participante, nombre_equipo) do
-    equipo = buscar_equipo_por_nombre(archivo_equipos, nombre_equipo)
 
-    if equipo do
-      asignar_participante_a_equipo(archivo_usuarios, archivo_equipos, id_participante, equipo.id)
-    else
-      {:error, "No se encontró un equipo con el nombre '#{nombre_equipo}'."}
+  def registrar_equipo(nombre_archivo, nombre, tema) do
+  end
+
+
+
+   defp asignar_participante_a_equipo(archivo_usuarios, archivo_equipos, id_participante, id_equipo) do
+    equipo_ = ServicioEquipo.obtener_equipo(archivo_equipos, id_equipo)
+
+    participante_ = ServicioUsuario.obtener_usuario(archivo_usuarios, id_participante)
+
+    case {equipo_, participante_} do
+      {{:error, reason}, _} ->
+        {:error, reason}
+
+      {_, {:error, reason}} ->
+        {:error, reason}
+
+      {{:ok, equipo}, {:ok, participante}} ->
+        if participante.id_equipo != "" do
+          {:error, "El participante ya pertenece a un equipo."}
+        else
+          actualizado = %{participante | id_equipo: id_equipo}
+          ServicioUsuario.actualizar_usuario(archivo_usuarios, actualizado)
+          {:ok, actualizado}
+        end
     end
+  end
+
+    defp obtener_equipo_nombre(archivo_equipos, nombre_equipo) do
+    ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
   end
 end

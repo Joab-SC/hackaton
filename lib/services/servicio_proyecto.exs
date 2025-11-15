@@ -1,4 +1,4 @@
-defmodule Hackaton.Service.ProyectoService do
+defmodule Hackaton.Services.ServicioProyecto do
   alias Hackaton.Domain.Proyecto
   alias Hackaton.Adapter.BaseDatos.BdProyecto
 

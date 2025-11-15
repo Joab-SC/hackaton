@@ -61,6 +61,37 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
     end
   end
 
+  def leer_usuario_user(nombre_archivo, user) do
+    case File.read(nombre_archivo) do
+      {:ok, lista} ->
+        lista_elem = String.split(lista, "\n")
+        |>Enum.map(fn linea ->
+        case String.split(linea, ",") do
+          ["id","Rol","Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
+          [id, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
+          if usuario == user do
+            %Usuario{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
+            correo: correo, telefono: telefono, usuario: usuario, contrasena: contrasena, id_equipo: id_equipo}
+          else
+            nil
+          end
+          _ -> []
+        end
+      end)
+      |> Enum.filter(& &1)
+
+      case lista_elem do
+        [participante | _] -> participante
+        [] -> nil
+      end
+
+      {:error, reason} ->
+        IO.puts("AMO A JOAB, PAPASOTE  RICO  #{reason}")
+        []
+    end
+  end
+
+
   def escribir_usuario(nombre_archivo, %Usuario{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
   correo: correo, telefono: telefono, usuario: usuario, contrasena: contrasena, id_equipo: id_equipo}) do
     File.write(nombre_archivo, "\n#{id},#{rol},#{nombre},#{apellido},#{cedula},#{correo},#{telefono},#{usuario},#{contrasena},#{id_equipo}", [:append, :utf8])

@@ -1,11 +1,10 @@
 defmodule Hackaton.Services.ServicioUsuario do
   alias Hackaton.Adapter.BaseDatos.BdUsuario
   alias Hackaton.Domain.Usuario
+  alias Hackaton.Util.SesionGlobal
   alias Hackaton.Util.{Encriptador, GeneradorID}
 
-  # -------------------------
-  # REGISTRO DE USUARIO
-  # -------------------------
+
   def registrar_usuario(nombre_archivo, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo) do
 
     with :ok <- Usuario.validar_campos_obligatorios(rol, nombre, apellido, cedula, correo, usuario, contrasena),
@@ -29,10 +28,7 @@ defmodule Hackaton.Services.ServicioUsuario do
     end
   end
 
-  # -------------------------
-  # LOGIN / AUTENTICACIÓN
-  # -------------------------
-  def autenticar_usuario(nombre_archivo, usuario, contrasena) do
+  def iniciar_sesion(nombre_archivo, usuario, contrasena) do
     usuarios = BdUsuario.leer_usuarios(nombre_archivo)
 
     case Enum.find(usuarios, fn u -> u.usuario == usuario && Encriptador.verificar_contrasena(contrasena, u.contrasena) end) do
@@ -41,9 +37,6 @@ defmodule Hackaton.Services.ServicioUsuario do
     end
   end
 
-  # -------------------------
-  # VALIDACIONES DE ENTORNO
-  # -------------------------
   defp validar_usuario_unico(nombre_archivo, usuario) do
     if Enum.any?(BdUsuario.leer_usuarios(nombre_archivo), fn u -> u.usuario == usuario end) do
       {:error, "El nombre de usuario ya está en uso."}
@@ -61,12 +54,30 @@ defmodule Hackaton.Services.ServicioUsuario do
   end
 
 
-  # -------------------------
-  # CONSULTAS Y OPERACIONES
-  # -------------------------
   def obtener_todos(nombre_archivo), do: BdUsuario.leer_usuarios(nombre_archivo)
-  def obtener_por_id(nombre_archivo, id), do: BdUsuario.leer_usuario(nombre_archivo, id)
+
+
+  def obtener_usuario(nombre_archivo, id) do
+    usuario = BdUsuario.leer_usuario(nombre_archivo, id)
+    if not usuario do
+      {:error, "No se pudo encontrar el usuario con ese id"}
+    else
+      {:ok,usuario}
+    end
+  end
+
+  def obtener_usuario_user(nombre_archivo, user) do
+    usuario = BdUsuario.leer_usuario_user(nombre_archivo, user)
+    if not usuario do
+      {:error, "No se pudo encontrar el usuario #{user}"}
+    else
+      {:ok,usuario}
+    end
+  end
   def obtener_participantes(nombre_archivo), do: BdUsuario.leer_participantes(nombre_archivo)
+  def obtener_participantes_equipo(nombre_archivo, id_equipo_buscar) do
+     BdUsuario.leer_participantes_equipo(nombre_archivo, id_equipo_buscar)
+  end
   def obtener_mentores(nombre_archivo), do: BdUsuario.leer_mentores(nombre_archivo)
   def eliminar_usuario(nombre_archivo, id), do: BdUsuario.borrar_usuario(nombre_archivo, id)
 

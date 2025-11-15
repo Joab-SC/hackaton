@@ -1,4 +1,4 @@
-defmodule Hackaton.Services.Servicio_mensaje do
+defmodule Hackaton.Services.ServicioMensaje do
   @moduledoc """
   Servicio que gestiona la creación y filtrado de mensajes.
   """

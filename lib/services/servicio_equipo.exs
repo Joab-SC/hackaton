@@ -35,21 +35,55 @@ defmodule Hackaton.Services.ServicioEquipo do
   # -------------------------
   # OPERACIONES DE SERVICIO
   # -------------------------
-  def obtener_todos(nombre_archivo), do: BdEquipo.leer_equipos(nombre_archivo)
+  def obtener_equipos(nombre_archivo), do: BdEquipo.leer_equipos(nombre_archivo)
 
-  def obtener_por_id(nombre_archivo, id), do: BdEquipo.leer_equipo(nombre_archivo, id)
-
-  def eliminar_equipo(nombre_archivo, id), do: BdEquipo.borrar_equipo(nombre_archivo, id)
-
-  def actualizar_equipo(nombre_archivo, equipo) do
-    with :ok <- Equipo.validar_campos_obligatorios(equipo.id, equipo.nombre, equipo.tema),
-         :ok <- validar_nombre_unico_para_actualizacion(nombre_archivo, equipo.id, equipo.nombre) do
-          BdEquipo.actualizar_equipo(nombre_archivo, equipo)
-      {:ok, equipo}
+  def obtener_equipo(nombre_archivo, id) do
+    equipo = BdEquipo.leer_equipo(nombre_archivo, id)
+    if not equipo do
+      {:error, "No se pudo encontrar el equipo con ese id"}
     else
-      {:error, mensaje} -> {:error, mensaje}
+      {:ok,equipo}
     end
   end
+
+  def obtener_equipo_nombre(nombre_archivo, nombre) do
+    equipo =  BdEquipo.leer_equipo_nombre(nombre_archivo, nombre)
+    if not equipo do
+      {:error, "No se pudo encontrar el equipo con el nombre #{nombre}"}
+    else
+      {:ok,equipo}
+    end
+  end
+
+
+  def eliminar_equipo(nombre_archivo, id) do
+    equipo = obtener_equipo(nombre_archivo, id)
+    case equipo do
+      {:error, reason} -> {:error, reason}
+      _ -> BdEquipo.borrar_equipo(nombre_archivo, id)
+    end
+
+  end
+
+
+  def actualizar_equipo(nombre_archivo, equipo) do
+
+    equipo = obtener_equipo(nombre_archivo, equipo.id)
+    case equipo do
+      {:error, reason} -> {:error, reason}
+      _ ->
+
+        with :ok <- Equipo.validar_campos_obligatorios(equipo.id, equipo.nombre, equipo.tema),
+         :ok <- validar_nombre_unico_para_actualizacion(nombre_archivo, equipo.id, equipo.nombre) do
+          BdEquipo.actualizar_equipo(nombre_archivo, equipo)
+          {:ok, equipo}
+        else
+          {:error, mensaje} -> {:error, mensaje}
+        end
+    end
+
+  end
+
 
   # Evita conflicto al actualizar (permite el mismo nombre si es el mismo equipo)
   defp validar_nombre_unico_para_actualizacion(nombre_archivo, id_equipo, nombre) do
