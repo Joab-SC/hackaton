@@ -11,7 +11,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     :registrarse,
     :eliminar_usuario
   ]
-  @comandos_usuario [
+  @comandos_participante [
     :join,
     :entrar_sala,
     :mentores,
@@ -27,7 +27,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   @comandos_global Enum.uniq(
     @comandos_global_base ++
     @comandos_admin ++
-    @comandos_usuario ++
+    @comandos_participante ++
     @comandos_mentor
   )
 
@@ -324,11 +324,47 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-  # def ejecutar(comando, rol, args) do
-  #   case rol do
-  #     cond do
-  #        ->
-  #     end
-  #   end
-  # end
+
+
+#   # El atomo aridad es una idea, para que no se
+# explote con funciones como registrarse y coja el atomo de la aridad de jhangod
+# eso sí, tocaria ponerle el atomo a todas las funciones
+# por ejepmlo:,
+    #
+    # project (:participante),
+    # crear_proyecto(:participante),
+    # enviar_comunicado(:admin)
+#de modo que todas las funciones de este archivo adapter, inicien con el atomo del rol que la puede ejecutar,
+# en caso de una funcion que hayan varios roles que la puedan ejecutar puedes decir tipo
+# login(_), porque es indiferente del rol (el _ seria par funciones que los 3 puedan usar)
+# para alguna donde hayan 2 roles que la puedan usar lo puedes hacer con guardas entonces
+# de todos modos la validacion de los comandos disponibles ya esta en este metodo pero lo de la aridad con el atomo
+# seria par solucionar lo de funciones como registrarse
+# pd: te amo te quiero besar
+
+
+
+
+  def ejecutar_comando(comando, args) do
+    if comando not in @comandos_global do
+      IO.puts("El comando ingresado no existe")
+    else
+      rol = SesionGlobal.usuario_actual().rol
+
+      {comandos_disponibles, atomo_aridad} =
+        case rol do
+          "PARTICIPANTE" -> {@comandos_participante, :participante}
+          "ADMIN" -> {@comandos_admin, :admin}
+          "MENTOR" -> {@comandos_mentor, :mentor}
+          _ -> {[], :nada}
+        end
+
+      if comando in comandos_disponibles do
+        apply(__MODULE__, comando, [atomo_aridad | args])
+      else
+        IO.puts("El comando #{comando} no está disponible para el rol #{String.capitalize(rol)}")
+      end
+    end
+  end
+
 end

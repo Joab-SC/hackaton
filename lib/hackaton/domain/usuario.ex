@@ -1,4 +1,5 @@
 defmodule Hackaton.Domain.Usuario do
+  @roles ["PARTICIPANTE", "MENTOR", "ADMIN"]
   defstruct id: "",
             rol: "",
             nombre: "",
@@ -45,7 +46,7 @@ defmodule Hackaton.Domain.Usuario do
   end
 
   def validar_rol(rol) do
-    if rol in ["PARTICIPANTE", "MENTOR", "ADMIN"] do
+    if rol in @roles do
       :ok
     else
       {:error, "Rol no válido. Debe ser PARTICIPANTE, MENTOR o ADMIN."}
