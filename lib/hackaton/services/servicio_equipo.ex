@@ -10,7 +10,9 @@ defmodule Hackaton.Services.ServicioEquipo do
     with :ok <- Equipo.validar_campos_obligatorios(nombre, tema),
          :ok <- validar_nombre_unico(nombre_archivo, nombre) do
       nuevo_equipo = Equipo.crear_equipo(GeneradorID.generar_id_unico("eqp", fn nuevo_id ->
-        Enum.any?(BdEquipo.leer_equipos(nombre_archivo), fn u -> u.id == nuevo_id end)end), nombre, tema)
+        Enum.any?(BdEquipo.leer_equipos(nombre_archivo), fn u -> u.id == nuevo_id
+        _ -> false
+      end)end), nombre, tema)
       BdEquipo.escribir_equipo(nombre_archivo, nuevo_equipo)
       {:ok, nuevo_equipo}
 
@@ -25,7 +27,16 @@ defmodule Hackaton.Services.ServicioEquipo do
   defp validar_nombre_unico(nombre_archivo, nombre) do
     equipos = BdEquipo.leer_equipos(nombre_archivo)
 
-    if Enum.any?(equipos, fn e -> String.downcase(e.nombre) == String.downcase(nombre) end) do
+    existe =
+      Enum.any?(equipos, fn
+        %Equipo{nombre: n} ->
+          String.downcase(n) == String.downcase(nombre)
+
+        _ ->
+          false
+      end)
+
+    if existe do
       {:error, "Ya existe un equipo con ese nombre."}
     else
       :ok

@@ -78,6 +78,13 @@ defmodule Hackaton.Services.ServicioHackathon do
   end
 
 
+  @spec listar_equipos(
+          binary()
+          | maybe_improper_list(
+              binary() | maybe_improper_list(any(), binary() | []) | char(),
+              binary() | []
+            )
+        ) :: list()
   def listar_equipos(archivo_equipos) do
     ServicioEquipo.obtener_equipos(archivo_equipos)
   end

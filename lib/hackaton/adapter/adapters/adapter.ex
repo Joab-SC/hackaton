@@ -20,7 +20,8 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     :agregar_avance,
     :registrarse,
     :cambiar_estado_proyecto,
-    :my_team
+    :my_team,
+    :registrar_equipo
   ]
   @comandos_mentor [:entrar_sala]
   @comandos_global_base [:chat, :login, :log_out, :ver_comandos, :registrarse]
@@ -30,6 +31,57 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     @comandos_participante ++
     @comandos_mentor
   )
+
+  def registrarse(:admin) do
+    IO.puts("------ REGISTRANDO MENTOR------ ")
+
+    nombre =
+      IO.gets("Ingrese su nombre: ")
+      |> String.trim()
+
+    apellido =
+      IO.gets("Ingrese su apellido: ")
+      |> String.trim()
+
+    cedula =
+      IO.gets("Ingrese su cedula: ")
+      |> String.trim()
+
+    correo =
+      IO.gets(
+        "Ingrese su correo: "
+      )
+      |> String.trim()
+
+    telefono =
+      IO.gets("Ingrese su telefono: ")
+      |> String.trim()
+
+    usuario =
+      IO.gets("Ingrese su usuario: ")
+      |> String.trim()
+
+    contrasena =
+      IO.gets("Ingrese su contraseña: ")
+      |> String.trim()
+
+    usuario =
+      NodoCliente.ejecutar(:registrar_usuario, [ "lib/hackaton/adapter/persistencia/usuario.csv",
+        "PARTICIPANTE",
+        nombre,
+        apellido,
+        cedula,
+        correo,
+        telefono,
+        usuario,
+        contrasena])
+
+    case usuario do
+      {:error, reason} -> IO.puts(reason)
+      {:ok, _usuario} -> IO.puts("Se registró correctamente el usuario")
+    end
+  end
+
 
   def registrarse(_) do
     IO.puts("------ REGISTRANDO PARTICIPANTE------ ")
@@ -80,57 +132,6 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-  def registrarse(:mentor) do
-    IO.puts("------ REGISTRANDO MENTOR------ ")
-
-    nombre =
-      IO.gets("Ingrese su nombre: ")
-      |> String.trim()
-
-    apellido =
-      IO.gets("Ingrese su apellido: ")
-      |> String.trim()
-
-    cedula =
-      IO.gets("Ingrese su cedula: ")
-      |> String.trim()
-
-    correo =
-      IO.gets(
-        "Ingrese su correo: "
-      )
-      |> String.trim()
-
-    telefono =
-      IO.gets("Ingrese su telefono: ")
-      |> String.trim()
-
-    usuario =
-      IO.gets("Ingrese su usuario: ")
-      |> String.trim()
-
-    contrasena =
-      IO.gets("Ingrese su contraseña: ")
-      |> String.trim()
-
-    usuario =
-      ServicioHackathon.registrar_usuario(
-        "usuario.csv",
-        "MENTOR",
-        nombre,
-        apellido,
-        cedula,
-        correo,
-        telefono,
-        usuario,
-        contrasena
-      )
-
-    case usuario do
-      {:error, reason} -> IO.puts(reason)
-      {:ok, _usuario} -> IO.puts("Se registró correctamente el usuario")
-    end
-  end
 
   def login(_) do
     IO.puts("------ INICIANDO SESIÓN ------ ")
@@ -143,15 +144,38 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       IO.gets("Ingrese su contrasena: ")
       |> String.trim()
 
-    usuario = ServicioHackathon.iniciar_sesion("usuario.csv", usuario, contrasena)
+    usuario = NodoCliente.ejecutar(:iniciar_sesion, [ "lib/hackaton/adapter/persistencia/usuario.csv", usuario, contrasena])
+
 
     case usuario do
       {:error, reason} -> IO.puts(reason)
-      {:ok, _usuario} -> IO.puts("Se inició sesion correctamente")
+      {:ok, u} ->
+        SesionGlobal.iniciar_sesion(u)
+        IO.puts("Se inició sesion correctamente")
     end
   end
 
-  def crear_proyecto() do
+  def registrar_equipo(:participante) do
+    IO.puts("------ REGISTRANDO EQUIPO ------ ")
+
+    nombre =
+      IO.gets("Ingrese el nombre del equipo: ")
+      |> String.trim()
+
+    tema =
+      IO.gets("Ingrese el tema del equipo: ")
+      |> String.trim()
+
+    equipo =
+      NodoCliente.ejecutar(:registrar_equipo, [ "lib/hackaton/adapter/persistencia/equipo.csv", nombre, tema])
+
+    case equipo do
+      {:error, reason} -> IO.puts(reason)
+      {:ok, _equipo} -> IO.puts("Se registró el equipo correctamente")
+    end
+  end
+
+  def crear_proyecto(:participante) do
     IO.puts("------ CREANDO PROYECTO ------ ")
 
     nombre =
@@ -186,7 +210,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-  def salir_hackaton() do
+  def salir_hackaton(:participante) do
     usuario =
       ServicioHackathon.eliminar_usuario("usuario.csv", SesionGlobal.usuario_actual().id, :id)
 
@@ -196,7 +220,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-  def expulsar_usuario(user) do
+  def expulsar_usuario(:admin, user) do
     usuario = ServicioHackathon.eliminar_usuario("usuario.csv", user, :user)
 
     case usuario do
@@ -205,7 +229,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-  def teams() do
+  def teams(:admin) do
     IO.puts("------ Lista de equipos ------")
     equipos = ServicioHackathon.listar_equipos("equipo.csv")
 
@@ -214,14 +238,17 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end)
   end
 
-  def join(nombre_equipo) do
+  def join(:participante, nombre_equipo) do
     ingreso =
-      ServicioHackathon.unirse_por_nombre(
-        "usuario.csv",
-        "equipo.csv",
+
+      NodoCliente.ejecutar(:unirse_por_nombre, [
+        "lib/hackaton/adapter/persistencia/usuario.csv",
+        "lib/hackaton/adapter/persistencia/equipo.csv",
         SesionGlobal.usuario_actual().id,
         nombre_equipo
-      )
+      ])
+
+
 
     case ingreso do
       {:error, reason} -> IO.puts(reason)
@@ -323,6 +350,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       {:ok, _proyecto} -> IO.puts("Se actualizó el estado del proyecto correctamente")
     end
   end
+
 
 
 

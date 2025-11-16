@@ -18,6 +18,12 @@ defmodule Hackaton.Comunicacion.NodoServidor do
 
   def main() do
     IO.puts("=== Nodo Servidor Iniciado ===")
+
+    case Hackaton.Util.SesionGlobal.start_link([]) do
+      {:ok, _pid} -> IO.puts("SesionGlobal iniciado en servidor")
+      {:error, {:already_started, _pid}} -> :ok
+    end
+    
     registrar_servicio(@nombre_servicio_local)
     ejectar_comandos()
   end
