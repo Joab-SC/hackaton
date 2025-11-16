@@ -5,7 +5,7 @@ defmodule Hackaton.Services.ServicioUsuario do
   alias Hackaton.Util.{Encriptador, GeneradorID}
 
 
-  def registrar_usuario(nombre_archivo, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo) do
+  def registrar_usuario(nombre_archivo, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena) do
 
     with :ok <- Usuario.validar_campos_obligatorios(rol, nombre, apellido, cedula, correo, usuario, contrasena),
          :ok <- Usuario.validar_rol(rol),
@@ -20,7 +20,7 @@ defmodule Hackaton.Services.ServicioUsuario do
         id = GeneradorID.unico(pref, fn nuevo_id ->
           Enum.any?(BdUsuario.leer_usuarios(nombre_archivo), fn u -> u.id == nuevo_id end) end)
 
-      nuevo_usuario = Usuario.crear_usuario(id, rol, nombre, apellido, cedula, correo, telefono, usuario, Encriptador.hash_contrasena(contrasena), id_equipo)
+      nuevo_usuario = Usuario.crear_usuario(id, rol, nombre, apellido, cedula, correo, telefono, usuario, Encriptador.hash_contrasena(contrasena))
       BdUsuario.escribir_usuario(nombre_archivo, nuevo_usuario)
       {:ok, nuevo_usuario}
     else
@@ -33,8 +33,14 @@ defmodule Hackaton.Services.ServicioUsuario do
 
     case Enum.find(usuarios, fn u -> u.usuario == usuario && Encriptador.verificar_contrasena(contrasena, u.contrasena) end) do
       nil -> {:error, "Usuario o contraseña incorrectos."}
-      u -> {:ok, u}
+      u ->
+        SesionGlobal.iniciar_sesion(u)
+        {:ok, u}
     end
+  end
+
+  def cerrar_sesion() do
+    SesionGlobal.cerrar_sesion()
   end
 
   defp validar_usuario_unico(nombre_archivo, usuario) do

@@ -3,13 +3,16 @@ defmodule Hackaton.Services.ServicioProyecto do
   alias Hackaton.Adapter.BaseDatos.BdProyecto
 
   # Crear un proyecto nuevo
-  def crear_proyecto(nombre_archivo, id, nombre, descripcion, categoria, estado, id_equipo, fecha_creacion) do
-    case Proyecto.validar_campos_obligatorios(nombre, descripcion, categoria, estado, id_equipo, fecha_creacion) do
-      :ok ->
-        nuevo = Proyecto.crear_proyecto(id, nombre, descripcion, categoria, estado, id_equipo, fecha_creacion)
-        BdProyecto.escribir_proyecto(nombre_archivo, nuevo)
-        {:ok, nuevo}
+  def crear_proyecto(nombre_archivo, nombre, descripcion, categoria, id_equipo) do
+    with  :ok <- Proyecto.validar_campos_obligatorios(nombre, descripcion, categoria, id_equipo),
+          :ok <-  validar_nombre_unico(nombre_archivo, nombre),
+          :ok <- Proyecto.validar_categoria(categoria) do
+            nuevo = Proyecto.crear_proyecto(GeneradorID.unico("pryt", fn nuevo_id ->
+            Enum.any?(BdProyecto.leer_proyectos(nombre_archivo), fn u -> u.id == nuevo_id end) end), nombre, descripcion, categoria, "Nuevo", id_equipo, DateTime.utc_now()|> Calendar.strftime("%Y-%m-%d %H:%M:%S"))
+            BdProyecto.escribir_proyecto(nombre_archivo, nuevo)
+            {:ok, nuevo}
 
+    else
       {:error, msg} ->
         {:error, msg}
     end
@@ -28,23 +31,68 @@ defmodule Hackaton.Services.ServicioProyecto do
     end
   end
 
+
+  def obtener_proyecto_nombre(nombre_archivo, nombre) do
+    case BdProyecto.leer_proyecto_nombre(nombre_archivo, nombre) do
+      nil -> {:error, "No hay ningún proyecto registrado con el nombre #{nombre}"}
+      proyecto -> {:ok, proyecto}
+    end
+  end
+
+  defp validar_nombre_unico(nombre_archivo, nombre) do
+    if Enum.any?(BdProyecto.leer_proyectos(nombre_archivo), fn u -> u.nombre == nombre end) do
+      {:error, "El nombre del proyecto ya está en uso."}
+    else
+      :ok
+    end
+  end
+
+
   # Actualizar un proyecto existente
   def actualizar_proyecto(nombre_archivo, id, nombre, descripcion, categoria, estado, id_equipo, fecha_creacion) do
-    case Proyecto.validar_campos_obligatorios(nombre, descripcion, categoria, estado, id_equipo, fecha_creacion) do
-      :ok ->
-        proyecto_actualizado = Proyecto.crear_proyecto(id, nombre, descripcion, categoria, estado, id_equipo, fecha_creacion)
-        BdProyecto.actualizar_proyecto(nombre_archivo, proyecto_actualizado)
-        {:ok, proyecto_actualizado}
+  with  :ok <- Proyecto.validar_campos_obligatorios(nombre, descripcion, categoria, id_equipo),
+        :ok <- Proyecto.validar_categoria(categoria),
+        :ok <- Proyecto.validar_estado(estado)
+  do
+      proyecto_actualizado =
+        Proyecto.crear_proyecto(
+          id,
+          nombre,
+          descripcion,
+          categoria,
+          estado,
+          id_equipo,
+          fecha_creacion
+        )
 
-      {:error, msg} ->
-        {:error, msg}
+      BdProyecto.actualizar_proyecto(nombre_archivo, proyecto_actualizado)
+      {:ok, proyecto_actualizado}
+
+  else
+    {:error, msg} -> {:error, msg}
+  end
+end
+
+
+  def actualizar_estado(nombre_archivo, id_proyecto, nuevo_estado) do
+    case BdProyecto.leer_proyecto(nombre_archivo, id_proyecto) do
+      nil ->
+        {:error, "No se encontró el proyecto con ID #{id_proyecto}"}
+      proyecto ->
+         case Proyecto.validar_estado(nuevo_estado) do
+           {:error, reason} -> {:error, reason}
+           :ok ->
+            proyecto_actualizado = %{proyecto | estado: nuevo_estado}
+            BdProyecto.actualizar_proyecto(nombre_archivo, proyecto_actualizado)
+            {:ok, proyecto_actualizado}
+         end
     end
   end
 
   # Eliminar un proyecto
   def eliminar_proyecto(nombre_archivo, id_proyecto) do
     case BdProyecto.borrar_proyecto(nombre_archivo, id_proyecto) do
-      :ok -> {:ok, "Proyecto con ID #{id_proyecto} eliminado correctamente."}
+      :ok -> :ok
       {:error, reason} -> {:error, reason}
     end
   end
