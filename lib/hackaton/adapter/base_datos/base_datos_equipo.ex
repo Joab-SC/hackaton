@@ -6,14 +6,15 @@ defmodule Hackaton.Adapter.BaseDatos.BdEquipo do
       {:ok, lista} ->
         String.split(lista, "\n")
         |>Enum.map(fn linea ->
-        case String.split(linea, ",") do
+        case String.split(String.replace(linea, "\r", ""), ",") do
           ["id","Nombre", "Tema"] -> nil
           [id,nombre, tema] ->
             %Equipo{id: id, nombre: nombre, tema: tema}
-          _ -> []
+          _ -> nil
         end
       end)
       |> Enum.filter(fn x -> x  end)
+      |>IO.inspect()
 
       {:error, reason} ->
         IO.puts("AMO A JOAB, PAPASOTE  RICO  #{reason}")
@@ -27,7 +28,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdEquipo do
       {:ok, lista} ->
         lista_elem = String.split(lista, "\n")
         |>Enum.map(fn linea ->
-        case String.split(linea, ",") do
+        case String.split(String.replace(linea, "\r", ""), ",") do
           ["id","Nombre", "Tema"] -> nil
           [id,nombre, tema] ->
           if id == id_equipo do
@@ -56,7 +57,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdEquipo do
       {:ok, lista} ->
         lista_elem = String.split(lista, "\n")
         |>Enum.map(fn linea ->
-        case String.split(linea, ",") do
+        case String.split(String.replace(linea, "\r", ""), ",") do
           ["id","Nombre", "Tema"] -> nil
           [id,nombre, tema] ->
           if nombre == nombre_equipo do

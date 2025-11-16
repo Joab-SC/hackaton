@@ -6,12 +6,12 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
       {:ok, lista} ->
         String.split(lista, "\n")
         |>Enum.map(fn linea ->
-        case String.split(linea, ",") do
+        case String.split(String.replace(linea, "\r", ""), ",") do
           ["id","Rol", "Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
           [id,rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
             %Usuario{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
             correo: correo, telefono: telefono, usuario: usuario, contrasena: contrasena, id_equipo: id_equipo}
-          _ -> []
+          _ -> nil
         end
       end)
       |> Enum.filter(fn x -> x  end)
@@ -37,7 +37,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
       {:ok, lista} ->
         lista_elem = String.split(lista, "\n")
         |>Enum.map(fn linea ->
-        case String.split(linea, ",") do
+        case String.split(String.replace(linea, "\r", ""), ",") do
           ["id","Rol","Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
           [id, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
           if id == id_participante do
@@ -67,7 +67,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
       {:ok, lista} ->
         lista_elem = String.split(lista, "\n")
         |>Enum.map(fn linea ->
-        case String.split(linea, ",") do
+        case String.split(String.replace(linea, "\r", ""), ",") do
           ["id","Rol","Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
           [id, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
           if usuario == user do
@@ -144,7 +144,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
       {:ok, lista} ->
         String.split(lista, "\n")
         |>Enum.map(fn linea ->
-        case String.split(linea, ",") do
+        case String.split(String.replace(linea, "\r", ""), ",") do
           ["id","Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
           [id,nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
             cond do
@@ -152,7 +152,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
             correo: correo, telefono: telefono, usuario: usuario, contrasena: contrasena, id_equipo: id_equipo}
             true -> nil
             end
-          _ -> []
+          _ -> nil
         end
       end)
       |> Enum.filter(fn x -> x  end)

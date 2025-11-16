@@ -5,11 +5,11 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
       {:ok, lista} ->
         String.split(lista, "\n")
         |>Enum.map(fn linea ->
-        case String.split(linea, ",") do
+        case String.split(String.replace(linea, "\r", ""), ",") do
           ["id","Tipo_mensaje","Tipo_receptor","id_receptor","Contenido","id_equipo","Timestamp","id_proyecto"] -> nil
           [id,tipo_mensaje,tipo_receptor,id_receptor,contenido,id_equipo,timestamp,id_proyecto] ->
             %Mensaje{id: id, tipo_mensaje: String.to_atom(tipo_mensaje), tipo_receptor: String.to_atom(tipo_receptor), id_receptor: id_receptor, contenido: contenido, id_equipo: id_equipo, timestamp: timestamp, id_proyecto: id_proyecto}
-          _ -> []
+          _ -> nil
         end
       end)
       |> Enum.filter(fn x -> x  end)
@@ -25,7 +25,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
       {:ok, lista} ->
         lista_elem = String.split(lista, "\n")
         |>Enum.map(fn linea ->
-        case String.split(linea, ",") do
+        case String.split(String.replace(linea, "\r", ""), ",") do
           ["id","Tipo_mensaje","Tipo_receptor","id_receptor","Contenido","id_equipo","Timestamp","id_proyecto"] -> nil
           [id,tipo_mensaje,tipo_receptor,id_receptor,contenido,id_equipo,timestamp,id_proyecto] ->
           if id == id_mensaje do

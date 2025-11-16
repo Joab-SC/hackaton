@@ -5,11 +5,11 @@ defmodule Hackaton.Adapter.BaseDatos.BdProyecto do
       {:ok, lista} ->
         String.split(lista, "\n")
         |>Enum.map(fn linea ->
-        case String.split(linea, ",") do
+        case String.split(String.replace(linea, "\r", ""), ",") do
           ["id","Nombre","Descripción","Categoria","Estado","id_equipo","Fecha_creacion"] -> nil
           [id,nombre,descripcion,categoria,estado,id_equipo,fecha_creacion] ->
             %Proyecto{id: id, nombre: nombre, descripcion: descripcion, categoria: categoria, estado: estado, id_equipo: id_equipo, fecha_creacion: fecha_creacion}
-          _ -> []
+          _ -> nil
         end
       end)
       |> Enum.filter(fn x -> x  end)
@@ -25,7 +25,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdProyecto do
       {:ok, lista} ->
         lista_elem = String.split(lista, "\n")
         |>Enum.map(fn linea ->
-        case String.split(linea, ",") do
+        case String.split(String.replace(linea, "\r", ""), ",") do
           ["id","Nombre","Descripción","Categoria","Estado","id_equipo","Fecha_creacion"] -> nil
           [id,nombre,descripcion,categoria,estado,id_equipo,fecha_creacion] ->
           if id == id_proyecto do
@@ -54,7 +54,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdProyecto do
       {:ok, lista} ->
         lista_elem = String.split(lista, "\n")
         |>Enum.map(fn linea ->
-        case String.split(linea, ",") do
+        case String.split(String.replace(linea, "\r", ""), ",") do
           ["id","Nombre","Descripción","Categoria","Estado","id_equipo","Fecha_creacion"] -> nil
           [id,nombre,descripcion,categoria,estado,id_equipo,fecha_creacion] ->
           if nombre_ == nombre do

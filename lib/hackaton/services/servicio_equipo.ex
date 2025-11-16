@@ -11,7 +11,6 @@ defmodule Hackaton.Services.ServicioEquipo do
          :ok <- validar_nombre_unico(nombre_archivo, nombre) do
       nuevo_equipo = Equipo.crear_equipo(GeneradorID.generar_id_unico("eqp", fn nuevo_id ->
         Enum.any?(BdEquipo.leer_equipos(nombre_archivo), fn u -> u.id == nuevo_id
-        _ -> false
       end)end), nombre, tema)
       BdEquipo.escribir_equipo(nombre_archivo, nuevo_equipo)
       {:ok, nuevo_equipo}
