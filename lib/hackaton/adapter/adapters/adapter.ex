@@ -9,7 +9,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     :teams,
     :project,
     :crear_sala,
-    :registrarse,
+    :registrar_mentor,
     :eliminar_usuario
   ] ++ @comandos_global_base
   @comandos_participante [
@@ -67,7 +67,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
     usuario =
       NodoCliente.ejecutar(:registrar_usuario, [ "lib/hackaton/adapter/persistencia/usuario.csv",
-        "PARTICIPANTE",
+        "MENTOR",
         nombre,
         apellido,
         cedula,
@@ -176,7 +176,14 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   end
 
   def crear_proyecto(:participante) do
-    IO.puts("------ CREANDO PROYECTO ------ ")
+    usuario = SesionGlobal.usuario_actual()
+
+    if usuario.id_equipo == "" do
+      IO.puts("No puedes crear un proyecto si no perteneces a un equipo. Únete o crea un equipo primero.")
+
+    else
+
+      IO.puts("------ CREANDO PROYECTO ------ ")
 
     nombre =
       IO.gets("Ingrese el nombre de su proyecto: ")
@@ -190,21 +197,22 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       IO.gets("Elija categoria: ")
       |> String.trim()
 
-    nombre_equipo =
-      IO.gets("Ingrese el nombre de su equipo: ")
-      |> String.trim()
+    id_equipo = usuario.id_equipo
 
     proyecto =
       NodoCliente.ejecutar(:crear_proyecto, [ "lib/hackaton/adapter/persistencia/proyecto.csv",
-      "lib/hackaton/adapter/persistencia/equipo.csv",
         nombre,
         descripcion,
         categoria,
-        nombre_equipo])
+        id_equipo])
 
     case proyecto do
-      {:error, reason} -> IO.puts(reason)
+      {:error, reason} ->
+
+        IO.puts(reason)
       {:ok, _proyecto} -> IO.puts("Se creo el proyecto exitosamente")
+    end
+
     end
   end
 
@@ -248,11 +256,12 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
     case ingreso do
       {:error, reason} -> IO.puts(reason)
-      {:ok, _} -> IO.puts("Se ingresó al equipo correctamente")
+      {:ok, u} -> IO.puts("Se ingresó al equipo correctamente")
+      SesionGlobal.iniciar_sesion(u)
     end
   end
 
-  def mentores() do
+  def mentores(:participante) do
     mentores = NodoCliente.ejecutar(:obtener_mentores, [ "lib/hackaton/adapter/persistencia/usuario.csv"])
 
     Enum.each(mentores, fn m ->
@@ -269,8 +278,9 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end)
   end
 
-  def log_out() do
+  def log_out(_) do
     SesionGlobal.logout()
+    IO.puts("Se cerró sesión correctamente")
   end
 
   def ver_comandos(_) do
@@ -297,7 +307,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-  def project(nombre) do
+  def project(_,nombre) do
 
     case NodoCliente.ejecutar(:obtener_proyecto_nombre, [ "lib/hackaton/adapter/persistencia/proyecto.csv", nombre]) do
       {:error, reason} ->
@@ -326,7 +336,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   end
 
 
-  def my_team() do
+  def my_team(:participante) do
     equipo =
       NodoCliente.ejecutar(:obtener_equipo_id, [ "lib/hackaton/adapter/persistencia/equipo.csv", SesionGlobal.usuario_actual().id_equipo])
 
@@ -336,7 +346,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-  def cambiar_estado_proyecto() do
+  def cambiar_estado_proyecto(:participante) do
     nuevo_estado =
       IO.gets("Ingrese el nuevo estado (proceso finalizado): ")
       |> String.trim()

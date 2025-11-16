@@ -5,7 +5,7 @@ defmodule Hackaton.Services.ServicioMensaje do
 
   alias Hackaton.Domain.Mensaje
   alias Hackaton.Adapter.BaseDatos.BdMensaje
-  alias Util.GeneradorID
+  alias Hackaton.Util.GeneradorID
 
   # ======================================================
   # CREAR MENSAJE
