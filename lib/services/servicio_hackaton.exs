@@ -10,12 +10,17 @@ defmodule Hackaton.Services.ServicioHackathon do
     - Buscar equipos por nombre o ID
   """
   alias Hackaton.Services.{ServicioEquipo, ServicioMensaje, ServicioProyecto, ServicioUsuario}
+  alias Hackaton.Util.SesionGlobal
 
   # =======================================================
   # 3. para usuarios
   # =======================================================
   def registrar_usuario(nombre_archivo, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena) do
     ServicioUsuario.registrar_usuario(nombre_archivo, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena)
+  end
+
+  def actualizar_usuario(nombre_archivo, usuario_actualizado) do
+    ServicioUsuario.actualizar_usuario(nombre_archivo, usuario_actualizado)
   end
 
   def iniciar_sesion(nombre_archivo, usuario, contrasena) do
@@ -51,18 +56,18 @@ defmodule Hackaton.Services.ServicioHackathon do
     ServicioUsuario.obtener_mentores(nombre_archivo)
   end
 
-  def crear_proyecto(nombre_archivo, nombre, descripcion, categoria, nombre_equipo) do
-    equipo_ = ServicioEquipo.obtener_equipo_nombre(nombre_archivo, nombre_equipo)
+  def crear_proyecto(archivo_proyectos, archivo_equipos, nombre, descripcion, categoria, nombre_equipo) do
+    equipo_ = ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
     case equipo_ do
       {:error, reason} -> {:error, reason}
-      {:ok, equipo} -> ServicioProyecto.crear_proyecto(nombre_archivo, nombre, descripcion, categoria, equipo.id)
+      {:ok, equipo} -> ServicioProyecto.crear_proyecto(archivo_proyectos, nombre, descripcion, categoria, equipo.id)
     end
 
   end
 
-  def actualizar_estado_proyecto(nombre_archivo, nombre_proyecto, nuevo_estado) do
-    proyecto = ServicioProyecto.obtener_proyecto_nombre(nombre_archivo, nombre_proyecto)
-    case proyecto do
+  def actualizar_estado_proyecto(nombre_archivo, nuevo_estado) do
+    proyecto_ = ServicioProyecto.obtener_proyecto_id_equipo(nombre_archivo, SesionGlobal.usuario_actual().id_equipo)
+    case proyecto_ do
       {:error, reason} -> {:error, reason}
       {:ok, proyecto} -> ServicioProyecto.actualizar_estado(nombre_archivo, proyecto.id, nuevo_estado)
     end
@@ -82,15 +87,21 @@ defmodule Hackaton.Services.ServicioHackathon do
     ServicioEquipo.registrar_equipo(nombre_archivo, nombre, tema)
   end
 
-  # =======================================================
-  # 4. BUSCAR EQUIPO POR NOMBRE (para /join)
-  # =======================================================
+  def obtener_equipo_nombre(archivo_equipos, nombre_equipo) do
+    ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
+  end
+
+  def obtener_equipo_id(archivo_equipos, id_equipo) do
+    ServicioEquipo.obtener_equipo(archivo_equipos, id_equipo)
+  end
+
+
 
 
   # =======================================================
   # 5. OBTENER PARTICIPANTES DE UN EQUIPO
   # =======================================================
-  def obtener_participantes_equipo(archivo_equipos, archivo_usuarios, nombre_equipo, :nombre) do
+  def obtener_participantes_equipo_nombre(archivo_equipos, archivo_usuarios, nombre_equipo) do
     equipo_ = ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
 
     case equipo_ do
@@ -99,21 +110,22 @@ defmodule Hackaton.Services.ServicioHackathon do
     end
   end
 
-  def obtener_participantes_equipo(archivo_usuarios, id_equipo, :id_equipo) do
-    ServicioUsuario.obtener_participantes_equipo(archivo_usuarios, id_equipo)
-  end
 
   # =======================================================
   # 6. OBTENER EQUIPO Y SUS MIEMBROS
   # =======================================================
   def obtener_equipo_con_miembros(archivo_usuarios, archivo_equipos, nombre_equipo) do
-    equipo = ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
+    equipo_ = ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
 
-    case equipo do
+    case equipo_ do
       {:error, reason} -> {:error, reason}
       {:ok, equipo} ->
-        miembros = obtener_participantes_equipo(archivo_usuarios, equipo.id, :id_equipo)
-        {:ok, %{equipo: equipo, miembros: miembros}}
+        miembros = obtener_participantes_equipo_nombre(archivo_equipos, archivo_usuarios, nombre_equipo)
+        case miembros do
+          {:error, reason} -> {:error, reason}
+          {:ok, miembros} ->
+            {:ok, %{equipo: equipo, miembros: miembros}}
+        end
     end
   end
 
@@ -143,9 +155,7 @@ defmodule Hackaton.Services.ServicioHackathon do
     end
   end
 
-    defp obtener_equipo_nombre(archivo_equipos, nombre_equipo) do
-    ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
-  end
+
 
     # =======================================================
   # Por ahora inutil

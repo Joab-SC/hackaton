@@ -80,6 +80,7 @@ defmodule Hackaton.Services.ServicioUsuario do
       {:ok,usuario}
     end
   end
+  
   def obtener_participantes(nombre_archivo), do: BdUsuario.leer_participantes(nombre_archivo)
   def obtener_participantes_equipo(nombre_archivo, id_equipo_buscar) do
      BdUsuario.leer_participantes_equipo(nombre_archivo, id_equipo_buscar)

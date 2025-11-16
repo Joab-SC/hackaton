@@ -4,9 +4,7 @@ defmodule Hackaton.Util.SesionGlobal do
   def start_link(_) do
     Agent.start_link(fn -> %{usuario: nil} end, name: __MODULE__)
   end
-end
 
-defmodule Sesion do
   def iniciar_sesion(usuario_struct) do
     Agent.update(SesionGlobal, &Map.put(&1, :usuario, usuario_struct))
   end
