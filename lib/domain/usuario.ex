@@ -5,7 +5,7 @@ defmodule Hackaton.Domain.Usuario do
             apellido: "",
             cedula: "",
             correo: "",
-            teléfono: "",
+            telefono: "",
             usuario: "",
             contrasena: "",
             id_equipo: ""
@@ -29,7 +29,7 @@ defmodule Hackaton.Domain.Usuario do
       apellido: apellido,
       cedula: cedula,
       correo: correo,
-      teléfono: telefono,
+      telefono: telefono,
       usuario: usuario,
       contrasena: contrasena,
       id_equipo: id_equipo
