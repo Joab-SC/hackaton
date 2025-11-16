@@ -6,14 +6,14 @@ defmodule Hackaton.Util.SesionGlobal do
   end
 
   def iniciar_sesion(usuario_struct) do
-    Agent.update(SesionGlobal, &Map.put(&1, :usuario, usuario_struct))
+    Agent.update(__MODULE__, &Map.put(&1, :usuario, usuario_struct))
   end
 
   def usuario_actual() do
-    Agent.get(SesionGlobal, & &1.usuario)
+    Agent.get(__MODULE__, & &1.usuario)
   end
 
   def logout() do
-    Agent.update(SesionGlobal, &Map.put(&1, :usuario, nil))
+    Agent.update(__MODULE__, &Map.put(&1, :usuario, nil))
   end
 end

@@ -1,4 +1,5 @@
 defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
+  alias Hackaton.Domain.Usuario
 
   def leer_usuarios(nombre_archivo) do
     case File.read(nombre_archivo) do
@@ -9,7 +10,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
           ["id","Rol", "Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
           [id,rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
             %Usuario{id: id, rol: rol, nombre: nombre, apellido: apellido, cedula: cedula,
-            correo: correo, telefono: telefono, usuario: usuario, id_equipo: id_equipo}
+            correo: correo, telefono: telefono, usuario: usuario, contrasena: contrasena, id_equipo: id_equipo}
           _ -> []
         end
       end)
@@ -147,8 +148,8 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
           ["id","Nombre","Apellido","Cedula","Correo","Telefono","Usuario","Contrasena","id_equipo"] -> nil
           [id,nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
             cond do
-              id_equipo == id_equipo_buscar -> %Participante{id: id, nombre: nombre, apellido: apellido, cedula: cedula,
-            correo: correo, telefono: telefono, usuario: usuario, id_equipo: id_equipo}
+              id_equipo == id_equipo_buscar -> %Usuario{id: id, nombre: nombre, apellido: apellido, cedula: cedula,
+            correo: correo, telefono: telefono, usuario: usuario, contrasena: contrasena, id_equipo: id_equipo}
             true -> nil
             end
           _ -> []

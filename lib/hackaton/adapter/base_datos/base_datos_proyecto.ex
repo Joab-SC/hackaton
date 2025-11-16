@@ -1,4 +1,5 @@
 defmodule Hackaton.Adapter.BaseDatos.BdProyecto do
+  alias Hackaton.Domain.Proyecto
   def leer_proyectos(nombre_archivo) do
     case File.read(nombre_archivo) do
       {:ok, lista} ->

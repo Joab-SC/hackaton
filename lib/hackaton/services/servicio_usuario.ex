@@ -17,10 +17,10 @@ defmodule Hackaton.Services.ServicioUsuario do
           rol == "PARTICIPANTE" -> "ptc"
           rol == "MENTOR" -> "mtr"
         end
-        id = GeneradorID.unico(pref, fn nuevo_id ->
+        id = GeneradorID.generar_id_unico(pref, fn nuevo_id ->
           Enum.any?(BdUsuario.leer_usuarios(nombre_archivo), fn u -> u.id == nuevo_id end) end)
 
-      nuevo_usuario = Usuario.crear_usuario(id, rol, nombre, apellido, cedula, correo, telefono, usuario, Encriptador.hash_contrasena(contrasena))
+      nuevo_usuario = Usuario.crear_usuario(id, rol, nombre, apellido, cedula, correo, telefono, usuario, Encriptador.hash_contrasena(contrasena), "")
       BdUsuario.escribir_usuario(nombre_archivo, nuevo_usuario)
       {:ok, nuevo_usuario}
     else
@@ -80,7 +80,7 @@ defmodule Hackaton.Services.ServicioUsuario do
       {:ok,usuario}
     end
   end
-  
+
   def obtener_participantes(nombre_archivo), do: BdUsuario.leer_participantes(nombre_archivo)
   def obtener_participantes_equipo(nombre_archivo, id_equipo_buscar) do
      BdUsuario.leer_participantes_equipo(nombre_archivo, id_equipo_buscar)

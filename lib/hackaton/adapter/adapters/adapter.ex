@@ -1,6 +1,7 @@
 defmodule Hackaton.Adapter.Adapters.Adapter do
   alias Hackaton.Services.ServicioHackathon
   alias Hackaton.Util.SesionGlobal
+  alias Hackaton.Comunicacion.NodoCliente
 
   @comandos_admin [
     :enviar_comunicado,
@@ -64,8 +65,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       |> String.trim()
 
     usuario =
-      ServicioHackathon.registrar_usuario(
-        "usuario.csv",
+      NodoCliente.ejecutar(:registrar_usuario, [ "lib/hackaton/adapter/persistencia/usuario.csv",
         "PARTICIPANTE",
         nombre,
         apellido,
@@ -73,9 +73,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
         correo,
         telefono,
         usuario,
-        contrasena
-      )
-
+        contrasena])
     case usuario do
       {:error, reason} -> IO.puts(reason)
       {:ok, _usuario} -> IO.puts("Se registró correctamente el usuario")
