@@ -7,11 +7,11 @@ defmodule Hackaton.Services.ServicioEquipo do
   # REGISTRAR EQUIPO
   # -------------------------
   def registrar_equipo(nombre_archivo, nombre, tema) do
-    with :ok <- Equipo.validar_campos_obligatorios(id, nombre, tema),
+    with :ok <- Equipo.validar_campos_obligatorios(nombre, tema),
          :ok <- validar_nombre_unico(nombre_archivo, nombre) do
       nuevo_equipo = Equipo.crear_equipo(GeneradorID.generar_id_unico("eqp", fn nuevo_id ->
         Enum.any?(BdEquipo.leer_equipos(nombre_archivo), fn u -> u.id == nuevo_id end)end), nombre, tema)
-      Bd_equipo.escribir_equipo(nombre_archivo, nuevo_equipo)
+      BdEquipo.escribir_equipo(nombre_archivo, nuevo_equipo)
       {:ok, nuevo_equipo}
 
     else
@@ -66,17 +66,17 @@ defmodule Hackaton.Services.ServicioEquipo do
   end
 
 
-  def actualizar_equipo(nombre_archivo, equipo) do
+  def actualizar_equipo(nombre_archivo, equipo_actualizado) do
 
-    equipo = obtener_equipo(nombre_archivo, equipo.id)
+    equipo = obtener_equipo(nombre_archivo, equipo_actualizado.id)
     case equipo do
       {:error, reason} -> {:error, reason}
       _ ->
 
-        with :ok <- Equipo.validar_campos_obligatorios(equipo.id, equipo.nombre, equipo.tema),
-         :ok <- validar_nombre_unico_para_actualizacion(nombre_archivo, equipo.id, equipo.nombre) do
-          BdEquipo.actualizar_equipo(nombre_archivo, equipo)
-          {:ok, equipo}
+        with :ok <- Equipo.validar_campos_obligatorios(equipo_actualizado.nombre, equipo_actualizado.tema),
+         :ok <- validar_nombre_id_unico_para_actualizacion(nombre_archivo, equipo_actualizado.id, equipo_actualizado.nombre) do
+          BdEquipo.actualizar_equipo(nombre_archivo, equipo_actualizado)
+          {:ok, equipo_actualizado}
         else
           {:error, mensaje} -> {:error, mensaje}
         end
@@ -86,7 +86,7 @@ defmodule Hackaton.Services.ServicioEquipo do
 
 
   # Evita conflicto al actualizar (permite el mismo nombre si es el mismo equipo)
-  defp validar_nombre_unico_para_actualizacion(nombre_archivo, id_equipo, nombre) do
+  defp validar_nombre_id_unico_para_actualizacion(nombre_archivo, id_equipo, nombre) do
     equipos = BdEquipo.leer_equipos(nombre_archivo)
 
     if Enum.any?(equipos, fn e ->
