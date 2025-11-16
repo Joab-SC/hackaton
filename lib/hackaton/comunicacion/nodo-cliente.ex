@@ -2,6 +2,12 @@ defmodule Hackaton.Comunicacion.NodoCliente do
   @nodo_remoto :nodoservidor@localhost
   @servicio_remoto {:servicio_hackaton, @nodo_remoto}
 
+
+  def main() do
+    IO.puts("=== Nodo Cliente Iniciado ===")
+    Hackaton.Adapter.Adapters.Adapter.escuchar_comandos()
+  end
+  
   def ejecutar(funcion, args) do
     enviar_solicitud(funcion, args)
     recibir_respuesta()

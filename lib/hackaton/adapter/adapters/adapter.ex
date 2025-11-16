@@ -23,7 +23,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     :my_team
   ]
   @comandos_mentor [:entrar_sala]
-  @comandos_global_base [:chat, :login, :log_out, :ver_comandos]
+  @comandos_global_base [:chat, :login, :log_out, :ver_comandos, :registrarse]
   @comandos_global Enum.uniq(
     @comandos_global_base ++
     @comandos_admin ++
@@ -31,7 +31,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     @comandos_mentor
   )
 
-  def registrarse(:participante) do
+  def registrarse(_) do
     IO.puts("------ REGISTRANDO PARTICIPANTE------ ")
 
     nombre =
@@ -132,7 +132,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-  def login() do
+  def login(_) do
     IO.puts("------ INICIANDO SESIÓN ------ ")
 
     usuario =
@@ -344,25 +344,65 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
 
 
+def escuchar_comandos() do
+  IO.write("> ")
+
+  case IO.gets("") do
+    :eof ->
+      IO.puts("Saliendo...")
+      :ok
+
+    input ->
+      input
+      |> String.trim()
+      |> procesar_entrada()
+
+      escuchar_comandos()
+  end
+end
+
+defp procesar_entrada(""), do: :ok
+
+defp procesar_entrada("/" <> resto) do
+  partes = String.split(resto, " ")
+
+  comando =
+    partes
+    |> List.first()
+    |> String.to_atom()
+
+  args =
+    partes
+    |> tl()
+
+  ejecutar_comando(comando, args)
+end
+
+defp procesar_entrada(_otro) do
+  IO.puts("Por favor escriba un comando válido que empiece con /")
+end
+
 
   def ejecutar_comando(comando, args) do
     if comando not in @comandos_global do
       IO.puts("El comando ingresado no existe")
     else
-      rol = SesionGlobal.usuario_actual().rol
+      usuario = SesionGlobal.usuario_actual()
+      rol = if usuario == nil, do: nil, else: usuario.rol
 
       {comandos_disponibles, atomo_aridad} =
         case rol do
           "PARTICIPANTE" -> {@comandos_participante, :participante}
           "ADMIN" -> {@comandos_admin, :admin}
           "MENTOR" -> {@comandos_mentor, :mentor}
+          nil -> {@comandos_global_base, :nada}
           _ -> {[], :nada}
         end
 
       if comando in comandos_disponibles do
         apply(__MODULE__, comando, [atomo_aridad | args])
       else
-        IO.puts("El comando #{comando} no está disponible para el rol #{String.capitalize(rol)}")
+        IO.puts("El comando #{comando} no está disponible para el rol #{rol}")
       end
     end
   end
