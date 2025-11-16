@@ -10,6 +10,7 @@ defmodule Hackaton.Services.ServicioHackathon do
     - Buscar equipos por nombre o ID
   """
   alias Hackaton.Services.{ServicioEquipo, ServicioMensaje, ServicioProyecto, ServicioUsuario}
+  alias Hackaton.Util.SesionGlobal
 
   # =======================================================
   # 3. para usuarios
@@ -64,9 +65,9 @@ defmodule Hackaton.Services.ServicioHackathon do
 
   end
 
-  def actualizar_estado_proyecto(nombre_archivo, nombre_proyecto, nuevo_estado) do
-    proyecto = ServicioProyecto.obtener_proyecto_nombre(nombre_archivo, nombre_proyecto)
-    case proyecto do
+  def actualizar_estado_proyecto(nombre_archivo, nuevo_estado) do
+    proyecto_ = ServicioProyecto.obtener_proyecto_id_equipo(nombre_archivo, SesionGlobal.usuario_actual().id_equipo)
+    case proyecto_ do
       {:error, reason} -> {:error, reason}
       {:ok, proyecto} -> ServicioProyecto.actualizar_estado(nombre_archivo, proyecto.id, nuevo_estado)
     end

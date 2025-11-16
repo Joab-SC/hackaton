@@ -47,6 +47,14 @@ defmodule Hackaton.Services.ServicioProyecto do
     end
   end
 
+  def obtener_proyecto_id_equipo(nombre_archivo, id_equipo_) do
+    case BdProyecto.leer_proyecto_id_equipo(nombre_archivo, id_equipo_) do
+      nil -> {:error, "No se encontró el proyecto esa id asociada"}
+      proyecto -> {:ok, proyecto}
+    end
+
+  end
+
 
   # Actualizar un proyecto existente
   def actualizar_proyecto(nombre_archivo, id, nombre, descripcion, categoria, estado, id_equipo, fecha_creacion) do
