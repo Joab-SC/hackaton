@@ -52,14 +52,15 @@ defmodule Hackaton.Services.ServicioHackathon do
     ServicioUsuario.obtener_mentores(nombre_archivo)
   end
 
-  def crear_proyecto(archivo_proyectos, archivo_equipos, nombre, descripcion, categoria, nombre_equipo) do
-    equipo_ = ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
-    case equipo_ do
-      {:error, reason} -> {:error, reason}
-      {:ok, equipo} -> ServicioProyecto.crear_proyecto(archivo_proyectos, nombre, descripcion, categoria, equipo.id)
+  def crear_proyecto(archivo_proyectos, nombre, descripcion, categoria, id_equipo) do
+    proyectos = ServicioProyecto.listar_proyectos(archivo_proyectos)
+    if Enum.any?(proyectos, fn p-> p.id_equipo == id_equipo end) do
+      {:error, "El equipo ya tiene un proyecto registrado."}
+    else
+      ServicioProyecto.crear_proyecto(archivo_proyectos, nombre, descripcion, categoria, id_equipo)
     end
-
   end
+
 
   def actualizar_estado_proyecto(nombre_archivo, id_equipo, nuevo_estado) do
     proyecto_ = ServicioProyecto.obtener_proyecto_id_equipo(nombre_archivo, id_equipo)
@@ -74,13 +75,7 @@ defmodule Hackaton.Services.ServicioHackathon do
   end
 
 
-  @spec listar_equipos(
-          binary()
-          | maybe_improper_list(
-              binary() | maybe_improper_list(any(), binary() | []) | char(),
-              binary() | []
-            )
-        ) :: list()
+
   def listar_equipos(archivo_equipos) do
     ServicioEquipo.obtener_equipos(archivo_equipos)
   end
@@ -126,8 +121,8 @@ defmodule Hackaton.Services.ServicioHackathon do
         miembros = obtener_participantes_equipo_nombre(archivo_equipos, archivo_usuarios, nombre_equipo)
         case miembros do
           {:error, reason} -> {:error, reason}
-          {:ok, miembros} ->
-            {:ok, %{equipo: equipo, miembros: miembros}}
+          {:ok, m} ->
+            {:ok, %{equipo: equipo, miembros: m}}
         end
     end
   end
@@ -147,7 +142,7 @@ defmodule Hackaton.Services.ServicioHackathon do
       {_, {:error, reason}} ->
         {:error, reason}
 
-      {{:ok, equipo}, {:ok, participante}} ->
+      {{:ok, _equipo}, {:ok, participante}} ->
         if participante.id_equipo != "" do
           {:error, "El participante ya pertenece a un equipo."}
         else

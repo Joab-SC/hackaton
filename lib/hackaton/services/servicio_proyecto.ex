@@ -1,13 +1,14 @@
 defmodule Hackaton.Services.ServicioProyecto do
   alias Hackaton.Domain.Proyecto
   alias Hackaton.Adapter.BaseDatos.BdProyecto
+  alias Hackaton.Util.GeneradorID
 
   # Crear un proyecto nuevo
   def crear_proyecto(nombre_archivo, nombre, descripcion, categoria, id_equipo) do
     with  :ok <- Proyecto.validar_campos_obligatorios(nombre, descripcion, categoria, id_equipo),
           :ok <-  validar_nombre_unico(nombre_archivo, nombre),
           :ok <- Proyecto.validar_categoria(categoria) do
-            nuevo = Proyecto.crear_proyecto(GeneradorID.unico("pryt", fn nuevo_id ->
+            nuevo = Proyecto.crear_proyecto(GeneradorID.generar_id_unico("pryt", fn nuevo_id ->
             Enum.any?(BdProyecto.leer_proyectos(nombre_archivo), fn u -> u.id == nuevo_id end) end), nombre, descripcion, categoria, "Nuevo", id_equipo, DateTime.utc_now()|> Calendar.strftime("%Y-%m-%d %H:%M:%S"))
             BdProyecto.escribir_proyecto(nombre_archivo, nuevo)
             {:ok, nuevo}

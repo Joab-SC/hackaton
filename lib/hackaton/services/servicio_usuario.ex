@@ -1,7 +1,6 @@
 defmodule Hackaton.Services.ServicioUsuario do
   alias Hackaton.Adapter.BaseDatos.BdUsuario
   alias Hackaton.Domain.Usuario
-  alias Hackaton.Util.SesionGlobal
   alias Hackaton.Util.{Encriptador, GeneradorID}
 
 
