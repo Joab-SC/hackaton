@@ -13,17 +13,12 @@ defmodule Hackaton.Comunicacion.NodoServidor do
   """
   @nombre_servicio_local :servicio_hackaton
   alias Hackaton.Services.{ServicioEquipo, ServicioMensaje, ServicioProyecto, ServicioUsuario}
-  alias Hackaton.Util.SesionGlobal
+
 
 
   def main() do
     IO.puts("=== Nodo Servidor Iniciado ===")
 
-    case Hackaton.Util.SesionGlobal.start_link([]) do
-      {:ok, _pid} -> IO.puts("SesionGlobal iniciado en servidor")
-      {:error, {:already_started, _pid}} -> :ok
-    end
-    
     registrar_servicio(@nombre_servicio_local)
     ejectar_comandos()
   end
