@@ -440,9 +440,20 @@ end
         end
 
       if comando in comandos_disponibles do
-        apply(__MODULE__, comando, [atomo_aridad | args])
-      else
-        IO.puts("El comando #{comando} no está disponible para el rol #{rol}")
+        try do
+          apply(__MODULE__, comando, [atomo_aridad | args])
+        rescue
+          e in FunctionClauseError ->
+            {_, _, aridad} = e.function
+            IO.puts("El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos")
+
+          e in UndefinedFunctionError ->
+            {_, _, aridad} = e.function
+            IO.puts("El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos")
+
+          _ ->
+            IO.puts("Ocurrió un error inesperado al ejecutar el comando '#{comando}'.")
+      end
       end
     end
   end
