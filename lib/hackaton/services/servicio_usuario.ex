@@ -65,7 +65,7 @@ defmodule Hackaton.Services.ServicioUsuario do
 
   def obtener_usuario(nombre_archivo, id) do
     usuario = BdUsuario.leer_usuario(nombre_archivo, id)
-    if not usuario do
+    if is_nil(usuario) do
       {:error, "No se pudo encontrar el usuario con ese id"}
     else
       {:ok,usuario}
@@ -74,7 +74,7 @@ defmodule Hackaton.Services.ServicioUsuario do
 
   def obtener_usuario_user(nombre_archivo, user) do
     usuario = BdUsuario.leer_usuario_user(nombre_archivo, user)
-    if not usuario do
+    if is_nil(usuario) do
       {:error, "No se pudo encontrar el usuario #{user}"}
     else
       {:ok,usuario}
