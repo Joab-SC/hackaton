@@ -98,6 +98,10 @@ defmodule Hackaton.Services.ServicioHackathon do
     ServicioEquipo.obtener_equipo(archivo_equipos, id_equipo)
   end
 
+  def actualizar_campo_usuario(nombre_archivo, id_usuario, valor, tipo_campo) do
+    ServicioUsuario.actualizar_campo(nombre_archivo, id_usuario, valor, tipo_campo)
+  end
+
 
 
 

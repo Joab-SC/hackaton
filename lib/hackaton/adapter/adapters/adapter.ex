@@ -3,7 +3,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   alias Hackaton.Comunicacion.NodoCliente
 
 
-  @comandos_global_base [:chat, :login, :log_out, :ver_comandos, :registrarse]
+  @comandos_global_base [:chat, :login, :log_out, :ver_comandos, :registrarse, :actualizar_campo]
   @comandos_admin [
     :enviar_comunicado,
     :teams,
@@ -351,6 +351,18 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       {:error, reason} -> IO.puts(reason)
       {:ok, _proyecto} -> IO.puts("Se actualizó el estado del proyecto correctamente")
     end
+  end
+
+
+  def actualizar_campo(_, tipo_campo, campo_nuevo) do
+    case NodoCliente.ejecutar(:actualizar_campo_usuario, [ "lib/hackaton/adapter/persistencia/usuario.csv",
+        SesionGlobal.usuario_actual().id,
+        campo_nuevo, tipo_campo
+      ]) do
+        {:ok, _usuario} ->
+          IO.puts("Se actualizó el usuario correctamente")
+        {:error, reason} -> IO.puts(reason)
+      end
   end
 
 

@@ -37,17 +37,36 @@ defmodule Hackaton.Domain.Usuario do
     }
   end
 
-  def validar_campos_obligatorios(rol, nombre, apellido, cedula, correo, usuario, contrasena) do
-    if Enum.any?([rol, nombre, apellido, cedula, correo, usuario, contrasena], &(&1 in ["", nil])) do
+  def validar_campos_vacios(rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena) do
+    if Enum.any?([rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena], fn campo ->
+      elem(validar_campo_vacio(campo), 0) == :error end) do
       {:error, "Todos los campos obligatorios deben estar llenos."}
     else
       :ok
     end
   end
 
+  def validar_campo_vacio(campo) do
+    campo_validar = if is_nil(campo), do: nil, else: String.trim(campo)
+    if campo_validar in ["", nil] do
+      {:error, "El campo #{campo} no puede estar vacío."}
+    else
+      {:ok, campo}
+    end
+  end
+
+  def validar_telefono(telefono) do
+     if Regex.match?(~r/^3[0-5][0-9]{8}$/, telefono) do
+      {:ok, telefono}
+    else
+      {:error, "El numero de telefono debe iniciar en 3 y tener 10 digitos"}
+    end
+
+  end
+
   def validar_rol(rol) do
     if rol in @roles do
-      :ok
+      {:ok, rol}
     else
       {:error, "Rol no válido. Debe ser PARTICIPANTE, MENTOR o ADMIN."}
     end
@@ -55,9 +74,24 @@ defmodule Hackaton.Domain.Usuario do
 
   def validar_correo(correo) do
     if Regex.match?(~r/^[\w._%+-]+@[\w.-]+\.[a-zA-Z]{2,4}$/, correo) do
-      :ok
+      {:ok, correo}
     else
       {:error, "El correo electrónico no tiene un formato válido."}
+    end
+  end
+
+  def validar_campos_obligatorios(rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena) do
+    case validar_campos_vacios(rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena) do
+      {:error, reason} -> {:error, reason}
+      :ok ->
+        case validar_rol(rol) do
+          {:error, reason} -> {:error, reason}
+          {:ok, _} ->
+            case validar_correo(correo) do
+              {:error, reason} -> {:error, reason}
+              {:ok, _} -> :ok
+            end
+        end
     end
   end
 
