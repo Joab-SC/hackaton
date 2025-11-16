@@ -34,14 +34,11 @@ defmodule Hackaton.Services.ServicioUsuario do
     case Enum.find(usuarios, fn u -> u.usuario == usuario && Encriptador.verificar_contrasena(contrasena, u.contrasena) end) do
       nil -> {:error, "Usuario o contraseña incorrectos."}
       u ->
-        SesionGlobal.iniciar_sesion(u)
         {:ok, u}
     end
   end
 
-  def cerrar_sesion() do
-    SesionGlobal.cerrar_sesion()
-  end
+
 
   defp validar_usuario_unico(nombre_archivo, usuario) do
     if Enum.any?(BdUsuario.leer_usuarios(nombre_archivo), fn u -> u.usuario == usuario end) do

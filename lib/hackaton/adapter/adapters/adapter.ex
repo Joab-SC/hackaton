@@ -270,8 +270,8 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end)
   end
 
-  def log_out do
-    ServicioHackathon.cerrar_sesion()
+  def log_out() do
+    SesionGlobal.cerrar_sesion()
   end
 
   def ver_comandos(_) do
@@ -340,7 +340,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       IO.gets("Ingrese el nuevo estado (proceso finalizado): ")
       |> String.trim()
 
-    actualizado = ServicioHackathon.actualizar_estado_proyecto("proyecto.csv", nuevo_estado)
+    actualizado = ServicioHackathon.actualizar_estado_proyecto("proyecto.csv", SesionGlobal.usuario_actual().id_equipo, nuevo_estado)
 
     case actualizado do
       {:error, reason} -> IO.puts(reason)
