@@ -14,7 +14,6 @@ defmodule Hackaton.Adapter.BaseDatos.BdEquipo do
         end
       end)
       |> Enum.filter(fn x -> x  end)
-      |>IO.inspect()
 
       {:error, reason} ->
         IO.puts("AMO A JOAB, PAPASOTE  RICO  #{reason}")
@@ -36,7 +35,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdEquipo do
           else
             nil
           end
-          _ -> []
+          _ -> nil
         end
       end)
       |> Enum.filter(& &1)
@@ -65,13 +64,13 @@ defmodule Hackaton.Adapter.BaseDatos.BdEquipo do
           else
             nil
           end
-          _ -> []
+          _ -> nil
         end
       end)
       |> Enum.filter(& &1)
 
       case lista_elem do
-        [equipo | _] -> equipo
+        [equipo | _] -> IO.inspect(equipo)
         [] -> nil
       end
 

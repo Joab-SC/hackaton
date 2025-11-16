@@ -3,6 +3,8 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   alias Hackaton.Util.SesionGlobal
   alias Hackaton.Comunicacion.NodoCliente
 
+
+  @comandos_global_base [:chat, :login, :log_out, :ver_comandos, :registrarse]
   @comandos_admin [
     :enviar_comunicado,
     :teams,
@@ -10,7 +12,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     :crear_sala,
     :registrarse,
     :eliminar_usuario
-  ]
+  ] ++ @comandos_global_base
   @comandos_participante [
     :join,
     :entrar_sala,
@@ -22,9 +24,8 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     :cambiar_estado_proyecto,
     :my_team,
     :registrar_equipo
-  ]
-  @comandos_mentor [:entrar_sala]
-  @comandos_global_base [:chat, :login, :log_out, :ver_comandos, :registrarse]
+  ] ++ @comandos_global_base
+  @comandos_mentor [:entrar_sala] ++ @comandos_global_base
   @comandos_global Enum.uniq(
     @comandos_global_base ++
     @comandos_admin ++
@@ -32,7 +33,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     @comandos_mentor
   )
 
-  def registrarse(:admin) do
+  def registrar_mentor(:admin) do
     IO.puts("------ REGISTRANDO MENTOR------ ")
 
     nombre =
@@ -195,14 +196,12 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       |> String.trim()
 
     proyecto =
-      ServicioHackathon.crear_proyecto(
-        "proyecto.csv",
-        "equipo.csv",
+      NodoCliente.ejecutar(:crear_proyecto, [ "lib/hackaton/adapter/persistencia/proyecto.csv",
+      "lib/hackaton/adapter/persistencia/equipo.csv",
         nombre,
         descripcion,
         categoria,
-        nombre_equipo
-      )
+        nombre_equipo])
 
     case proyecto do
       {:error, reason} -> IO.puts(reason)
@@ -212,7 +211,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
   def salir_hackaton(:participante) do
     usuario =
-      ServicioHackathon.eliminar_usuario("usuario.csv", SesionGlobal.usuario_actual().id, :id)
+      NodoCliente.ejecutar(:eliminar_usuario, [ "lib/hackaton/adapter/persistencia/usuario.csv", SesionGlobal.usuario_actual().id, :id])
 
     case usuario do
       {:error, reason} -> IO.puts(reason)
@@ -221,8 +220,8 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   end
 
   def expulsar_usuario(:admin, user) do
-    usuario = ServicioHackathon.eliminar_usuario("usuario.csv", user, :user)
-
+    usuario =
+      NodoCliente.ejecutar(:eliminar_usuario, [ "lib/hackaton/adapter/persistencia/usuario.csv", user, :user])
     case usuario do
       {:error, reason} -> IO.puts(reason)
       :ok -> IO.puts("Se expulsó correctamente de la hackaton")
@@ -231,8 +230,8 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
   def teams(:admin) do
     IO.puts("------ Lista de equipos ------")
-    equipos = ServicioHackathon.listar_equipos("equipo.csv")
-
+    equipos =
+    NodoCliente.ejecutar(:listar_equipos, [ "lib/hackaton/adapter/persistencia/equipo.csv"])
     Enum.each(equipos, fn equipo ->
       IO.puts("#{equipo.nombre} — Tema: #{equipo.tema}")
     end)
@@ -240,14 +239,12 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
   def join(:participante, nombre_equipo) do
     ingreso =
-
       NodoCliente.ejecutar(:unirse_por_nombre, [
         "lib/hackaton/adapter/persistencia/usuario.csv",
         "lib/hackaton/adapter/persistencia/equipo.csv",
         SesionGlobal.usuario_actual().id,
         nombre_equipo
       ])
-
 
 
     case ingreso do
@@ -257,7 +254,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   end
 
   def mentores() do
-    mentores = ServicioHackathon.obtener_mentores("usuario.csv")
+    mentores = NodoCliente.ejecutar(:obtener_mentores, [ "lib/hackaton/adapter/persistencia/usuario.csv"])
 
     Enum.each(mentores, fn m ->
       IO.puts("""
@@ -277,17 +274,17 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     ServicioHackathon.cerrar_sesion()
   end
 
-  def ver_comandos() do
+  def ver_comandos(_) do
     IO.puts("------ COMANDOS DISPONIBLES ------")
-
-    case SesionGlobal.usuario_actual().rol do
+    rol = if SesionGlobal.usuario_actual() != nil, do: SesionGlobal.usuario_actual().rol , else: nil
+    case rol do
       "ADMIN" ->
         Enum.each(@comandos_admin ++ @comandos_global_base, fn comando ->
           IO.puts("/#{comando}")
         end)
 
       "PARTICIPANTE" ->
-        Enum.each(@comandos_usuario ++ @comandos_global_base, fn comando ->
+        Enum.each(@comandos_participante ++ @comandos_global_base, fn comando ->
           IO.puts("/#{comando}")
         end)
 

@@ -49,16 +49,24 @@ defmodule Hackaton.Services.ServicioEquipo do
 
   def obtener_equipo(nombre_archivo, id) do
     equipo = BdEquipo.leer_equipo(nombre_archivo, id)
-    if not equipo do
+    if is_nil(equipo) do
       {:error, "No se pudo encontrar el equipo con ese id"}
     else
       {:ok,equipo}
     end
   end
 
+  @spec obtener_equipo_nombre(
+          binary()
+          | maybe_improper_list(
+              binary() | maybe_improper_list(any(), binary() | []) | char(),
+              binary() | []
+            ),
+          any()
+        ) :: {:error, <<_::64, _::_*8>>} | {:ok, boolean()}
   def obtener_equipo_nombre(nombre_archivo, nombre) do
     equipo =  BdEquipo.leer_equipo_nombre(nombre_archivo, nombre)
-    if not equipo do
+    if is_nil(equipo) do
       {:error, "No se pudo encontrar el equipo con el nombre #{nombre}"}
     else
       {:ok,equipo}
