@@ -1,5 +1,4 @@
 defmodule Hackaton.Adapter.Adapters.Adapter do
-  alias Hackaton.Services.ServicioHackathon
   alias Hackaton.Util.SesionGlobal
   alias Hackaton.Comunicacion.NodoCliente
 
@@ -271,7 +270,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   end
 
   def log_out() do
-    SesionGlobal.cerrar_sesion()
+    SesionGlobal.logout()
   end
 
   def ver_comandos(_) do
@@ -299,12 +298,14 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   end
 
   def project(nombre) do
-    case ServicioHackathon.obtener_proyecto_nombre("proyecto.csv", nombre) do
+
+    case NodoCliente.ejecutar(:obtener_proyecto_nombre, [ "lib/hackaton/adapter/persistencia/proyecto.csv", nombre]) do
       {:error, reason} ->
         IO.puts(reason)
 
       {:ok, p} ->
-        case ServicioHackathon.obtener_equipo_id("equipo.csv", p.id_equipo) do
+
+        case NodoCliente.ejecutar(:obtener_equipo_id, [ "lib/hackaton/adapter/persistencia/equipo.csv", p.id_equipo]) do
           {:error, reason} ->
             IO.puts(reason)
 
@@ -327,7 +328,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
   def my_team() do
     equipo =
-      ServicioHackathon.obtener_equipo_id("equipo.csv", SesionGlobal.usuario_actual().id_equipo)
+      NodoCliente.ejecutar(:obtener_equipo_id, [ "lib/hackaton/adapter/persistencia/equipo.csv", SesionGlobal.usuario_actual().id_equipo])
 
     case equipo do
       {:error, reason} -> IO.puts(reason)
@@ -340,7 +341,11 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       IO.gets("Ingrese el nuevo estado (proceso finalizado): ")
       |> String.trim()
 
-    actualizado = ServicioHackathon.actualizar_estado_proyecto("proyecto.csv", SesionGlobal.usuario_actual().id_equipo, nuevo_estado)
+    actualizado =
+      NodoCliente.ejecutar(:actualizar_estado_proyecto, [ "lib/hackaton/adapter/persistencia/proyecto.csv",
+        SesionGlobal.usuario_actual().id_equipo,
+        nuevo_estado
+      ])
 
     case actualizado do
       {:error, reason} -> IO.puts(reason)
