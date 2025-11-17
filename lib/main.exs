@@ -1,5 +1,5 @@
 defmodule Hackaton.Main do
-  alias Hackaton.Adapter.Adapters.Adapter
+  alias Hackaton.Adapter.Comandos
   @nodo_remoto :nodoservidor@localhost
   def main do
 
@@ -9,7 +9,7 @@ defmodule Hackaton.Main do
         IO.puts("Servicio conectado correctamente")
         #IO.inspect(Adapter.registrarse(:participante))
         IO.puts("Escriba un comando para iniciar.\n")
-        Adapter.escuchar_comandos()
+        Comandos.escuchar_comandos()
       false -> IO.puts("No se pudo conectar con el servicio remoto")
 
     end
