@@ -116,6 +116,10 @@ defmodule Hackaton.Services.ServicioHackathon do
     ServicioUsuario.obtener_usuario(nombre_archivo, id)
   end
 
+  def obtener_usuario_user(nombre_archivo, id) do
+    ServicioUsuario.obtener_usuario_user(nombre_archivo, id)
+  end
+
   def listar_equipos(archivo_equipos) do
     ServicioEquipo.obtener_equipos(archivo_equipos)
   end
@@ -169,7 +173,25 @@ defmodule Hackaton.Services.ServicioHackathon do
     )
   end
 
-  def obtener_retroalimentaciones_proyecto(nombre_archivo_proyectos, archivo_mensajes, id_proyecto) do
+  def crear_mensaje_personal(nombre_archivo, id_emisor, id_receptor, contenido) do
+    ServicioMensaje.crear_mensaje(
+      nombre_archivo,
+      :chat,
+      :usuario,
+      id_receptor,
+      id_emisor,
+      contenido,
+      "",
+      "",
+      "pendiente"
+    )
+  end
+
+  def obtener_retroalimentaciones_proyecto(
+        nombre_archivo_proyectos,
+        archivo_mensajes,
+        id_proyecto
+      ) do
     retroalimentaciones =
       ServicioMensaje.filtrar_por_proyecto(archivo_mensajes, :retroalimentacion, id_proyecto)
 
@@ -186,7 +208,7 @@ defmodule Hackaton.Services.ServicioHackathon do
   end
 
   def obtener_avances_proyecto(nombre_archivo, id_proyecto) do
-     avances =
+    avances =
       ServicioMensaje.filtrar_por_proyecto(nombre_archivo, :avance, id_proyecto)
 
     case ServicioProyecto.obtener_proyecto(nombre_archivo, id_proyecto) do
@@ -199,6 +221,28 @@ defmodule Hackaton.Services.ServicioHackathon do
           _ -> {:ok, avances}
         end
     end
+  end
+
+  def obtener_mensajes_personal(nombre_archivo, id_emisor, id_receptor) do
+    case ServicioMensaje.filtrar_mensajes_personal(nombre_archivo, id_emisor, id_receptor) do
+      [] -> {:error, "El usuario no tiene mensajes con el receptor especificado."}
+      mensajes -> {:ok, mensajes}
+    end
+  end
+
+  def obtener_mensajes_personal_pendientes(nombre_archivo, id_emisor, id_receptor) do
+    case ServicioMensaje.filtrar_mensajes_personal_pendiente(
+           nombre_archivo,
+           id_emisor,
+           id_receptor
+         ) do
+      [] -> {:error, "No hay mensajes pendientes con el receptor especificado."}
+      mensajes -> {:ok, mensajes}
+    end
+  end
+
+  def marcar_leidos(nombre_archivo, mensajes) do
+    ServicioMensaje.marcar_leidos(nombre_archivo, mensajes)
   end
 
   # =======================================================

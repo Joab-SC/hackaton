@@ -2,6 +2,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   alias Hackaton.Util.SesionGlobal
   alias Hackaton.Comunicacion.NodoCliente
   alias Hackaton.Adapter.Comandos
+  alias Hackaton.Adapter.Mensajes.ManejoMensajes
 
   def registrar_mentor(:admin) do
     IO.puts("------ REGISTRANDO MENTOR------ ")
@@ -417,10 +418,11 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   end
 
   def mostrar_historial(:admin, nombre) do
-    proyecto = NodoCliente.ejecutar(:obtener_proyecto_nombre, [
-           "lib/hackaton/adapter/persistencia/proyecto.csv",
-           nombre
-         ])
+    proyecto =
+      NodoCliente.ejecutar(:obtener_proyecto_nombre, [
+        "lib/hackaton/adapter/persistencia/proyecto.csv",
+        nombre
+      ])
 
     case proyecto do
       {:error, reason} ->
@@ -428,7 +430,14 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
       {:ok, p} ->
         IO.puts("------ Historial de retroalimentaciones del proyecto #{p.nombre} ------")
-        retroalimentaciones = NodoCliente.ejecutar(:obtener_retroalimentaciones_proyecto, ["lib/hackaton/adapter/persistencia/proyecto.csv", "lib/hackaton/adapter/persistencia/mensaje.csv", p.id])
+
+        retroalimentaciones =
+          NodoCliente.ejecutar(:obtener_retroalimentaciones_proyecto, [
+            "lib/hackaton/adapter/persistencia/proyecto.csv",
+            "lib/hackaton/adapter/persistencia/mensaje.csv",
+            p.id
+          ])
+
         case retroalimentaciones do
           {:error, reason} ->
             IO.puts(reason)
@@ -437,8 +446,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
             Enum.each(r, fn retroalimentacion ->
               IO.puts("""
               ----------------------------------------
-              De:            #{NodoCliente.ejecutar(:obtener_usuario, ["lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.id_emisor])
-              |> case do
+              De:            #{NodoCliente.ejecutar(:obtener_usuario, ["lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.id_emisor]) |> case do
                 {:ok, u} -> u.nombre <> " " <> u.apellido
                 {:error, _} -> "Usuario desconocido"
               end}
@@ -450,10 +458,15 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
         end
     end
   end
+
   def mostrar_historial(:participante) do
     usuario = SesionGlobal.usuario_actual()
 
-    proyecto = NodoCliente.ejecutar(:obtener_proyecto_id_equipo, ["lib/hackaton/adapter/persistencia/proyecto.csv", usuario.id_equipo])
+    proyecto =
+      NodoCliente.ejecutar(:obtener_proyecto_id_equipo, [
+        "lib/hackaton/adapter/persistencia/proyecto.csv",
+        usuario.id_equipo
+      ])
 
     case proyecto do
       {:error, reason} ->
@@ -461,7 +474,14 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
       {:ok, p} ->
         IO.puts("------ Historial de retroalimentaciones del proyecto #{p.nombre} ------")
-        retroalimentaciones = NodoCliente.ejecutar(:obtener_retroalimentaciones_proyecto, ["lib/hackaton/adapter/persistencia/proyecto.csv", "lib/hackaton/adapter/persistencia/mensaje.csv", p.id])
+
+        retroalimentaciones =
+          NodoCliente.ejecutar(:obtener_retroalimentaciones_proyecto, [
+            "lib/hackaton/adapter/persistencia/proyecto.csv",
+            "lib/hackaton/adapter/persistencia/mensaje.csv",
+            p.id
+          ])
+
         case retroalimentaciones do
           {:error, reason} ->
             IO.puts(reason)
@@ -470,8 +490,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
             Enum.each(r, fn retroalimentacion ->
               IO.puts("""
               ----------------------------------------
-              De:            #{NodoCliente.ejecutar(:obtener_usuario, ["lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.id_emisor])
-              |> case do
+              De:            #{NodoCliente.ejecutar(:obtener_usuario, ["lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.id_emisor]) |> case do
                 {:ok, u} -> u.nombre <> " " <> u.apellido
                 {:error, _} -> "Usuario desconocido"
               end}
@@ -488,50 +507,46 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     usuario = SesionGlobal.usuario_actual()
 
     if usuario.id_equipo == "" do
-      IO.puts(
-        "No puedes crear un avance si no perteneces a un equipo"
-      )
+      IO.puts("No puedes crear un avance si no perteneces a un equipo")
     else
+      case NodoCliente.ejecutar(:obtener_proyecto_id_equipo, [
+             "lib/hackaton/adapter/persistencia/proyecto.csv",
+             usuario.id_equipo
+           ]) do
+        {:error, reason} ->
+          IO.puts(reason)
 
-    case NodoCliente.ejecutar(:obtener_proyecto_id_equipo, [
-           "lib/hackaton/adapter/persistencia/proyecto.csv",
-           usuario.id_equipo
-         ]) do
-      {:error, reason} ->
-        IO.puts(reason)
+        {:ok, p} ->
+          IO.puts("------ CREANDO AVANCE DEL PROYECTO #{p.nombre} ------ ")
 
-      {:ok, p} ->
-        IO.puts("------ CREANDO AVANCE DEL PROYECTO #{p.nombre} ------ ")
+          contenido =
+            IO.gets("Ingrese el contenido del avance: ")
+            |> String.trim()
 
-        contenido =
-          IO.gets("Ingrese el contenido del avance: ")
-          |> String.trim()
+          avance =
+            NodoCliente.ejecutar(:crear_avance, [
+              "lib/hackaton/adapter/persistencia/mensaje.csv",
+              usuario.id,
+              contenido,
+              p.id
+            ])
 
-        avance =
-          NodoCliente.ejecutar(:crear_avance, [
-            "lib/hackaton/adapter/persistencia/mensaje.csv",
-            usuario.id,
-            contenido,
-            p.id
-          ])
+          case avance do
+            {:error, reason} ->
+              IO.puts(reason)
 
-        case avance do
-          {:error, reason} ->
-            IO.puts(reason)
-
-          {:ok, _avance} ->
-            IO.puts("Se creó el avance correctamente")
-        end
+            {:ok, _avance} ->
+              IO.puts("Se creó el avance correctamente")
+          end
+      end
     end
   end
 
-end
-
   def crear_retroalimentacion(:mentor, nombre) do
     NodoCliente.ejecutar(:obtener_proyecto_nombre, [
-           "lib/hackaton/adapter/persistencia/proyecto.csv",
-           nombre
-         ])
+      "lib/hackaton/adapter/persistencia/proyecto.csv",
+      nombre
+    ])
     |> case do
       {:error, reason} ->
         IO.puts(reason)
@@ -559,5 +574,40 @@ end
             IO.puts("Se creó la retroalimentación correctamente")
         end
     end
+  end
+
+  def abrir_chat(_, otro_usuario_user) do
+    {:ok, otro_usuario} =
+      NodoCliente.ejecutar(:obtener_usuario_user, [
+        "lib/hackaton/adapter/persistencia/usuario.csv",
+        otro_usuario_user
+      ])
+
+    usuario_actual = SesionGlobal.usuario_actual()
+
+    IO.inspect(
+      NodoCliente.ejecutar(:obtener_mensajes_personal, [
+        "lib/hackaton/adapter/persistencia/mensaje.csv",
+        otro_usuario.id,
+        usuario_actual.id
+      ])
+    )
+
+    case NodoCliente.ejecutar(:obtener_mensajes_personal, [
+           "lib/hackaton/adapter/persistencia/mensaje.csv",
+           otro_usuario.id,
+           usuario_actual.id
+         ]) do
+      {:ok, mensajes} ->
+        NodoCliente.ejecutar(:marcar_leidos, [
+          "lib/hackaton/adapter/persistencia/mensaje.csv",
+          mensajes
+        ])
+        ManejoMensajes.mostrar_mensajes_chat(mensajes)
+
+      {:error, reason} ->
+        IO.puts(reason)
+    end
+    ManejoMensajes.chatear(usuario_actual, otro_usuario)
   end
 end
