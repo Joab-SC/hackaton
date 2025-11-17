@@ -29,7 +29,7 @@ defmodule Hackaton.Services.ServicioMensaje do
   def crear_mensaje(nombre_archivo, tipo_mensaje, tipo_receptor, id_receptor,
                     id_emisor, contenido, id_equipo, id_proyecto, estado) do
 
-    with :ok <- Mensaje.validar_campos_obligatorios(tipo_mensaje, tipo_receptor, id_receptor, contenido) do
+    with :ok <- Mensaje.validar_campos_obligatorios(tipo_mensaje, tipo_receptor, contenido) do
       id = GeneradorID.generar_id_unico(to_string(tipo_mensaje), fn nuevo_id ->
         Enum.any?(BdMensaje.leer_mensajes(nombre_archivo), &(&1.id == nuevo_id))
       end)
@@ -105,5 +105,13 @@ defmodule Hackaton.Services.ServicioMensaje do
 
   def filtrar_mensajes_personal_pendiente(nombre_archivo, id_emisor, id_receptor) do
     BdMensaje.filtrar_mensajes_personal_pendiente(nombre_archivo, id_emisor, id_receptor)
+  end
+
+  def filtrar_mensajes_equipo(nombre_archivo, id_equipo) do
+    BdMensaje.filtrar_mensajes_equipo(nombre_archivo, id_equipo)
+  end
+
+  def filtrar_mensajes_equipo_pendiente(nombre_archivo, id_equipo) do
+    BdMensaje.filtrar_mensajes_equipo_pendiente(nombre_archivo, id_equipo)
   end
 end

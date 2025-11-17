@@ -7,8 +7,13 @@ defmodule Hackaton.Services.ServicioHackathon do
 
   """
 
-
-  alias Hackaton.Services.{ServicioEquipo, ServicioMensaje, ServicioProyecto, ServicioUsuario, ServicioSala}
+  alias Hackaton.Services.{
+    ServicioEquipo,
+    ServicioMensaje,
+    ServicioProyecto,
+    ServicioUsuario,
+    ServicioSala
+  }
 
   @doc """
   Registra un usuario delegando la operación a `ServicioUsuario`.
@@ -268,25 +273,6 @@ defmodule Hackaton.Services.ServicioHackathon do
     )
   end
 
-  @doc """
-  Crea un avance asociado a un proyecto.
-  """
-  @doc """
-  Crea un avance asociado a un proyecto.
-  """
-  def crear_avance(nombre_archivo, id_emisor, contenido, id_proyecto) do
-    ServicioMensaje.crear_mensaje(
-      nombre_archivo,
-      :avance,
-      nil,
-      "",
-      id_emisor,
-      contenido,
-      "",
-      id_proyecto,
-      ""
-    )
-  end
 
   def crear_mensaje_personal(nombre_archivo, id_emisor, id_receptor, contenido) do
     ServicioMensaje.crear_mensaje(
@@ -310,8 +296,6 @@ defmodule Hackaton.Services.ServicioHackathon do
         archivo_mensajes,
         id_proyecto
       ) do
-
-
     retroalimentaciones =
       ServicioMensaje.filtrar_por_proyecto(archivo_mensajes, :retroalimentacion, id_proyecto)
 
@@ -334,8 +318,7 @@ defmodule Hackaton.Services.ServicioHackathon do
   Obtiene todos los avances de un proyecto validando previamente la existencia del proyecto.
   """
   def obtener_avances_proyecto(nombre_archivo, id_proyecto) do
-     avances =
-     avances =
+    avances =
       ServicioMensaje.filtrar_por_proyecto(nombre_archivo, :avance, id_proyecto)
 
     case ServicioProyecto.obtener_proyecto(nombre_archivo, id_proyecto) do
@@ -348,28 +331,6 @@ defmodule Hackaton.Services.ServicioHackathon do
           _ -> {:ok, avances}
         end
     end
-  end
-
-  def obtener_mensajes_personal(nombre_archivo, id_emisor, id_receptor) do
-    case ServicioMensaje.filtrar_mensajes_personal(nombre_archivo, id_emisor, id_receptor) do
-      [] -> {:error, "El usuario no tiene mensajes con el receptor especificado."}
-      mensajes -> {:ok, mensajes}
-    end
-  end
-
-  def obtener_mensajes_personal_pendientes(nombre_archivo, id_emisor, id_receptor) do
-    case ServicioMensaje.filtrar_mensajes_personal_pendiente(
-           nombre_archivo,
-           id_emisor,
-           id_receptor
-         ) do
-      [] -> {:error, "No hay mensajes pendientes con el receptor especificado."}
-      mensajes -> {:ok, mensajes}
-    end
-  end
-
-  def marcar_leidos(nombre_archivo, mensajes) do
-    ServicioMensaje.marcar_leidos(nombre_archivo, mensajes)
   end
 
   @doc """
@@ -397,6 +358,7 @@ defmodule Hackaton.Services.ServicioHackathon do
 
       {:ok, equipo} ->
         ServicioUsuario.obtener_participantes_equipo(archivo_usuarios, equipo.id)
+
       {:error, reason} ->
         {:error, reason}
 
@@ -482,23 +444,6 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Quita un participante de su equipo (si pertenece a alguno).
   """
-  @doc """
-  Quita un participante de su equipo (si pertenece a alguno).
-  """
-  def quitar_participante_de_equipo(archivo_usuarios, id_participante) do
-    participante = ServicioUsuario.obtener_usuario(archivo_usuarios, id_participante)
-
-    case participante do
-      {:error, reason} ->
-        {:error, reason}
-
-      {:ok, usuario} ->defmodule Hackaton.Services.ServicioHackathon do
-  @moduledoc """
-  Servicio general que coordina la interacción entre usuarios, equipos, proyectos y mensajes
-  dentro del sistema de la Hackathon.
-  """
-
-  alias Hackaton.Services.{ServicioEquipo, ServicioMensaje, ServicioProyecto, ServicioUsuario}
 
   @doc """
   Registra un usuario delegando la operación a `ServicioUsuario`.
@@ -712,20 +657,6 @@ defmodule Hackaton.Services.ServicioHackathon do
     )
   end
 
-  def crear_mensaje_personal(nombre_archivo, id_emisor, id_receptor, contenido) do
-    ServicioMensaje.crear_mensaje(
-      nombre_archivo,
-      :chat,
-      :usuario,
-      id_receptor,
-      id_emisor,
-      contenido,
-      "",
-      "",
-      "pendiente"
-    )
-  end
-
   @doc """
   Obtiene todas las retroalimentaciones de un proyecto validando que dicho proyecto exista.
   """
@@ -734,7 +665,6 @@ defmodule Hackaton.Services.ServicioHackathon do
         archivo_mensajes,
         id_proyecto
       ) do
-
     retroalimentaciones =
       ServicioMensaje.filtrar_por_proyecto(archivo_mensajes, :retroalimentacion, id_proyecto)
 
@@ -769,6 +699,10 @@ defmodule Hackaton.Services.ServicioHackathon do
     end
   end
 
+  def marcar_leidos(nombre_archivo, mensajes) do
+    ServicioMensaje.marcar_leidos(nombre_archivo, mensajes)
+  end
+
   def obtener_mensajes_personal(nombre_archivo, id_emisor, id_receptor) do
     case ServicioMensaje.filtrar_mensajes_personal(nombre_archivo, id_emisor, id_receptor) do
       [] -> {:error, "El usuario no tiene mensajes con el receptor especificado."}
@@ -787,8 +721,46 @@ defmodule Hackaton.Services.ServicioHackathon do
     end
   end
 
-  def marcar_leidos(nombre_archivo, mensajes) do
-    ServicioMensaje.marcar_leidos(nombre_archivo, mensajes)
+  def crear_mensaje_personal(nombre_archivo, id_emisor, id_receptor, contenido) do
+    ServicioMensaje.crear_mensaje(
+      nombre_archivo,
+      :chat,
+      :usuario,
+      id_receptor,
+      id_emisor,
+      contenido,
+      "",
+      "",
+      "pendiente"
+    )
+  end
+
+  def obtener_mensajes_equipo(nombre_archivo, id_equipo, _id_emisor) do
+    case ServicioMensaje.filtrar_mensajes_equipo(nombre_archivo, id_equipo) do
+      [] -> {:error, "El chat del equipo aún no tiene mensajes."}
+      mensajes -> {:ok, mensajes}
+    end
+  end
+
+  def obtener_mensajes_equipo_pendientes(nombre_archivo, id_equipo, _id_emisor) do
+    case ServicioMensaje.filtrar_mensajes_equipo_pendiente(nombre_archivo, id_equipo) do
+      [] -> {:error, "El chat del equipo aún no tiene mensajes."}
+      mensajes -> {:ok, mensajes}
+    end
+  end
+
+  def crear_mensaje_equipo(nombre_archivo, id_emisor, id_equipo, contenido) do
+    ServicioMensaje.crear_mensaje(
+      nombre_archivo,
+      :chat,
+      :equipo,
+      "",
+      id_emisor,
+      contenido,
+      id_equipo,
+      "",
+      "pendiente"
+    )
   end
 
   @doc """
@@ -801,7 +773,7 @@ defmodule Hackaton.Services.ServicioHackathon do
       {:error, reason} ->
         {:error, reason}
 
-      {:ok}, equipo ->
+      {:ok, equipo} ->
         ServicioUsuario.obtener_participantes_equipo(archivo_usuarios, equipo.id)
     end
   end
@@ -880,8 +852,18 @@ defmodule Hackaton.Services.ServicioHackathon do
         end
     end
   end
-end
 
+  @doc """
+  Quita un participante de su equipo (si pertenece a alguno).
+  """
+  def quitar_participante_de_equipo(archivo_usuarios, id_participante) do
+    participante = ServicioUsuario.obtener_usuario(archivo_usuarios, id_participante)
+
+    case participante do
+      {:error, reason} ->
+        {:error, reason}
+
+      {:ok, usuario} ->
         if usuario.id_equipo == "" do
           {:error, "El participante no pertenece a ningún equipo."}
         else
@@ -905,6 +887,4 @@ end
   def obtener_sala_tema(nombre_archivo, tema) do
     ServicioSala.obtener_sala_tema(nombre_archivo, tema)
   end
-
-
 end

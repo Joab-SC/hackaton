@@ -197,9 +197,33 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
 
   def filtrar_mensajes_personal_pendiente(nombre_archivo, id_emisor_buscar, id_receptor_buscar) do
     Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
-      mensaje.id_emisor == id_emisor_buscar and mensaje.id_receptor == id_receptor_buscar and mensaje.estado == "pendiente"
+      mensaje.id_emisor == id_emisor_buscar and mensaje.id_receptor == id_receptor_buscar and
+        mensaje.estado == "pendiente"
     end)
   end
+
+  def filtrar_mensajes_equipo(nombre_archivo, id_equipo) do
+    IO.inspect(id_equipo)
+    Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
+      mensaje.id_equipo == id_equipo
+    end)
+  end
+
+  def filtrar_mensajes_equipo_pendiente(nombre_archivo, id_equipo) do
+    Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
+      mensaje.id_equipo == id_equipo and
+        mensaje.estado == "pendiente"
+    end)
+  end
+
+
+
+
+
+
+
+
+
 
   def filtrar_mensajes(nombre_archivo, tipo_buscar, id_receptor_buscar) do
     Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->

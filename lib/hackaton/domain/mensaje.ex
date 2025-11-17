@@ -53,12 +53,12 @@ defmodule Hackaton.Domain.Mensaje do
   Valida los campos obligatorios requeridos para crear un mensaje.
 
   """
-  def validar_campos_obligatorios(tipo_mensaje, tipo_receptor, id_receptor, contenido) do
+  def validar_campos_obligatorios(tipo_mensaje, tipo_receptor, contenido) do
     with {:ok, _} <- validar_campo_vacio(tipo_mensaje),
          {:ok, _} <- validar_campo_vacio(contenido),
          {:ok, _} <- validar_tipo_mensaje(tipo_mensaje),
-         :ok <- validar_tipo_receptor_si_necesario(tipo_mensaje, tipo_receptor),
-         :ok <- validar_receptor_id(tipo_mensaje, tipo_receptor, id_receptor) do
+         :ok <- validar_tipo_receptor_si_necesario(tipo_mensaje, tipo_receptor)
+         do
       :ok
     end
   end
