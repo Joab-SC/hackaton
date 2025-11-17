@@ -9,7 +9,8 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
                     :project,
                     :crear_sala,
                     :registrar_mentor,
-                    :eliminar_usuario
+                    :expulsar_usuario,
+                    :salir_hackaton
                   ] ++ @comandos_global_base
   @comandos_participante [
                            :join,
@@ -467,7 +468,6 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   end
 
   def ejecutar_comando(comando, args) do
-
     if comando not in @comandos_global do
       IO.puts("El comando ingresado no existe")
     else
@@ -484,35 +484,28 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
         end
 
       if comando in comandos_disponibles do
-        try do
-          func_info = __MODULE__.__info__(:functions)
 
-          if {comando, length(args) + 1} in func_info do
-            apply(__MODULE__, comando, [atomo_aridad | args])
-          else
-            IO.puts(
-              "El comando '#{comando}' espera #{length(args) + 1} argumentos, tú pasaste #{length(args)}"
-            )
-          end
-        rescue
-          e in FunctionClauseError ->
-            {_, _, aridad} = e.function
+        # ------- CORRECCIÓN IMPORTANTE --------
+        # si la función necesita nombre y no lo dieron
+        cond do
+          comando == :project and length(args) == 0 ->
+            IO.puts("Debes ingresar un nombre de proyecto. Ejemplo: /project MiProyecto")
 
-            IO.puts(
-              "El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos"
-            )
+          true ->
+            final_args = [atomo_aridad | args]
 
-          e in UndefinedFunctionError ->
-            {_, _, aridad} = e.function
-
-            IO.puts(
-              "El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos"
-            )
-
-          _ ->
-            IO.puts("Ocurrió un error inesperado al ejecutar el comando '#{comando}'.")
+            try do
+              apply(__MODULE__, comando, final_args)
+            rescue
+              _ ->
+                IO.puts("Error ejecutando el comando '#{comando}'. Verifica los parámetros.")
+            end
         end
+
+      else
+        IO.puts("El comando #{comando} no está permitido para tu rol.")
       end
     end
   end
+
 end
