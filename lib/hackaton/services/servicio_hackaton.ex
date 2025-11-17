@@ -74,6 +74,9 @@ defmodule Hackaton.Services.ServicioHackathon do
     ServicioProyecto.obtener_proyecto_nombre(nombre_archivo, nombre_proyecto)
   end
 
+  def obtener_usuario(nombre_archivo, id) do
+    ServicioUsuario.obtener_usuario(nombre_archivo, id)
+  end
 
 
   def listar_equipos(archivo_equipos) do
@@ -97,7 +100,25 @@ defmodule Hackaton.Services.ServicioHackathon do
     ServicioUsuario.actualizar_campo(nombre_archivo, id_usuario, valor, tipo_campo)
   end
 
+  def crear_retroalimentacion(nombre_archivo, id_emisor, contenido, id_proyecto) do
+    ServicioMensaje.crear_mensaje(nombre_archivo, :retroalimentacion, nil, "",
+    id_emisor, contenido, "", id_proyecto, "")
 
+  end
+
+  # Crear avance de proyecto
+  def crear_avance(nombre_archivo, id_emisor, contenido, id_proyecto) do
+    ServicioMensaje.crear_mensaje(nombre_archivo, :avance, nil, "",
+    id_emisor, contenido, "", id_proyecto, "")
+  end
+
+  def obtener_retroalimentaciones_proyecto(nombre_archivo, id_proyecto) do
+    ServicioMensaje.filtrar_por_proyecto(nombre_archivo, :retroalimentacion, id_proyecto)
+  end
+
+  def obtener_avances_proyecto(nombre_archivo, id_proyecto) do
+    ServicioMensaje.filtrar_por_proyecto(nombre_archivo, :avance, id_proyecto)
+  end
 
 
   # =======================================================

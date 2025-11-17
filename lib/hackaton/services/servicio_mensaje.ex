@@ -10,25 +10,22 @@ defmodule Hackaton.Services.ServicioMensaje do
   # ======================================================
   # CREAR MENSAJE
   # ======================================================
-  def crear_mensaje(nombre_archivo, tipo_mensaje, tipo_receptor, id_receptor, id_emisor, contenido, id_equipo \\ "", id_proyecto \\ "") do
-    id =
-      GeneradorID.generar_id_unico("msg", fn nuevo_id ->
-        Enum.any?(BdMensaje.leer_mensajes(nombre_archivo), fn m -> m.id == nuevo_id end)
-      end)
-
-    timestamp = DateTime.utc_now() |> DateTime.to_iso8601()
+    def crear_mensaje(nombre_archivo, tipo_mensaje, tipo_receptor, id_receptor,
+                    id_emisor, contenido, id_equipo, id_proyecto, estado) do
 
     with :ok <- Mensaje.validar_campos_obligatorios(tipo_mensaje, tipo_receptor, id_receptor, contenido) do
-      nuevo_mensaje =
-        Mensaje.crear_mensaje(id, tipo_mensaje, tipo_receptor, id_receptor, id_emisor, contenido, timestamp, id_equipo, id_proyecto)
+      id = GeneradorID.generar_id_unico(to_string(tipo_mensaje), fn nuevo_id ->
+        Enum.any?(BdMensaje.leer_mensajes(nombre_archivo), &(&1.id == nuevo_id))
+      end)
 
-      BdMensaje.escribir_mensaje(nombre_archivo, nuevo_mensaje)
-      {:ok, nuevo_mensaje}
-    else
-      {:error, msg} -> {:error, msg}
+      fecha = DateTime.utc_now() |> DateTime.to_iso8601()
+      mensaje = Mensaje.crear_mensaje(id, tipo_mensaje, tipo_receptor, id_receptor,
+                                      id_emisor, contenido, id_equipo, fecha, id_proyecto, estado)
+
+      BdMensaje.escribir_mensaje(nombre_archivo, mensaje)
+      {:ok, mensaje}
     end
   end
-
   # ======================================================
   # FILTRAR MENSAJES
   # ======================================================
