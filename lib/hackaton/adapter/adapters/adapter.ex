@@ -1,4 +1,5 @@
 defmodule Hackaton.Adapter.Adapters.Adapter do
+  alias Hackaton.Services.ServicioHackathon
   alias Hackaton.Util.SesionGlobal
   alias Hackaton.Comunicacion.NodoCliente
   alias Hackaton.Adapter.Comandos
@@ -279,7 +280,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     IO.puts("Se cerró sesión correctamente")
   end
 
-  def ver_comandos(_) do
+  def help(_) do
     IO.puts("------ COMANDOS DISPONIBLES ------")
 
     rol =
@@ -411,4 +412,38 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     """)
   end
 
+  def salir(_rol) do
+    IO.puts("Cerrando cliente...")
+    System.halt(0)
+  end
+
+  def mostrar_historial() do
+    usuario = SesionGlobal.usuario_actual()
+
+    proyecto = ServicioHackathon.obtener_proyecto_id_equipo("lib/hackaton/adapter/persistencia/proyecto.csv", usuario.id_equipo)
+
+    case proyecto do
+      {:error, reason} ->
+        IO.puts(reason)
+
+      {:ok, p} ->
+        IO.puts("------ Historial de retroalimentaciones del proyecto #{p.nombre} ------")
+        retroalimentaciones = ServicioHackathon.obtener_retroalimentaciones_proyecto("lib/hackaton/adapter/persistencia/mensaje.csv", p.id)
+        case retroalimentaciones do
+          {:error, reason} ->
+            IO.puts(reason)
+
+          {:ok, r} ->
+            Enum.each(r, fn retroalimentacion ->
+              IO.puts("""
+              ----------------------------------------
+              De:            #{ServicioHackathon.obtener_usuario("lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.emisor) }
+              Mensaje:       #{retroalimentacion.contenido}
+              Fecha:         #{retroalimentacion.fecha}
+              ----------------------------------------
+              """)
+            end)
+        end
+    end
+  end
 end

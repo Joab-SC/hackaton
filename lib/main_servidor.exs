@@ -6,7 +6,7 @@ defmodule Hackaton.MainServidor do
     {:ok, pid} = Hackaton.AppServidor.start_link(nil)
 
     IO.puts("Servidor iniciado correctamente. PId #{inspect(pid)}")
-    # Process.sleep(:infinity)
+    Process.sleep(:infinity)
   end
 end
 
