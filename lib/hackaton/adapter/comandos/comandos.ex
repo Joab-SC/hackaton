@@ -1,64 +1,99 @@
 defmodule Hackaton.Adapter.Comandos do
   alias Hackaton.Util.SesionGlobal
-  @comandos_incognito [:login, :help, :registrarse, :salir]
-  @comandos_global_base [:chat, :log_out, :actualizar_campo, :mi_info, :help, :salir]
-  @comandos_admin [
-                    :enviar_comunicado,
-                    :teams,
-                    :project,
-                    :crear_sala,
-                    :registrar_mentor,
-                    :eliminar_usuario,
-                    :mostrar_historial
-                  ] ++ @comandos_global_base
-  @comandos_participante [
-                           :join,
-                           :entrar_sala,
-                           :mentores,
-                           :project,
-                           :crear_proyecto,
-                           :agregar_avance,
-                           :registrarse,
-                           :cambiar_estado_proyecto,
-                           :my_team,
-                           :registrar_equipo,
-                           :mostrar_historial,
-                           :crear_avance
-                         ] ++ @comandos_global_base
-  @comandos_mentor [:entrar_sala, :crear_retroalimentacion] ++ @comandos_global_base
-  @comandos_global Enum.uniq(
-                     @comandos_incognito ++
-                       @comandos_global_base ++
-                       @comandos_admin ++
-                       @comandos_participante ++
-                       @comandos_mentor
-                   )
 
-
+  @argumentos_por_rol %{
+    incognito: %{
+      login: ["email", "password"],
+      registrarse: ["email", "password", "nombre"],
+      help: [],
+      salir: []
+    },
+    participante: %{
+      join: ["id_equipo"],
+      entrar_sala: ["id_sala"],
+      mentores: [],
+      project: ["id_proyecto"],
+      crear_proyecto: ["nombre", "descripcion"],
+      agregar_avance: ["id_proyecto"],
+      registrarse: ["email", "password", "nombre"],
+      cambiar_estado_proyecto: ["id_proyecto", "nuevo_estado"],
+      my_team: [],
+      registrar_equipo: ["nombre_equipo"],
+      mostrar_historial: ["id_proyecto"],
+      crear_avance: ["id_proyecto"],
+      chat: ["mensaje"],
+      log_out: [],
+      actualizar_campo: ["campo", "valor"],
+      mi_info: [],
+      help: [],
+      salir: []
+    },
+    admin: %{
+      enviar_comunicado: ["mensaje"],
+      teams: [],
+      project: ["id_proyecto"],
+      crear_sala: ["nombre_sala"],
+      registrar_mentor: ["email", "password", "nombre"],
+      eliminar_usuario: ["id_usuario"],
+      mostrar_historial: ["id_proyecto"],
+      chat: ["mensaje"],
+      log_out: [],
+      actualizar_campo: ["campo", "valor"],
+      mi_info: [],
+      help: [],
+      salir: []
+    },
+    mentor: %{
+      entrar_sala: ["id_sala"],
+      crear_retroalimentacion: ["id_proyecto"],
+      chat: ["mensaje"],
+      log_out: [],
+      actualizar_campo: ["campo", "valor"],
+      mi_info: [],
+      help: [],
+      salir: []
+    }
+  }
 
   def comandos_incognito do
-    @comandos_incognito
+    Map.keys(@argumentos_por_rol.incognito)
   end
 
   def comandos_admin do
-    @comandos_admin
+    Map.keys(@argumentos_por_rol.admin)
   end
 
   def comandos_participante do
-    @comandos_participante
+    Map.keys(@argumentos_por_rol.participante)
   end
 
   def comandos_mentor do
-    @comandos_mentor
+    Map.keys(@argumentos_por_rol.mentor)
   end
 
   def comandos_global do
-    @comandos_global
+    Enum.uniq(
+      comandos_incognito() ++ comandos_admin() ++ comandos_participante() ++ comandos_mentor()
+    )
   end
 
-  def comandos_global_base do
-    @comandos_global_base
+  # -----------------------------
+  # Helpers para leer el mapa
+  # -----------------------------
+
+  def comandos_de_rol(rol_atom) do
+    Map.keys(@argumentos_por_rol[rol_atom] || %{})
   end
+
+  def argumentos_para(rol_atom, comando) do
+    @argumentos_por_rol
+    |> Map.get(rol_atom, %{})
+    |> Map.get(comando, nil)
+  end
+
+  # -----------------------------
+  # Lógica de escucha
+  # -----------------------------
 
   def escuchar_comandos() do
     IO.write("> ")
@@ -81,73 +116,64 @@ defmodule Hackaton.Adapter.Comandos do
 
   defp procesar_entrada("/" <> resto) do
     partes = String.split(resto, " ")
-
-    comando =
-      partes
-      |> List.first()
-      |> String.to_atom()
-
-    args =
-      partes
-      |> tl()
-
+    comando = partes |> hd() |> String.to_atom()
+    args = partes |> tl()
     ejecutar_comando(comando, args)
   end
 
-  defp procesar_entrada(_otro) do
-    IO.puts("Por favor escriba un comando válido que empiece con /")
-  end
+  defp procesar_entrada(_),
+    do: IO.puts("Por favor escriba un comando válido que empiece con /")
+
+  # -----------------------------
+  # Ejecución de comandos
+  # -----------------------------
 
   def ejecutar_comando(comando, args) do
-    if comando not in @comandos_global do
-      IO.puts("El comando ingresado no existe")
-    else
-      usuario = SesionGlobal.usuario_actual()
-      rol = if usuario == nil, do: nil, else: usuario.rol
+    usuario = SesionGlobal.usuario_actual()
 
-      {comandos_disponibles, atomo_aridad} =
-        case rol do
-          "PARTICIPANTE" -> {@comandos_participante, :participante}
-          "ADMIN" -> {@comandos_admin, :admin}
-          "MENTOR" -> {@comandos_mentor, :mentor}
-          nil -> {@comandos_incognito, :incognito}
-          _ -> {[], :nada}
-        end
-
-      if comando in comandos_disponibles do
-        # try do
-          func_info = Hackaton.Adapter.Adapters.Adapter.__info__(:functions)
-
-          if {comando, length(args) + 1} in func_info do
-            apply(Hackaton.Adapter.Adapters.Adapter, comando, [atomo_aridad | args])
-          else
-            IO.puts(
-              "El comando '#{comando}' espera #{length(args) + 1} argumentos, tú pasaste #{length(args)}"
-            )
-          end
-        # rescue
-
-          # e in FunctionClauseError ->
-          #   {_, _, aridad} = e.function
-
-          #   IO.puts(
-          #     "El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos"
-          #   )
-
-          # e in UndefinedFunctionError ->
-          #   {_, _, aridad} = e.function
-
-          #   IO.puts(
-          #     "El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos"
-          #   )
-
-          # e ->
-          #   IO.puts("Ocurrió un error inesperado al ejecutar el comando '#{comando}'.")
-
-        # end
-      else
-        IO.puts("El comando #{comando} no está disponible para este rol")
+    rol_atom =
+      case usuario && usuario.rol do
+        "PARTICIPANTE" -> :participante
+        "ADMIN" -> :admin
+        "MENTOR" -> :mentor
+        _ -> :incognito
       end
+
+    comandos_disponibles = comandos_de_rol(rol_atom)
+
+    # comando no existe en este rol
+    if comando not in comandos_disponibles do
+      IO.puts("El comando #{comando} no está disponible para este rol")
+      return(:error)
     end
+
+    # argumentos esperados
+    esperados = argumentos_para(rol_atom, comando)
+
+    # cantidad incorrecta
+    if esperados != nil and length(args) != length(esperados) do
+      IO.puts("""
+      Uso incorrecto del comando '#{comando}'.
+
+      Argumentos esperados:
+      #{Enum.join(esperados, ", ")}
+
+      Tú pasaste #{length(args)} argumentos.
+      """)
+
+      return(:error)
+    end
+
+    # verificar función definida
+    func_info = Hackaton.Adapter.Adapters.Adapter.__info__(:functions)
+    aridad = length(args) + 1
+
+    if {comando, aridad} not in func_info do
+      IO.puts("La función #{comando}/#{aridad} no existe en el Adapter.")
+      return(:error)
+    end
+
+    # ejecutar
+    apply(Hackaton.Adapter.Adapters.Adapter, comando, [rol_atom | args])
   end
 end

@@ -288,22 +288,22 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
     case rol do
       "ADMIN" ->
-        Enum.each(Comandos.comandos_admin ++ Comandos.comandos_global_base, fn comando ->
+        Enum.each(Comandos.comandos_admin(), fn comando ->
           IO.puts("/#{comando}")
         end)
 
       "PARTICIPANTE" ->
-        Enum.each(Comandos.comandos_participante ++ Comandos.comandos_global_base, fn comando ->
+        Enum.each(Comandos.comandos_participante(), fn comando ->
           IO.puts("/#{comando}")
         end)
 
       "MENTOR" ->
-        Enum.each(Comandos.comandos_mentor ++ Comandos.comandos_global_base, fn comando ->
+        Enum.each(Comandos.comandos_mentor(), fn comando ->
           IO.puts("/#{comando}")
         end)
 
       nil ->
-        Enum.each(Comandos.comandos_incognito, fn comando ->
+        Enum.each(Comandos.comandos_incognito(), fn comando ->
           IO.puts("/#{comando}")
         end)
     end
@@ -435,7 +435,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
             Enum.each(r, fn retroalimentacion ->
               IO.puts("""
               ----------------------------------------
-              De:            #{ServicioHackathon.obtener_usuario("lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.emisor)
+              De:            #{ServicioHackathon.obtener_usuario("lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.id_emisor)
               |> case do
                 {:ok, u} -> u.nombre <> " " <> u.apellido
                 {:error, _} -> "Usuario desconocido"
