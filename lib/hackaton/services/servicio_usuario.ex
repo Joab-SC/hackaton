@@ -1,8 +1,30 @@
 defmodule Hackaton.Services.ServicioUsuario do
+  @moduledoc """
+  Servicio encargado de gestionar toda la lógica relacionada con usuarios:
+  registro, autenticación, validaciones de unicidad, consultas, actualización
+  y eliminación.
+
+  """
+
   alias Hackaton.Adapter.BaseDatos.BdUsuario
   alias Hackaton.Domain.Usuario
   alias Hackaton.Util.{Encriptador, GeneradorID}
 
+  @doc """
+  Registra un nuevo usuario en el sistema tras validar:
+
+    - Campos obligatorios
+    - Nombre de usuario único
+    - Cédula única
+
+  Se genera un ID único basado en el rol del usuario:
+    - ADMIN → `"adm"`
+    - PARTICIPANTE → `"ptc"`
+    - MENTOR → `"mtr"`
+
+  La contraseña se almacena **encriptada** mediante `Encriptador.hash_contrasena/1`.
+
+  """
   def registrar_usuario(
         nombre_archivo,
         rol,
@@ -60,6 +82,13 @@ defmodule Hackaton.Services.ServicioUsuario do
     end
   end
 
+  @doc """
+  Inicia sesión validando:
+
+    - Que el usuario exista
+    - Que la contraseña coincida (comparación encriptada)
+
+  """
   def iniciar_sesion(nombre_archivo, usuario, contrasena) do
     usuarios = BdUsuario.leer_usuarios(nombre_archivo)
 
@@ -74,6 +103,9 @@ defmodule Hackaton.Services.ServicioUsuario do
     end
   end
 
+  @doc """
+  Verifica que el nombre de usuario no esté registrado previamente.
+  """
   defp validar_usuario_unico(nombre_archivo, usuario) do
     if Enum.any?(BdUsuario.leer_usuarios(nombre_archivo), fn u -> u.usuario == usuario end) do
       {:error, "El nombre de usuario ya está en uso."}
@@ -82,6 +114,10 @@ defmodule Hackaton.Services.ServicioUsuario do
     end
   end
 
+  @doc """
+  Valida que la cédula no esté registrada en otro usuario.
+
+  """
   defp validar_cedula_unica(nombre_archivo, cedula) do
     if Enum.any?(BdUsuario.leer_usuarios(nombre_archivo), fn u -> u.cedula == cedula end) do
       {:error, "Ya existe un usuario con esa cédula."}
@@ -90,8 +126,15 @@ defmodule Hackaton.Services.ServicioUsuario do
     end
   end
 
+  @doc """
+  Retorna todos los usuarios almacenados en el archivo.
+  """
   def obtener_todos(nombre_archivo), do: BdUsuario.leer_usuarios(nombre_archivo)
 
+  @doc """
+  Obtiene un usuario por ID.
+
+  """
   def obtener_usuario(nombre_archivo, id) do
     usuario = BdUsuario.leer_usuario(nombre_archivo, id)
 
@@ -102,6 +145,10 @@ defmodule Hackaton.Services.ServicioUsuario do
     end
   end
 
+  @doc """
+  Obtiene un usuario por su nombre de usuario (`user`).
+
+  """
   def obtener_usuario_user(nombre_archivo, user) do
     usuario = BdUsuario.leer_usuario_user(nombre_archivo, user)
 
@@ -112,15 +159,35 @@ defmodule Hackaton.Services.ServicioUsuario do
     end
   end
 
+  @doc """
+  Obtiene todos los usuarios cuyo rol es PARTICIPANTE.
+  """
   def obtener_participantes(nombre_archivo), do: BdUsuario.leer_participantes(nombre_archivo)
 
+  @doc """
+  Obtiene participantes que pertenecen a un equipo específico.
+  """
   def obtener_participantes_equipo(nombre_archivo, id_equipo_buscar) do
     BdUsuario.leer_participantes_equipo(nombre_archivo, id_equipo_buscar)
   end
 
+  @doc """
+  Devuelve todos los usuarios cuyo rol es MENTOR.
+  """
   def obtener_mentores(nombre_archivo), do: BdUsuario.leer_mentores(nombre_archivo)
+
+  @doc """
+  Elimina un usuario por su ID.
+  """
   def eliminar_usuario(nombre_archivo, id), do: BdUsuario.borrar_usuario(nombre_archivo, id)
 
+  @doc """
+  Actualiza un usuario completo después de validar:
+
+    - Campos obligatorios
+    - Correo válido
+
+  """
   def actualizar_usuario(nombre_archivo, usuario) do
     with :ok <-
            Usuario.validar_campos_obligatorios(
@@ -141,13 +208,25 @@ defmodule Hackaton.Services.ServicioUsuario do
     end
   end
 
+  @doc """
+  Actualiza un solo campo de un usuario dinámicamente.
+
+  Flujo:
+    1. Verifica que el usuario exista.
+    2. Valida que el campo a modificar es permitido.
+    3. Aplica el cambio usando `Map.put/3`.
+    4. Ejecuta `actualizar_usuario/2`.
+
+  """
   def actualizar_campo(nombre_archivo, id_usuario, valor, tipo_campo) do
     case {obtener_usuario(nombre_archivo, id_usuario), Usuario.campo_valido(tipo_campo)} do
       {{:ok, usuario}, {:ok, tipo_campo}} ->
         actualizado = Map.put(usuario, tipo_campo, valor)
         actualizar_usuario(nombre_archivo, actualizado)
+
       {{:error, reason}, _} ->
         {:error, reason}
+
       {_, {:error, reason}} ->
         {:error, reason}
     end
