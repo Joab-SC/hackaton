@@ -225,6 +225,7 @@ defmodule Hackaton.Services.ServicioHackathon do
     )
   end
 
+
   @doc """
   Obtiene todas las retroalimentaciones de un proyecto validando que dicho proyecto exista.
   """
@@ -233,6 +234,7 @@ defmodule Hackaton.Services.ServicioHackathon do
         archivo_mensajes,
         id_proyecto
       ) do
+        
     retroalimentaciones =
       ServicioMensaje.filtrar_por_proyecto(archivo_mensajes, :retroalimentacion, id_proyecto)
 
@@ -252,7 +254,7 @@ defmodule Hackaton.Services.ServicioHackathon do
   Obtiene todos los avances de un proyecto validando previamente la existencia del proyecto.
   """
   def obtener_avances_proyecto(nombre_archivo, id_proyecto) do
-    avances =
+     avances =
       ServicioMensaje.filtrar_por_proyecto(nombre_archivo, :avance, id_proyecto)
 
     case ServicioProyecto.obtener_proyecto(nombre_archivo, id_proyecto) do
@@ -266,6 +268,7 @@ defmodule Hackaton.Services.ServicioHackathon do
         end
     end
   end
+
 
   def obtener_mensajes_personal(nombre_archivo, id_emisor, id_receptor) do
     case ServicioMensaje.filtrar_mensajes_personal(nombre_archivo, id_emisor, id_receptor) do
