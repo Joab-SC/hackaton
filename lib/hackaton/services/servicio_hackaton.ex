@@ -8,7 +8,7 @@ defmodule Hackaton.Services.ServicioHackathon do
   """
 
 
-  alias Hackaton.Services.{ServicioEquipo, ServicioMensaje, ServicioProyecto, ServicioUsuario}
+  alias Hackaton.Services.{ServicioEquipo, ServicioMensaje, ServicioProyecto, ServicioUsuario, ServicioSala}
 
   @doc """
   Registra un usuario delegando la operación a `ServicioUsuario`.
@@ -891,4 +891,20 @@ end
         end
     end
   end
+
+  def crear_sala(nombre_archivo, tema, descripcion) do
+    ServicioSala.registrar_sala(nombre_archivo, tema, descripcion)
+  end
+
+  def obtener_salas(nombre_archivo), do: ServicioSala.obtener_salas(nombre_archivo)
+
+  def obtener_sala(nombre_archivo, id) do
+    ServicioSala.obtener_sala(nombre_archivo, id)
+  end
+
+  def obtener_sala_tema(nombre_archivo, tema) do
+    ServicioSala.obtener_sala_tema(nombre_archivo, tema)
+  end
+
+
 end
