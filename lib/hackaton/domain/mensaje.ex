@@ -1,6 +1,7 @@
 defmodule Hackaton.Domain.Mensaje do
   @moduledoc """
-  Define la estructura y reglas de negocio para los mensajes.
+  Define la estructura de un mensaje dentro del sistema Hackaton y las reglas
+  de negocio necesarias para validar su creación.
   """
 
   @tipos_mensaje [:chat, :consulta, :retroalimentacion, :anuncio, :avance]
@@ -17,9 +18,11 @@ defmodule Hackaton.Domain.Mensaje do
             id_proyecto: "",
             estado: ""
 
-  # ======================================================
-  # Constructor único
-  # ======================================================
+
+  @doc """
+  Crea una estructura `%Mensaje{}` con todos los campos del dominio.
+
+  """
   def crear_mensaje(id, tipo_mensaje, tipo_receptor, id_receptor, id_emisor, contenido,
                       id_equipo, fecha, id_proyecto, estado) do
     %__MODULE__{
@@ -36,14 +39,20 @@ defmodule Hackaton.Domain.Mensaje do
     }
   end
 
-  # ======================================================
-  # Validaciones
-  # ======================================================
+
+  @doc """
+  Valida que un campo obligatorio no sea `nil` ni una cadena vacía.
+
+  """
   def validar_campo_vacio(nil), do: {:error, "No puede estar vacío"}
   def validar_campo_vacio(""), do: {:error, "No puede estar vacío"}
   def validar_campo_vacio(campo) when is_binary(campo), do: {:ok, String.trim(campo)}
   def validar_campo_vacio(campo), do: {:ok, campo}
 
+  @doc """
+  Valida los campos obligatorios requeridos para crear un mensaje.
+
+  """
   def validar_campos_obligatorios(tipo_mensaje, tipo_receptor, id_receptor, contenido) do
     with {:ok, _} <- validar_campo_vacio(tipo_mensaje),
          {:ok, _} <- validar_campo_vacio(contenido),
@@ -54,18 +63,23 @@ defmodule Hackaton.Domain.Mensaje do
     end
   end
 
-  # ======================================================
-  # Validación de tipo de mensaje
-  # ======================================================
+
+  @doc """
+  Valida que el tipo de mensaje pertenezca a los valores permitidos.
+
+  """
   defp validar_tipo_mensaje(tipo_mensaje) do
     if tipo_mensaje in @tipos_mensaje,
       do: {:ok, tipo_mensaje},
       else: {:error, "Tipo de mensaje inválido"}
   end
 
-  # ======================================================
-  # Validación de tipo de receptor solo si aplica
-  # ======================================================
+
+  @doc """
+  Valida el tipo de receptor solo cuando el mensaje no pertenece a los tipos
+  especiales `:avance` o `:retroalimentacion`, los cuales no requieren receptor explícito.
+
+  """
   defp validar_tipo_receptor_si_necesario(tipo_mensaje, tipo_receptor)
        when tipo_mensaje in [:avance, :retroalimentacion], do: :ok
 
@@ -75,9 +89,11 @@ defmodule Hackaton.Domain.Mensaje do
       else: {:error, "Tipo de receptor inválido"}
   end
 
-  # ======================================================
-  # Validación de id_receptor solo si aplica
-  # ======================================================
+
+  @doc """
+  Valida el campo `id_receptor` dependiendo del tipo de mensaje y del tipo de receptor.
+
+  """
   defp validar_receptor_id(tipo_mensaje, _tipo_receptor, _id_receptor)
        when tipo_mensaje in [:avance, :retroalimentacion], do: :ok
 
