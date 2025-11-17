@@ -2,11 +2,18 @@ defmodule Hackaton.Services.ServicioHackathon do
   @moduledoc """
   Servicio general que coordina la interacción entre usuarios, equipos, proyectos y mensajes
   dentro del sistema de la Hackathon.
+  Servicio general que coordina la interacción entre usuarios, equipos, proyectos y mensajes
+  dentro del sistema de la Hackathon.
 
   """
 
+
   alias Hackaton.Services.{ServicioEquipo, ServicioMensaje, ServicioProyecto, ServicioUsuario}
 
+  @doc """
+  Registra un usuario delegando la operación a `ServicioUsuario`.
+
+  """
   @doc """
   Registra un usuario delegando la operación a `ServicioUsuario`.
 
@@ -38,6 +45,9 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Actualiza un usuario existente delegando la lógica al servicio correspondiente.
   """
+  @doc """
+  Actualiza un usuario existente delegando la lógica al servicio correspondiente.
+  """
   def actualizar_usuario(nombre_archivo, usuario_actualizado) do
     ServicioUsuario.actualizar_usuario(nombre_archivo, usuario_actualizado)
   end
@@ -45,10 +55,20 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Inicia sesión validando usuario y contraseña mediante `ServicioUsuario`.
   """
+  @doc """
+  Inicia sesión validando usuario y contraseña mediante `ServicioUsuario`.
+  """
   def iniciar_sesion(nombre_archivo, usuario, contrasena) do
     ServicioUsuario.iniciar_sesion(nombre_archivo, usuario, contrasena)
   end
 
+  @doc """
+  Permite a un participante unirse a un equipo especificando su nombre.
+
+  Flujo:
+    1. Busca el equipo por nombre.
+    2. Si existe, llama a `asignar_participante_a_equipo/4`.
+  """
   @doc """
   Permite a un participante unirse a un equipo especificando su nombre.
 
@@ -76,6 +96,9 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Elimina un usuario usando su nombre de usuario (`:user`) o su ID (`:id`).
   """
+  @doc """
+  Elimina un usuario usando su nombre de usuario (`:user`) o su ID (`:id`).
+  """
   def eliminar_usuario(nombre_archivo, user, :user) do
     usuario_ = ServicioUsuario.obtener_usuario_user(nombre_archivo, user)
 
@@ -92,10 +115,17 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Obtiene la lista de mentores registrados.
   """
+  @doc """
+  Obtiene la lista de mentores registrados.
+  """
   def obtener_mentores(nombre_archivo) do
     ServicioUsuario.obtener_mentores(nombre_archivo)
   end
 
+  @doc """
+  Crea un proyecto siempre que el equipo no tenga ya uno asignado.
+
+  """
   @doc """
   Crea un proyecto siempre que el equipo no tenga ya uno asignado.
 
@@ -119,6 +149,9 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Actualiza el estado del proyecto asociado a un equipo.
   """
+  @doc """
+  Actualiza el estado del proyecto asociado a un equipo.
+  """
   def actualizar_estado_proyecto(nombre_archivo, id_equipo, nuevo_estado) do
     proyecto_ = ServicioProyecto.obtener_proyecto_id_equipo(nombre_archivo, id_equipo)
 
@@ -134,10 +167,16 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Obtiene un proyecto por su nombre.
   """
+  @doc """
+  Obtiene un proyecto por su nombre.
+  """
   def obtener_proyecto_nombre(nombre_archivo, nombre_proyecto) do
     ServicioProyecto.obtener_proyecto_nombre(nombre_archivo, nombre_proyecto)
   end
 
+  @doc """
+  Obtiene un usuario por ID.
+  """
   @doc """
   Obtiene un usuario por ID.
   """
@@ -152,10 +191,16 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Lista todos los equipos registrados.
   """
+  @doc """
+  Lista todos los equipos registrados.
+  """
   def listar_equipos(archivo_equipos) do
     ServicioEquipo.obtener_equipos(archivo_equipos)
   end
 
+  @doc """
+  Registra un nuevo equipo.
+  """
   @doc """
   Registra un nuevo equipo.
   """
@@ -166,10 +211,16 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Obtiene un equipo usando su nombre.
   """
+  @doc """
+  Obtiene un equipo usando su nombre.
+  """
   def obtener_equipo_nombre(archivo_equipos, nombre_equipo) do
     ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
   end
 
+  @doc """
+  Obtiene un equipo por su ID.
+  """
   @doc """
   Obtiene un equipo por su ID.
   """
@@ -180,6 +231,9 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Actualiza un campo específico de un usuario, delegando a `ServicioUsuario`.
   """
+  @doc """
+  Actualiza un campo específico de un usuario, delegando a `ServicioUsuario`.
+  """
   def actualizar_campo_usuario(nombre_archivo, id_usuario, valor, tipo_campo) do
     ServicioUsuario.actualizar_campo(nombre_archivo, id_usuario, valor, tipo_campo)
   end
@@ -187,10 +241,16 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Obtiene un proyecto asociado a un equipo.
   """
+  @doc """
+  Obtiene un proyecto asociado a un equipo.
+  """
   def obtener_proyecto_id_equipo(nombre_archivo, id_equipo) do
     ServicioProyecto.obtener_proyecto_id_equipo(nombre_archivo, id_equipo)
   end
 
+  @doc """
+  Crea una retroalimentación asociada a un proyecto.
+  """
   @doc """
   Crea una retroalimentación asociada a un proyecto.
   """
@@ -208,6 +268,9 @@ defmodule Hackaton.Services.ServicioHackathon do
     )
   end
 
+  @doc """
+  Crea un avance asociado a un proyecto.
+  """
   @doc """
   Crea un avance asociado a un proyecto.
   """
@@ -248,6 +311,7 @@ defmodule Hackaton.Services.ServicioHackathon do
         id_proyecto
       ) do
 
+
     retroalimentaciones =
       ServicioMensaje.filtrar_por_proyecto(archivo_mensajes, :retroalimentacion, id_proyecto)
 
@@ -266,7 +330,11 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Obtiene todos los avances de un proyecto validando previamente la existencia del proyecto.
   """
+  @doc """
+  Obtiene todos los avances de un proyecto validando previamente la existencia del proyecto.
+  """
   def obtener_avances_proyecto(nombre_archivo, id_proyecto) do
+     avances =
      avances =
       ServicioMensaje.filtrar_por_proyecto(nombre_archivo, :avance, id_proyecto)
 
@@ -304,6 +372,10 @@ defmodule Hackaton.Services.ServicioHackathon do
     ServicioMensaje.marcar_leidos(nombre_archivo, mensajes)
   end
 
+  @doc """
+  Obtiene los participantes de un equipo dado su nombre.
+  """
+
   # =======================================================
   # 5. OBTENER PARTICIPANTES DE UN EQUIPO
   # =======================================================
@@ -325,9 +397,19 @@ defmodule Hackaton.Services.ServicioHackathon do
 
       {:ok, equipo} ->
         ServicioUsuario.obtener_participantes_equipo(archivo_usuarios, equipo.id)
+      {:error, reason} ->
+        {:error, reason}
+
+      {:ok, equipo} ->
+        ServicioUsuario.obtener_participantes_equipo(archivo_usuarios, equipo.id)
     end
   end
 
+  @doc """
+  Devuelve un map con el equipo y su lista de miembros:
+
+      %{equipo: equipo, miembros: lista}
+  """
   @doc """
   Devuelve un map con el equipo y su lista de miembros:
 
@@ -354,6 +436,14 @@ defmodule Hackaton.Services.ServicioHackathon do
     end
   end
 
+  @doc """
+  Asigna un participante a un equipo si:
+
+    - Ambos existen
+    - El participante no está asignado ya a otro equipo
+
+
+  """
   @doc """
   Asigna un participante a un equipo si:
 
@@ -389,6 +479,9 @@ defmodule Hackaton.Services.ServicioHackathon do
     end
   end
 
+  @doc """
+  Quita un participante de su equipo (si pertenece a alguno).
+  """
   @doc """
   Quita un participante de su equipo (si pertenece a alguno).
   """

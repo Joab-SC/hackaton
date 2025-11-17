@@ -17,6 +17,15 @@ defmodule Hackaton.Services.ServicioMensaje do
   y escribe el mensaje en la base de datos.
 
   """
+
+  @doc """
+  Crea un mensaje validando previamente los campos obligatorios.
+
+
+  Genera un ID único usando `GeneradorID`, asigna la fecha actual
+  y escribe el mensaje en la base de datos.
+
+  """
   def crear_mensaje(nombre_archivo, tipo_mensaje, tipo_receptor, id_receptor,
                     id_emisor, contenido, id_equipo, id_proyecto, estado) do
 
