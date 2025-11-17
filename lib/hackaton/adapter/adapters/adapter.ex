@@ -459,7 +459,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
       {:ok, p} ->
         IO.puts("------ Historial de retroalimentaciones del proyecto #{p.nombre} ------")
-        retroalimentaciones = ServicioHackathon.obtener_retroalimentaciones_proyecto("lib/hackaton/adapter/persistencia/mensaje.csv", p.id)
+        retroalimentaciones = ServicioHackathon.obtener_retroalimentaciones_proyecto("lib/hackaton/adapter/persistencia/proyecto.csv", "lib/hackaton/adapter/persistencia/mensaje.csv", p.id)
         case retroalimentaciones do
           {:error, reason} ->
             IO.puts(reason)
@@ -468,7 +468,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
             Enum.each(r, fn retroalimentacion ->
               IO.puts("""
               ----------------------------------------
-              De:            #{ServicioHackathon.obtener_usuario("lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.emisor)
+              De:            #{ServicioHackathon.obtener_usuario("lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.id_emisor)
               |> case do
                 {:ok, u} -> u.nombre <> " " <> u.apellido
                 {:error, _} -> "Usuario desconocido"
@@ -481,5 +481,6 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
         end
     end
   end
+
 
 end

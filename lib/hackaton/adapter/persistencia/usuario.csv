@@ -2,3 +2,4 @@ id,Rol,Nombre,Apellido,Cedula,Correo,Telefono,Usuario,Contrasena,id_equipo
 adm-1A2B3C,ADMIN,Carlos,Gomez,1000000000,admin@hackathon.com,3000000000,admin,8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918,
 ptc-4A83AC,PARTICIPANTE,Laura,Duarte,1054863011,l@gmail.com,3177403834,lau123,b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79,eqp-661398
 ptc-F0FDC4,PARTICIPANTE,joabsito,suarez,1092457610,joab@gmail.com,3014750404,joabs,a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3,eqp-661398
+mtr-40B606,MENTOR,Carlos,Villa,10,caflores@gmail.com,3123456789,caflores,6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b,

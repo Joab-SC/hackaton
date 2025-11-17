@@ -21,7 +21,7 @@ defmodule Hackaton.Domain.Mensaje do
   # Constructor único
   # ======================================================
   def crear_mensaje(id, tipo_mensaje, tipo_receptor, id_receptor, id_emisor, contenido,
-                    id_equipo, fecha, id_proyecto, estado) do
+                      id_equipo, fecha, id_proyecto, estado) do
     %__MODULE__{
       id: id,
       tipo_mensaje: tipo_mensaje,

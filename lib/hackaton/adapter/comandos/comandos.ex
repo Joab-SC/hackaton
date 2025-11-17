@@ -114,7 +114,7 @@ defmodule Hackaton.Adapter.Comandos do
         end
 
       if comando in comandos_disponibles do
-        try do
+        # try do
           func_info = Hackaton.Adapter.Adapters.Adapter.__info__(:functions)
 
           if {comando, length(args) + 1} in func_info do
@@ -124,24 +124,26 @@ defmodule Hackaton.Adapter.Comandos do
               "El comando '#{comando}' espera #{length(args) + 1} argumentos, tú pasaste #{length(args)}"
             )
           end
-        rescue
-          e in FunctionClauseError ->
-            {_, _, aridad} = e.function
+        # rescue
 
-            IO.puts(
-              "El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos"
-            )
+          # e in FunctionClauseError ->
+          #   {_, _, aridad} = e.function
 
-          e in UndefinedFunctionError ->
-            {_, _, aridad} = e.function
+          #   IO.puts(
+          #     "El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos"
+          #   )
 
-            IO.puts(
-              "El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos"
-            )
+          # e in UndefinedFunctionError ->
+          #   {_, _, aridad} = e.function
 
-          _ ->
-            IO.puts("Ocurrió un error inesperado al ejecutar el comando '#{comando}'.")
-        end
+          #   IO.puts(
+          #     "El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos"
+          #   )
+
+          # e ->
+          #   IO.puts("Ocurrió un error inesperado al ejecutar el comando '#{comando}'.")
+
+        # end
       else
         IO.puts("El comando #{comando} no está disponible para este rol")
       end

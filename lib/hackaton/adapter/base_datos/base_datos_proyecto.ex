@@ -16,7 +16,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdProyecto do
 
       {:error, reason} ->
         IO.puts("AMO A JOAB, PAPASOTE  RICO  #{reason}")
-        []
+        nil
     end
   end
 

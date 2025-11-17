@@ -14,8 +14,28 @@ defmodule Hackaton.Services.ServicioHackathon do
   # =======================================================
   # 3. para usuarios
   # =======================================================
-  def registrar_usuario(nombre_archivo, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena) do
-    ServicioUsuario.registrar_usuario(nombre_archivo, rol, nombre, apellido, cedula, correo, telefono, usuario, contrasena)
+  def registrar_usuario(
+        nombre_archivo,
+        rol,
+        nombre,
+        apellido,
+        cedula,
+        correo,
+        telefono,
+        usuario,
+        contrasena
+      ) do
+    ServicioUsuario.registrar_usuario(
+      nombre_archivo,
+      rol,
+      nombre,
+      apellido,
+      cedula,
+      correo,
+      telefono,
+      usuario,
+      contrasena
+    )
   end
 
   def actualizar_usuario(nombre_archivo, usuario_actualizado) do
@@ -26,18 +46,26 @@ defmodule Hackaton.Services.ServicioHackathon do
     ServicioUsuario.iniciar_sesion(nombre_archivo, usuario, contrasena)
   end
 
-
-
   def unirse_por_nombre(archivo_usuarios, archivo_equipos, id_participante, nombre_equipo) do
     equipo_ = ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
+
     case equipo_ do
-      {:error, reason} -> {:error, reason}
-      {:ok, equipo} -> asignar_participante_a_equipo(archivo_usuarios, archivo_equipos, id_participante, equipo.id)
+      {:error, reason} ->
+        {:error, reason}
+
+      {:ok, equipo} ->
+        asignar_participante_a_equipo(
+          archivo_usuarios,
+          archivo_equipos,
+          id_participante,
+          equipo.id
+        )
     end
   end
 
   def eliminar_usuario(nombre_archivo, user, :user) do
     usuario_ = ServicioUsuario.obtener_usuario_user(nombre_archivo, user)
+
     case usuario_ do
       {:error, reason} -> {:error, reason}
       {:ok, usuario} -> ServicioUsuario.eliminar_usuario(nombre_archivo, usuario.id)
@@ -54,19 +82,29 @@ defmodule Hackaton.Services.ServicioHackathon do
 
   def crear_proyecto(archivo_proyectos, nombre, descripcion, categoria, id_equipo) do
     proyectos = ServicioProyecto.listar_proyectos(archivo_proyectos)
-    if Enum.any?(proyectos, fn p-> p.id_equipo == id_equipo end) do
+
+    if Enum.any?(proyectos, fn p -> p.id_equipo == id_equipo end) do
       {:error, "El equipo ya tiene un proyecto registrado."}
     else
-      ServicioProyecto.crear_proyecto(archivo_proyectos, nombre, descripcion, categoria, id_equipo)
+      ServicioProyecto.crear_proyecto(
+        archivo_proyectos,
+        nombre,
+        descripcion,
+        categoria,
+        id_equipo
+      )
     end
   end
 
-
   def actualizar_estado_proyecto(nombre_archivo, id_equipo, nuevo_estado) do
     proyecto_ = ServicioProyecto.obtener_proyecto_id_equipo(nombre_archivo, id_equipo)
+
     case proyecto_ do
-      {:error, reason} -> {:error, reason}
-      {:ok, proyecto} -> ServicioProyecto.actualizar_estado(nombre_archivo, proyecto.id , nuevo_estado)
+      {:error, reason} ->
+        {:error, reason}
+
+      {:ok, proyecto} ->
+        ServicioProyecto.actualizar_estado(nombre_archivo, proyecto.id, nuevo_estado)
     end
   end
 
@@ -78,11 +116,9 @@ defmodule Hackaton.Services.ServicioHackathon do
     ServicioUsuario.obtener_usuario(nombre_archivo, id)
   end
 
-
   def listar_equipos(archivo_equipos) do
     ServicioEquipo.obtener_equipos(archivo_equipos)
   end
-
 
   def registrar_equipo(nombre_archivo, nombre, tema) do
     ServicioEquipo.registrar_equipo(nombre_archivo, nombre, tema)
@@ -100,26 +136,70 @@ defmodule Hackaton.Services.ServicioHackathon do
     ServicioUsuario.actualizar_campo(nombre_archivo, id_usuario, valor, tipo_campo)
   end
 
-  def crear_retroalimentacion(nombre_archivo, id_emisor, contenido, id_proyecto) do
-    ServicioMensaje.crear_mensaje(nombre_archivo, :retroalimentacion, nil, "",
-    id_emisor, contenido, "", id_proyecto, "")
+  def obtener_proyecto_id_equipo(nombre_archivo, id_equipo) do
+    ServicioProyecto.obtener_proyecto_id_equipo(nombre_archivo, id_equipo)
+  end
 
+  def crear_retroalimentacion(nombre_archivo, id_emisor, contenido, id_proyecto) do
+    ServicioMensaje.crear_mensaje(
+      nombre_archivo,
+      :retroalimentacion,
+      nil,
+      "",
+      id_emisor,
+      contenido,
+      "",
+      id_proyecto,
+      ""
+    )
   end
 
   # Crear avance de proyecto
   def crear_avance(nombre_archivo, id_emisor, contenido, id_proyecto) do
-    ServicioMensaje.crear_mensaje(nombre_archivo, :avance, nil, "",
-    id_emisor, contenido, "", id_proyecto, "")
+    ServicioMensaje.crear_mensaje(
+      nombre_archivo,
+      :avance,
+      nil,
+      "",
+      id_emisor,
+      contenido,
+      "",
+      id_proyecto,
+      ""
+    )
   end
 
-  def obtener_retroalimentaciones_proyecto(nombre_archivo, id_proyecto) do
-    ServicioMensaje.filtrar_por_proyecto(nombre_archivo, :retroalimentacion, id_proyecto)
+  def obtener_retroalimentaciones_proyecto(nombre_archivo_proyectos, archivo_mensajes, id_proyecto) do
+    retroalimentaciones =
+      ServicioMensaje.filtrar_por_proyecto(archivo_mensajes, :retroalimentacion, id_proyecto)
+
+    case ServicioProyecto.obtener_proyecto(nombre_archivo_proyectos, id_proyecto) do
+      {:error, reason} ->
+        {:error, reason}
+
+      {:ok, proyecto} ->
+        case retroalimentaciones do
+          [] -> {:error, "No hay retroalimentaciones para el proyecto #{proyecto.nombre}"}
+          _ -> {:ok, retroalimentaciones}
+        end
+    end
   end
 
   def obtener_avances_proyecto(nombre_archivo, id_proyecto) do
-    ServicioMensaje.filtrar_por_proyecto(nombre_archivo, :avance, id_proyecto)
-  end
+     avances =
+      ServicioMensaje.filtrar_por_proyecto(nombre_archivo, :avance, id_proyecto)
 
+    case ServicioProyecto.obtener_proyecto(nombre_archivo, id_proyecto) do
+      {:error, reason} ->
+        {:error, reason}
+
+      {:ok, proyecto} ->
+        case avances do
+          [] -> {:error, "No hay avances para el proyecto #{proyecto.nombre}"}
+          _ -> {:ok, avances}
+        end
+    end
+  end
 
   # =======================================================
   # 5. OBTENER PARTICIPANTES DE UN EQUIPO
@@ -133,7 +213,6 @@ defmodule Hackaton.Services.ServicioHackathon do
     end
   end
 
-
   # =======================================================
   # 6. OBTENER EQUIPO Y SUS MIEMBROS
   # =======================================================
@@ -141,21 +220,29 @@ defmodule Hackaton.Services.ServicioHackathon do
     equipo_ = ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
 
     case equipo_ do
-      {:error, reason} -> {:error, reason}
+      {:error, reason} ->
+        {:error, reason}
+
       {:ok, equipo} ->
-        miembros = obtener_participantes_equipo_nombre(archivo_equipos, archivo_usuarios, nombre_equipo)
+        miembros =
+          obtener_participantes_equipo_nombre(archivo_equipos, archivo_usuarios, nombre_equipo)
+
         case miembros do
-          {:error, reason} -> {:error, reason}
+          {:error, reason} ->
+            {:error, reason}
+
           {:ok, m} ->
             {:ok, %{equipo: equipo, miembros: m}}
         end
     end
   end
 
-
-
-
-   defp asignar_participante_a_equipo(archivo_usuarios, archivo_equipos, id_participante, id_equipo) do
+  defp asignar_participante_a_equipo(
+         archivo_usuarios,
+         archivo_equipos,
+         id_participante,
+         id_equipo
+       ) do
     equipo_ = ServicioEquipo.obtener_equipo(archivo_equipos, id_equipo)
 
     participante_ = ServicioUsuario.obtener_usuario(archivo_usuarios, id_participante)
@@ -178,9 +265,7 @@ defmodule Hackaton.Services.ServicioHackathon do
     end
   end
 
-
-
-    # =======================================================
+  # =======================================================
   # Por ahora inutil
   # =======================================================
   def quitar_participante_de_equipo(archivo_usuarios, id_participante) do
