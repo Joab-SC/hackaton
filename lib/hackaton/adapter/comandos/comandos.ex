@@ -27,7 +27,8 @@ defmodule Hackaton.Adapter.Comandos do
       help: [],
       salir: [],
       abrir_chat: ["otro usuario"],
-      chat_grupo: []
+      chat_grupo: [],
+      ver_avances: []
     },
     admin: %{
       expulsar_usuario: ["usuario"],
@@ -39,7 +40,8 @@ defmodule Hackaton.Adapter.Comandos do
       actualizar_campo: ["campo", "valor"],
       mi_info: [],
       help: [],
-      salir: []
+      salir: [],
+      crear_sala: [],
     },
     mentor: %{
       crear_retroalimentacion: ["nombre_proyecto"],

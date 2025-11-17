@@ -622,4 +622,71 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
         )
       end
   end
+
+  def ver_avances(:participante) do
+
+    usuario = SesionGlobal.usuario_actual()
+
+    if usuario.id_equipo == "" do
+      IO.puts("No puedes ver avances si no perteneces a un equipo")
+    else
+      case NodoCliente.ejecutar(:obtener_proyecto_id_equipo, [
+        "lib/hackaton/adapter/persistencia/proyecto.csv",
+        usuario.id_equipo
+      ]) do
+        {:error, reason} ->
+          IO.puts(reason)
+
+        {:ok, p} ->
+          IO.puts("------ Avances del proyecto #{p.nombre} ------ ")
+          avances =
+            NodoCliente.ejecutar(:obtener_avances_proyecto, [
+              "lib/hackaton/adapter/persistencia/mensaje.csv", p.id
+            ])
+
+          case avances do
+            {:error, reason} ->
+              IO.puts(reason)
+
+            {:ok, a} ->
+              Enum.each(a, fn avance ->
+                IO.puts("""
+                ----------------------------------------
+                De:            #{NodoCliente.ejecutar(:obtener_usuario, ["lib/hackaton/adapter/persistencia/usuario.csv", avance.id_emisor]) |> case do
+                  {:ok, u} -> u.nombre <> " " <> u.apellido
+                  {:error, _} -> "Usuario desconocido"
+                end}
+                Mensaje:       #{avance.contenido}
+                Fecha:         #{avance.fecha}
+                ----------------------------------------
+                """)
+              end)
+          end
+      end
+    end
+  end
+
+  def crear_sala(:admin) do
+    IO.puts("------ CREANDO SALA ------ ")
+
+    tema =
+      IO.gets("Ingrese el tema de la sala: ")
+      |> String.trim()
+
+    descripcion =
+      IO.gets("Ingrese la descripcion de la sala: ")
+      |> String.trim()
+
+    sala =
+      NodoCliente.ejecutar(:crear_sala, [
+        "lib/hackaton/adapter/persistencia/sala.csv",
+        tema,
+        descripcion
+      ])
+
+    case sala do
+      {:error, reason} -> IO.puts(reason)
+      {:ok, _sala} -> IO.puts("Se creó la sala correctamente")
+    end
+  end
 end
