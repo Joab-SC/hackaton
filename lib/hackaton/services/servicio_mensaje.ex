@@ -58,7 +58,9 @@ defmodule Hackaton.Services.ServicioMensaje do
 
   def marcar_leidos(nombre_archivo, mensajes) do
     Enum.each(mensajes, fn mensaje ->
-      BdMensaje.actualizar_mensaje(nombre_archivo, %Mensaje{mensaje | estado: "leido"})
+      if mensaje.estado != "leido" do
+        BdMensaje.actualizar_mensaje(nombre_archivo, %Mensaje{mensaje | estado: "leido"})
+      end
     end)
   end
 

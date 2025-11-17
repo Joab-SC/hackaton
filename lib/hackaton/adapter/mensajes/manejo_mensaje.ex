@@ -1,14 +1,14 @@
 defmodule Hackaton.Adapter.Mensajes.ManejoMensajes do
   alias Hackaton.Comunicacion.NodoCliente
 
-  def lector(emisor, receptor) do
-    case NodoCliente.ejecutar(:obtener_mensajes_personal_pendientes, [
+  def lector(emisor, receptor, funcion_obtener_mensajes_atomo) do
+    case NodoCliente.ejecutar(funcion_obtener_mensajes_atomo, [
            "lib/hackaton/adapter/persistencia/mensaje.csv",
            emisor.id,
            receptor.id
          ]) do
       {:error, _} ->
-        lector(emisor, receptor)
+        lector(emisor, receptor, funcion_obtener_mensajes_atomo)
 
       {:ok, mensajes} ->
         mostrar_mensajes_chat(mensajes)
@@ -19,17 +19,17 @@ defmodule Hackaton.Adapter.Mensajes.ManejoMensajes do
           mensajes
         ])
 
-        lector(emisor, receptor)
+        lector(emisor, receptor, funcion_obtener_mensajes_atomo)
     end
   end
 
-  def escritor(emisor, receptor) do
+  def escritor(emisor, receptor, funcion_crear_mensajes_atomo) do
     contenido = String.trim(IO.gets("Escribir: "))
 
     if contenido == "/salir" do
       :ok
     else
-      case NodoCliente.ejecutar(:crear_mensaje_personal, [
+      case NodoCliente.ejecutar(funcion_crear_mensajes_atomo, [
              "lib/hackaton/adapter/persistencia/mensaje.csv",
              emisor.id,
              receptor.id,
@@ -37,17 +37,32 @@ defmodule Hackaton.Adapter.Mensajes.ManejoMensajes do
            ]) do
         {:error, reason} ->
           IO.puts(reason)
-          escritor(emisor, receptor)
+          escritor(emisor, receptor, funcion_crear_mensajes_atomo)
 
         {:ok, _} ->
-          escritor(emisor, receptor)
+          escritor(emisor, receptor, funcion_crear_mensajes_atomo)
       end
     end
   end
 
-  def chatear(actual, otro) do
-    tarea = Task.async(fn -> lector(otro, actual) end)
-    escritor(actual, otro)
+  def chatear(actual, otro, funcion_crear_mensajes_atomo, funcion_obtener_mensajes_atomo, funcion_obtener_mensajes_pendientes_atomo) do
+    case NodoCliente.ejecutar(funcion_obtener_mensajes_atomo, [
+           "lib/hackaton/adapter/persistencia/mensaje.csv",
+           otro.id,
+           actual.id
+         ]) do
+      {:ok, mensajes} ->
+        NodoCliente.ejecutar(:marcar_leidos, [
+           "lib/hackaton/adapter/persistencia/mensaje.csv",
+           mensajes
+         ])
+        mostrar_mensajes_chat(mensajes)
+      {:error, reason} ->
+        IO.puts(reason)
+    end
+
+    tarea = Task.async(fn -> lector(otro, actual, funcion_obtener_mensajes_pendientes_atomo) end)
+    escritor(actual, otro, funcion_crear_mensajes_atomo)
     Task.shutdown(tarea, :brutal_kill)
   end
 
