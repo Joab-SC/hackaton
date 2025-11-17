@@ -22,9 +22,10 @@ defmodule Hackaton.Adapter.Comandos do
                            :cambiar_estado_proyecto,
                            :my_team,
                            :registrar_equipo,
-                           :mostrar_historial
+                           :mostrar_historial,
+                           :crear_avance
                          ] ++ @comandos_global_base
-  @comandos_mentor [:entrar_sala] ++ @comandos_global_base
+  @comandos_mentor [:entrar_sala, :crear_retroalimentacion] ++ @comandos_global_base
   @comandos_global Enum.uniq(
                      @comandos_incognito ++
                        @comandos_global_base ++

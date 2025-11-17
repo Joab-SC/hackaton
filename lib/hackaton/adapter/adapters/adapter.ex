@@ -482,5 +482,73 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  def crear_avance(:participante) do
+    usuario = SesionGlobal.usuario_actual()
 
+    if usuario.id_equipo == "" do
+      IO.puts(
+        "No puedes crear un avance si no perteneces a un equipo"
+      )
+
+    case ServicioHackathon.obtener_proyecto_id_equipo("lib/hackaton/adapter/persistencia/proyecto.csv", usuario.id_equipo) do
+      {:error, reason} ->
+        IO.puts(reason)
+
+      {:ok, p} ->
+        IO.puts("------ CREANDO AVANCE DEL PROYECTO #{p.nombre} ------ ")
+
+        contenido =
+          IO.gets("Ingrese el contenido del avance: ")
+          |> String.trim()
+
+        avance =
+          NodoCliente.ejecutar(:crear_avance, [
+            "lib/hackaton/adapter/persistencia/mensaje.csv",
+            usuario.id,
+            contenido,
+            p.id
+          ])
+
+        case avance do
+          {:error, reason} ->
+            IO.puts(reason)
+
+          {:ok, _avance} ->
+            IO.puts("Se creó el avance correctamente")
+        end
+    end
+  end
+
+end
+
+  def crear_retroalimentacion(:mentor, nombre) do
+    ServicioHackathon.obtener_proyecto_nombre("lib/hackaton/adapter/persistencia/proyecto.csv", nombre)
+    |> case do
+      {:error, reason} ->
+        IO.puts(reason)
+
+      {:ok, p} ->
+        IO.puts("------ CREANDO RETROALIMENTACIÓN DEL PROYECTO #{p.nombre} ------ ")
+
+        contenido =
+          IO.gets("Ingrese el contenido de la retroalimentación: ")
+          |> String.trim()
+
+        retroalimentacion =
+          NodoCliente.ejecutar(:crear_retroalimentacion, [
+            "lib/hackaton/adapter/persistencia/mensaje.csv",
+            SesionGlobal.usuario_actual().id,
+            contenido,
+            p.id
+          ])
+
+        case retroalimentacion do
+          {:error, reason} ->
+            IO.puts(reason)
+
+          {:ok, _retroalimentacion} ->
+            IO.puts("Se creó la retroalimentación correctamente")
+        end
+    end
+  end
 end
