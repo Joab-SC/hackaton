@@ -390,12 +390,11 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   def mi_info(_rol) do
     usuario = SesionGlobal.usuario_actual()
 
-    equipo =
-      case NodoCliente.ejecutar(:obtener_equipo_id, [
-             "lib/hackaton/adapter/persistencia/usuario.csv",
+      equipo = case NodoCliente.ejecutar(:obtener_equipo_id, [
+             "lib/hackaton/adapter/persistencia/equipo.csv",
              usuario.id_equipo
            ]) do
-        {:ok, equipo} -> equipo.nombre
+        {:ok, e} -> e.nombre
         {:error, _} -> "Sin equipo"
       end
 
