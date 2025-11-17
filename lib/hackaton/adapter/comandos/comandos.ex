@@ -42,6 +42,8 @@ defmodule Hackaton.Adapter.Comandos do
       help: [],
       salir: [],
       crear_sala: [],
+      consultar_proyecto_categoria: ["categoria"],
+      conultar_proyecto_estado: ["estado"]
     },
     mentor: %{
       crear_retroalimentacion: ["nombre_proyecto"],

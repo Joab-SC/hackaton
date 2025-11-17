@@ -887,4 +887,18 @@ defmodule Hackaton.Services.ServicioHackathon do
   def obtener_sala_tema(nombre_archivo, tema) do
     ServicioSala.obtener_sala_tema(nombre_archivo, tema)
   end
+
+  def buscar_proyectos_por_categoria(nombre_archivo, categoria) do
+    case ServicioProyecto.buscar_por_categoria(nombre_archivo, categoria) do
+      [] -> {:error, "No se encontraron proyectos en la categoría #{categoria}."}
+      proyectos -> {:ok, proyectos}
+    end
+  end
+
+  def buscar_proyectos_por_estado(nombre_archivo, estado) do
+    case ServicioProyecto.buscar_por_estado(nombre_archivo, estado) do
+      [] -> {:error, "No se encontraron proyectos con el estado #{estado}."}
+      proyectos -> {:ok, proyectos}
+    end
+  end
 end

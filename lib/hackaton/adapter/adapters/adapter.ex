@@ -689,4 +689,66 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       {:ok, _sala} -> IO.puts("Se creó la sala correctamente")
     end
   end
+
+  def consultar_proyecto_categoria(:admin, categoria) do
+    proyectos =
+      NodoCliente.ejecutar(:buscar_proyectos_por_categoria, [
+        "lib/hackaton/adapter/persistencia/proyecto.csv",
+        categoria
+      ])
+
+    case proyectos do
+      {:error, reason} ->
+        IO.puts(reason)
+
+      {:ok, ps} ->
+        Enum.each(ps, fn p ->
+          IO.puts("""
+          ----------------------------------------
+          Nombre:         #{p.nombre}
+          Descripción:    #{p.descripcion}
+          Categoría:      #{p.categoria}
+          Estado:         #{p.estado}
+          Equipo:         #{NodoCliente.ejecutar(:obtener_equipo_id, ["lib/hackaton/adapter/persistencia/equipo.csv", p.id_equipo]) |> case do
+            {:ok, e} -> e.nombre
+            {:error, _} -> "Equipo desconocido"
+          end}
+          Fecha creación: #{p.fecha_creacion}
+          ----------------------------------------
+          """)
+        end)
+    end
+  end
+
+  def conultar_proyecto_estado(:admin, estado) do
+    proyectos =
+      NodoCliente.ejecutar(:buscar_proyectos_por_estado, [
+        "lib/hackaton/adapter/persistencia/proyecto.csv",
+        estado
+      ])
+
+    case proyectos do
+      {:error, reason} ->
+        IO.puts(reason)
+
+      {:ok, ps} ->
+        Enum.each(ps, fn p ->
+          IO.puts("""
+          ----------------------------------------
+          Nombre:         #{p.nombre}
+          Descripción:    #{p.descripcion}
+          Categoría:      #{p.categoria}
+          Estado:         #{p.estado}
+          Equipo:         #{NodoCliente.ejecutar(:obtener_equipo_id, ["lib/hackaton/adapter/persistencia/equipo.csv", p.id_equipo]) |> case do
+            {:ok, e} -> e.nombre
+            {:error, _} -> "Equipo desconocido"
+          end}
+          Fecha creación: #{p.fecha_creacion}
+          ----------------------------------------
+          """)
+        end)
+    end
+  end
+
+
 end
