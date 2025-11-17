@@ -417,7 +417,38 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     System.halt(0)
   end
 
-  def mostrar_historial() do
+  def mostrar_historial(:admin, nombre) do
+    proyecto = ServicioHackathon.obtener_proyecto_nombre("lib/hackaton/adapter/persistencia/proyecto.csv", nombre)
+
+    case proyecto do
+      {:error, reason} ->
+        IO.puts(reason)
+
+      {:ok, p} ->
+        IO.puts("------ Historial de retroalimentaciones del proyecto #{p.nombre} ------")
+        retroalimentaciones = ServicioHackathon.obtener_retroalimentaciones_proyecto("lib/hackaton/adapter/persistencia/mensaje.csv", p.id)
+        case retroalimentaciones do
+          {:error, reason} ->
+            IO.puts(reason)
+
+          {:ok, r} ->
+            Enum.each(r, fn retroalimentacion ->
+              IO.puts("""
+              ----------------------------------------
+              De:            #{ServicioHackathon.obtener_usuario("lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.emisor)
+              |> case do
+                {:ok, u} -> u.nombre <> " " <> u.apellido
+                {:error, _} -> "Usuario desconocido"
+              end}
+              Mensaje:       #{retroalimentacion.contenido}
+              Fecha:         #{retroalimentacion.fecha}
+              ----------------------------------------
+              """)
+            end)
+        end
+    end
+  end
+  def mostrar_historial(:participante) do
     usuario = SesionGlobal.usuario_actual()
 
     proyecto = ServicioHackathon.obtener_proyecto_id_equipo("lib/hackaton/adapter/persistencia/proyecto.csv", usuario.id_equipo)
@@ -437,7 +468,11 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
             Enum.each(r, fn retroalimentacion ->
               IO.puts("""
               ----------------------------------------
-              De:            #{ServicioHackathon.obtener_usuario("lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.emisor) }
+              De:            #{ServicioHackathon.obtener_usuario("lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.emisor)
+              |> case do
+                {:ok, u} -> u.nombre <> " " <> u.apellido
+                {:error, _} -> "Usuario desconocido"
+              end}
               Mensaje:       #{retroalimentacion.contenido}
               Fecha:         #{retroalimentacion.fecha}
               ----------------------------------------
@@ -446,4 +481,5 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
         end
     end
   end
+
 end

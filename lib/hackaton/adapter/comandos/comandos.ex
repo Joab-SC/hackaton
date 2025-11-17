@@ -1,14 +1,15 @@
 defmodule Hackaton.Adapter.Comandos do
   alias Hackaton.Util.SesionGlobal
-  @comandos_incognito [:login, :ver_comandos, :registrarse]
-  @comandos_global_base [:chat, :log_out, :actualizar_campo, :mi_info, :ver_comandos]
+  @comandos_incognito [:login, :help, :registrarse, :salir]
+  @comandos_global_base [:chat, :log_out, :actualizar_campo, :mi_info, :help, :salir]
   @comandos_admin [
                     :enviar_comunicado,
                     :teams,
                     :project,
                     :crear_sala,
                     :registrar_mentor,
-                    :eliminar_usuario
+                    :eliminar_usuario,
+                    :mostrar_historial
                   ] ++ @comandos_global_base
   @comandos_participante [
                            :join,
@@ -20,7 +21,8 @@ defmodule Hackaton.Adapter.Comandos do
                            :registrarse,
                            :cambiar_estado_proyecto,
                            :my_team,
-                           :registrar_equipo
+                           :registrar_equipo,
+                           :mostrar_historial
                          ] ++ @comandos_global_base
   @comandos_mentor [:entrar_sala] ++ @comandos_global_base
   @comandos_global Enum.uniq(
@@ -31,7 +33,7 @@ defmodule Hackaton.Adapter.Comandos do
                        @comandos_mentor
                    )
 
-  
+
 
   def comandos_incognito do
     @comandos_incognito
