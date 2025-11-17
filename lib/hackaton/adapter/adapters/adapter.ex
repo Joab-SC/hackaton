@@ -1,5 +1,4 @@
 defmodule Hackaton.Adapter.Adapters.Adapter do
-  alias Hackaton.Services.ServicioHackathon
   alias Hackaton.Util.SesionGlobal
   alias Hackaton.Comunicacion.NodoCliente
   alias Hackaton.Adapter.Comandos

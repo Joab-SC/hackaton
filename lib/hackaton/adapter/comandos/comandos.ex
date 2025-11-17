@@ -3,25 +3,24 @@ defmodule Hackaton.Adapter.Comandos do
 
   @argumentos_por_rol %{
     incognito: %{
-      login: ["email", "password"],
-      registrarse: ["email", "password", "nombre"],
+      login: [],
+      registrarse: [],
       help: [],
       salir: []
     },
     participante: %{
-      join: ["id_equipo"],
-      entrar_sala: ["id_sala"],
+      salir_hackaton: [],
+      join: ["nombre_equipo"],
       mentores: [],
-      project: ["id_proyecto"],
-      crear_proyecto: ["nombre", "descripcion"],
-      agregar_avance: ["id_proyecto"],
-      registrarse: ["email", "password", "nombre"],
-      cambiar_estado_proyecto: ["id_proyecto", "nuevo_estado"],
+      project: ["nombre_proyecto"],
+      crear_proyecto: [],
+      crear_avance: [],
+      registrarse: [],
+      cambiar_estado_proyecto: [],
       my_team: [],
-      registrar_equipo: ["nombre_equipo"],
-      mostrar_historial: ["id_proyecto"],
-      crear_avance: ["id_proyecto"],
-      chat: ["mensaje"],
+      registrar_equipo: [],
+      mostrar_historial: [],
+      crear_avance: [],
       log_out: [],
       actualizar_campo: ["campo", "valor"],
       mi_info: [],
@@ -29,14 +28,11 @@ defmodule Hackaton.Adapter.Comandos do
       salir: []
     },
     admin: %{
-      enviar_comunicado: ["mensaje"],
+      expulsar_usuario: ["usuario"],
       teams: [],
-      project: ["id_proyecto"],
-      crear_sala: ["nombre_sala"],
-      registrar_mentor: ["email", "password", "nombre"],
-      eliminar_usuario: ["id_usuario"],
-      mostrar_historial: ["id_proyecto"],
-      chat: ["mensaje"],
+      project: ["nombre_proyecto"],
+      registrar_mentor: [],
+      mostrar_historial: ["nombre_proyecto"],
       log_out: [],
       actualizar_campo: ["campo", "valor"],
       mi_info: [],
@@ -44,9 +40,7 @@ defmodule Hackaton.Adapter.Comandos do
       salir: []
     },
     mentor: %{
-      entrar_sala: ["id_sala"],
-      crear_retroalimentacion: ["id_proyecto"],
-      chat: ["mensaje"],
+      crear_retroalimentacion: ["nombre_proyecto"],
       log_out: [],
       actualizar_campo: ["campo", "valor"],
       mi_info: [],
@@ -141,39 +135,44 @@ defmodule Hackaton.Adapter.Comandos do
 
     comandos_disponibles = comandos_de_rol(rol_atom)
 
-    # comando no existe en este rol
-    if comando not in comandos_disponibles do
-      IO.puts("El comando #{comando} no está disponible para este rol")
-      return(:error)
+    cond do
+
+    comando not in comandos_global() ->
+        IO.puts("Comando desconocido: #{comando}")
+        :error
+      # 1. El comando no existe para este rol
+      comando not in comandos_disponibles ->
+        IO.puts("El comando #{comando} no está disponible")
+        :error
+
+      # 2. Cantidad incorrecta de argumentos
+      true ->
+        esperados = argumentos_para(rol_atom, comando)
+
+        if esperados != nil and length(args) != length(esperados) do
+          IO.puts("""
+          Uso incorrecto del comando '#{comando}'.
+
+          Argumentos esperados:
+          #{Enum.join(esperados, ", ")}
+
+          Tú pasaste #{length(args)} argumentos.
+          """)
+
+          :error
+        else
+          # 3. Verificar si la función existe
+          func_info = Hackaton.Adapter.Adapters.Adapter.__info__(:functions)
+          aridad = length(args) + 1
+
+          if {comando, aridad} not in func_info do
+            IO.puts("La función #{comando}/#{aridad} no existe en el Adapter.")
+            :error
+          else
+            # 4. Ejecutar normalmente
+            apply(Hackaton.Adapter.Adapters.Adapter, comando, [rol_atom | args])
+          end
+        end
     end
-
-    # argumentos esperados
-    esperados = argumentos_para(rol_atom, comando)
-
-    # cantidad incorrecta
-    if esperados != nil and length(args) != length(esperados) do
-      IO.puts("""
-      Uso incorrecto del comando '#{comando}'.
-
-      Argumentos esperados:
-      #{Enum.join(esperados, ", ")}
-
-      Tú pasaste #{length(args)} argumentos.
-      """)
-
-      return(:error)
-    end
-
-    # verificar función definida
-    func_info = Hackaton.Adapter.Adapters.Adapter.__info__(:functions)
-    aridad = length(args) + 1
-
-    if {comando, aridad} not in func_info do
-      IO.puts("La función #{comando}/#{aridad} no existe en el Adapter.")
-      return(:error)
-    end
-
-    # ejecutar
-    apply(Hackaton.Adapter.Adapters.Adapter, comando, [rol_atom | args])
   end
 end
