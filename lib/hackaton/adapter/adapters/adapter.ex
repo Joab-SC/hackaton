@@ -1,36 +1,7 @@
 defmodule Hackaton.Adapter.Adapters.Adapter do
   alias Hackaton.Util.SesionGlobal
   alias Hackaton.Comunicacion.NodoCliente
-
-  @comandos_global_base [:chat, :login, :log_out, :ver_comandos, :registrarse, :actualizar_campo]
-  @comandos_admin [
-                    :enviar_comunicado,
-                    :teams,
-                    :project,
-                    :crear_sala,
-                    :registrar_mentor,
-                    :expulsar_usuario,
-                    :salir_hackaton
-                  ] ++ @comandos_global_base
-  @comandos_participante [
-                           :join,
-                           :entrar_sala,
-                           :mentores,
-                           :project,
-                           :crear_proyecto,
-                           :agregar_avance,
-                           :registrarse,
-                           :cambiar_estado_proyecto,
-                           :my_team,
-                           :registrar_equipo
-                         ] ++ @comandos_global_base
-  @comandos_mentor [:entrar_sala] ++ @comandos_global_base
-  @comandos_global Enum.uniq(
-                     @comandos_global_base ++
-                       @comandos_admin ++
-                       @comandos_participante ++
-                       @comandos_mentor
-                   )
+  alias Hackaton.Adapter.Comandos
 
   def registrar_mentor(:admin) do
     IO.puts("------ REGISTRANDO MENTOR------ ")
@@ -82,7 +53,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-  def registrarse(_) do
+  def registrarse(:incognito) do
     IO.puts("------ REGISTRANDO PARTICIPANTE------ ")
 
     nombre =
@@ -132,7 +103,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-  def login(_) do
+  def login(:incognito) do
     IO.puts("------ INICIANDO SESIÓN ------ ")
 
     usuario =
@@ -316,22 +287,24 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
     case rol do
       "ADMIN" ->
-        Enum.each(@comandos_admin ++ @comandos_global_base, fn comando ->
+        Enum.each(Comandos.comandos_admin ++ Comandos.comandos_global_base, fn comando ->
           IO.puts("/#{comando}")
         end)
 
       "PARTICIPANTE" ->
-        Enum.each(@comandos_participante ++ @comandos_global_base, fn comando ->
+        Enum.each(Comandos.comandos_participante ++ Comandos.comandos_global_base, fn comando ->
           IO.puts("/#{comando}")
         end)
 
       "MENTOR" ->
-        Enum.each(@comandos_mentor ++ @comandos_global_base, fn comando ->
+        Enum.each(Comandos.comandos_mentor ++ Comandos.comandos_global_base, fn comando ->
           IO.puts("/#{comando}")
         end)
 
       nil ->
-        IO.puts("/login")
+        Enum.each(Comandos.comandos_incognito, fn comando ->
+          IO.puts("/#{comando}")
+        end)
     end
   end
 
@@ -413,99 +386,29 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-  #   # El atomo aridad es una idea, para que no se
-  # explote con funciones como registrarse y coja el atomo de la aridad de jhangod
-  # eso sí, tocaria ponerle el atomo a todas las funciones
-  # por ejepmlo:,
-  #
-  # project (:participante),
-  # crear_proyecto(:participante),
-  # enviar_comunicado(:admin)
-  # de modo que todas las funciones de este archivo adapter, inicien con el atomo del rol que la puede ejecutar,
-  # en caso de una funcion que hayan varios roles que la puedan ejecutar puedes decir tipo
-  # login(_), porque es indiferente del rol (el _ seria par funciones que los 3 puedan usar)
-  # para alguna donde hayan 2 roles que la puedan usar lo puedes hacer con guardas entonces
-  # de todos modos la validacion de los comandos disponibles ya esta en este metodo pero lo de la aridad con el atomo
-  # seria par solucionar lo de funciones como registrarse
-  # pd: te amo te quiero besar
+  def mi_info(_rol) do
+    usuario = SesionGlobal.usuario_actual()
 
-  def escuchar_comandos() do
-    IO.write("> ")
-
-    case IO.gets("") do
-      :eof ->
-        IO.puts("Saliendo...")
-        :ok
-
-      input ->
-        input
-        |> String.trim()
-        |> procesar_entrada()
-
-        escuchar_comandos()
-    end
-  end
-
-  defp procesar_entrada(""), do: :ok
-
-  defp procesar_entrada("/" <> resto) do
-    partes = String.split(resto, " ")
-
-    comando =
-      partes
-      |> List.first()
-      |> String.to_atom()
-
-    args =
-      partes
-      |> tl()
-
-    ejecutar_comando(comando, args)
-  end
-
-  defp procesar_entrada(_otro) do
-    IO.puts("Por favor escriba un comando válido que empiece con /")
-  end
-
-  def ejecutar_comando(comando, args) do
-    if comando not in @comandos_global do
-      IO.puts("El comando ingresado no existe")
-    else
-      usuario = SesionGlobal.usuario_actual()
-      rol = if usuario == nil, do: nil, else: usuario.rol
-
-      {comandos_disponibles, atomo_aridad} =
-        case rol do
-          "PARTICIPANTE" -> {@comandos_participante, :participante}
-          "ADMIN" -> {@comandos_admin, :admin}
-          "MENTOR" -> {@comandos_mentor, :mentor}
-          nil -> {@comandos_global_base, :nada}
-          _ -> {[], :nada}
-        end
-
-      if comando in comandos_disponibles do
-
-        # ------- CORRECCIÓN IMPORTANTE --------
-        # si la función necesita nombre y no lo dieron
-        cond do
-          comando == :project and length(args) == 0 ->
-            IO.puts("Debes ingresar un nombre de proyecto. Ejemplo: /project MiProyecto")
-
-          true ->
-            final_args = [atomo_aridad | args]
-
-            try do
-              apply(__MODULE__, comando, final_args)
-            rescue
-              _ ->
-                IO.puts("Error ejecutando el comando '#{comando}'. Verifica los parámetros.")
-            end
-        end
-
-      else
-        IO.puts("El comando #{comando} no está permitido para tu rol.")
+    equipo =
+      case NodoCliente.ejecutar(:obtener_equipo_id, [
+             "lib/hackaton/adapter/persistencia/usuario.csv",
+             usuario.id_equipo
+           ]) do
+        {:ok, equipo} -> equipo.nombre
+        {:error, _} -> "Sin equipo"
       end
-    end
+
+    IO.puts("""
+    ----------------------------------------
+    Nombre:         #{usuario.nombre}
+    Apellido:       #{usuario.apellido}
+    Cedula:         #{usuario.cedula}
+    Correo:         #{usuario.correo}
+    Telefono:       #{usuario.telefono}
+    Usuario:        #{usuario.usuario}
+    Equipo:         #{equipo}
+    ----------------------------------------
+    """)
   end
 
 end
