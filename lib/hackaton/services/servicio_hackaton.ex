@@ -225,7 +225,6 @@ defmodule Hackaton.Services.ServicioHackathon do
     )
   end
 
-
   def crear_mensaje_personal(nombre_archivo, id_emisor, id_receptor, contenido) do
     ServicioMensaje.crear_mensaje(
       nombre_archivo,
@@ -239,6 +238,7 @@ defmodule Hackaton.Services.ServicioHackathon do
       "pendiente"
     )
   end
+
 
   @doc """
   Obtiene todas las retroalimentaciones de un proyecto validando que dicho proyecto exista.
@@ -313,6 +313,11 @@ defmodule Hackaton.Services.ServicioHackathon do
   @doc """
   Obtiene los participantes de un equipo dado su nombre.
   """
+
+  # =======================================================
+  # 5. OBTENER PARTICIPANTES DE UN EQUIPO
+  # =======================================================
+
   def obtener_participantes_equipo_nombre(archivo_equipos, archivo_usuarios, nombre_equipo) do
     equipo_ = ServicioEquipo.obtener_equipo_nombre(archivo_equipos, nombre_equipo)
 
