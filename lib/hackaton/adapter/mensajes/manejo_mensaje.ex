@@ -12,6 +12,7 @@ defmodule Hackaton.Adapter.Mensajes.ManejoMensajes do
 
       {:ok, mensajes} ->
         mostrar_mensajes_chat(mensajes)
+        IO.write("Escribir: ")
 
         NodoCliente.ejecutar(:marcar_leidos, [
           "lib/hackaton/adapter/persistencia/mensaje.csv",

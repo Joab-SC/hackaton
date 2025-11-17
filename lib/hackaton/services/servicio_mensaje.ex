@@ -62,15 +62,6 @@ defmodule Hackaton.Services.ServicioMensaje do
     end)
   end
 
-  # ======================================================
-  # FILTRAR MENSAJES
-  # ======================================================
-  def listar_mensajes(nombre_archivo), do: BdMensaje.leer_mensajes(nombre_archivo)
-  def filtrar_por_tipo(nombre_archivo, tipo_mensaje), do: BdMensaje.filtrar_mensajes(nombre_archivo, tipo_mensaje)
-  def filtrar_por_receptor(nombre_archivo, tipo_receptor), do: BdMensaje.filtrar_mensajes(nombre_archivo, tipo_receptor)
-  def filtrar_por_proyecto(nombre_archivo, tipo_mensaje, id_proyecto), do: BdMensaje.filtrar_mensajes_proyecto(nombre_archivo, tipo_mensaje, id_proyecto)
-
-
 
   @doc """
   Lista todos los mensajes almacenados en el archivo indicado.
@@ -103,6 +94,14 @@ defmodule Hackaton.Services.ServicioMensaje do
 
   """
   def filtrar_por_receptor_y_tipo(nombre_archivo, tipo_mensaje, id_receptor) do
-    mensajes = BdMensaje.filtrar_mensajes(nombre_archivo, tipo_mensaje, id_receptor)
+    BdMensaje.filtrar_mensajes(nombre_archivo, tipo_mensaje, id_receptor)
+  end
+
+  def filtrar_mensajes_personal(nombre_archivo, id_emisor, id_receptor) do
+    BdMensaje.filtrar_mensajes_personal(nombre_archivo, id_emisor, id_receptor)
+  end
+
+  def filtrar_mensajes_personal_pendiente(nombre_archivo, id_emisor, id_receptor) do
+    BdMensaje.filtrar_mensajes_personal_pendiente(nombre_archivo, id_emisor, id_receptor)
   end
 end
