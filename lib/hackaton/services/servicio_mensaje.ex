@@ -52,7 +52,7 @@ defmodule Hackaton.Services.ServicioMensaje do
       BdMensaje.actualizar_mensaje(nombre_archivo, %Mensaje{mensaje | estado: "leido"})
     end)
   end
-  
+
   # ======================================================
   # FILTRAR MENSAJES
   # ======================================================
@@ -94,14 +94,6 @@ defmodule Hackaton.Services.ServicioMensaje do
 
   """
   def filtrar_por_receptor_y_tipo(nombre_archivo, tipo_mensaje, id_receptor) do
-    BdMensaje.filtrar_mensajes(nombre_archivo, tipo_mensaje, id_receptor)
-  end
-
-  def filtrar_mensajes_personal(nombre_archivo, id_emisor, id_receptor) do
-    BdMensaje.filtrar_mensajes_personal(nombre_archivo, id_emisor, id_receptor)
-  end
-
-  def filtrar_mensajes_personal_pendiente(nombre_archivo, id_emisor, id_receptor) do
-    BdMensaje.filtrar_mensajes_personal_pendiente(nombre_archivo, id_emisor, id_receptor)
+    mensajes = BdMensaje.filtrar_mensajes(nombre_archivo, tipo_mensaje, id_receptor)
   end
 end

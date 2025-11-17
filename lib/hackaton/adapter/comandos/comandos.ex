@@ -25,8 +25,7 @@ defmodule Hackaton.Adapter.Comandos do
       actualizar_campo: ["campo", "valor"],
       mi_info: [],
       help: [],
-      salir: [],
-      abrir_chat: ["otro usuario"]
+      salir: []
     },
     admin: %{
       expulsar_usuario: ["usuario"],
@@ -137,6 +136,7 @@ defmodule Hackaton.Adapter.Comandos do
     comandos_disponibles = comandos_de_rol(rol_atom)
 
     cond do
+
     comando not in comandos_global() ->
         IO.puts("Comando desconocido: #{comando}")
         :error
