@@ -2,35 +2,34 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   alias Hackaton.Util.SesionGlobal
   alias Hackaton.Comunicacion.NodoCliente
 
-
   @comandos_global_base [:chat, :login, :log_out, :ver_comandos, :registrarse, :actualizar_campo]
   @comandos_admin [
-    :enviar_comunicado,
-    :teams,
-    :project,
-    :crear_sala,
-    :registrar_mentor,
-    :eliminar_usuario
-  ] ++ @comandos_global_base
+                    :enviar_comunicado,
+                    :teams,
+                    :project,
+                    :crear_sala,
+                    :registrar_mentor,
+                    :eliminar_usuario
+                  ] ++ @comandos_global_base
   @comandos_participante [
-    :join,
-    :entrar_sala,
-    :mentores,
-    :project,
-    :crear_proyecto,
-    :agregar_avance,
-    :registrarse,
-    :cambiar_estado_proyecto,
-    :my_team,
-    :registrar_equipo
-  ] ++ @comandos_global_base
+                           :join,
+                           :entrar_sala,
+                           :mentores,
+                           :project,
+                           :crear_proyecto,
+                           :agregar_avance,
+                           :registrarse,
+                           :cambiar_estado_proyecto,
+                           :my_team,
+                           :registrar_equipo
+                         ] ++ @comandos_global_base
   @comandos_mentor [:entrar_sala] ++ @comandos_global_base
   @comandos_global Enum.uniq(
-    @comandos_global_base ++
-    @comandos_admin ++
-    @comandos_participante ++
-    @comandos_mentor
-  )
+                     @comandos_global_base ++
+                       @comandos_admin ++
+                       @comandos_participante ++
+                       @comandos_mentor
+                   )
 
   def registrar_mentor(:admin) do
     IO.puts("------ REGISTRANDO MENTOR------ ")
@@ -48,9 +47,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       |> String.trim()
 
     correo =
-      IO.gets(
-        "Ingrese su correo: "
-      )
+      IO.gets("Ingrese su correo: ")
       |> String.trim()
 
     telefono =
@@ -66,7 +63,8 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       |> String.trim()
 
     usuario =
-      NodoCliente.ejecutar(:registrar_usuario, [ "lib/hackaton/adapter/persistencia/usuario.csv",
+      NodoCliente.ejecutar(:registrar_usuario, [
+        "lib/hackaton/adapter/persistencia/usuario.csv",
         "MENTOR",
         nombre,
         apellido,
@@ -74,14 +72,14 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
         correo,
         telefono,
         usuario,
-        contrasena])
+        contrasena
+      ])
 
     case usuario do
       {:error, reason} -> IO.puts(reason)
       {:ok, _usuario} -> IO.puts("Se registró correctamente el usuario")
     end
   end
-
 
   def registrarse(_) do
     IO.puts("------ REGISTRANDO PARTICIPANTE------ ")
@@ -99,9 +97,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       |> String.trim()
 
     correo =
-      IO.gets(
-        "Ingrese su correo: "
-      )
+      IO.gets("Ingrese su correo: ")
       |> String.trim()
 
     telefono =
@@ -117,7 +113,8 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       |> String.trim()
 
     usuario =
-      NodoCliente.ejecutar(:registrar_usuario, [ "lib/hackaton/adapter/persistencia/usuario.csv",
+      NodoCliente.ejecutar(:registrar_usuario, [
+        "lib/hackaton/adapter/persistencia/usuario.csv",
         "PARTICIPANTE",
         nombre,
         apellido,
@@ -125,13 +122,14 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
         correo,
         telefono,
         usuario,
-        contrasena])
+        contrasena
+      ])
+
     case usuario do
       {:error, reason} -> IO.puts(reason)
       {:ok, _usuario} -> IO.puts("Se registró correctamente el usuario")
     end
   end
-
 
   def login(_) do
     IO.puts("------ INICIANDO SESIÓN ------ ")
@@ -144,11 +142,17 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       IO.gets("Ingrese su contrasena: ")
       |> String.trim()
 
-    usuario = NodoCliente.ejecutar(:iniciar_sesion, [ "lib/hackaton/adapter/persistencia/usuario.csv", usuario, contrasena])
-
+    usuario =
+      NodoCliente.ejecutar(:iniciar_sesion, [
+        "lib/hackaton/adapter/persistencia/usuario.csv",
+        usuario,
+        contrasena
+      ])
 
     case usuario do
-      {:error, reason} -> IO.puts(reason)
+      {:error, reason} ->
+        IO.puts(reason)
+
       {:ok, u} ->
         SesionGlobal.iniciar_sesion(u)
         IO.puts("Se inició sesion correctamente")
@@ -167,7 +171,11 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       |> String.trim()
 
     equipo =
-      NodoCliente.ejecutar(:registrar_equipo, [ "lib/hackaton/adapter/persistencia/equipo.csv", nombre, tema])
+      NodoCliente.ejecutar(:registrar_equipo, [
+        "lib/hackaton/adapter/persistencia/equipo.csv",
+        nombre,
+        tema
+      ])
 
     case equipo do
       {:error, reason} -> IO.puts(reason)
@@ -179,46 +187,52 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     usuario = SesionGlobal.usuario_actual()
 
     if usuario.id_equipo == "" do
-      IO.puts("No puedes crear un proyecto si no perteneces a un equipo. Únete o crea un equipo primero.")
-
+      IO.puts(
+        "No puedes crear un proyecto si no perteneces a un equipo. Únete o crea un equipo primero."
+      )
     else
-
       IO.puts("------ CREANDO PROYECTO ------ ")
 
-    nombre =
-      IO.gets("Ingrese el nombre de su proyecto: ")
-      |> String.trim()
+      nombre =
+        IO.gets("Ingrese el nombre de su proyecto: ")
+        |> String.trim()
 
-    descripcion =
-      IO.gets("Ingrese la descripcion: ")
-      |> String.trim()
+      descripcion =
+        IO.gets("Ingrese la descripcion: ")
+        |> String.trim()
 
-    categoria =
-      IO.gets("Elija categoria: ")
-      |> String.trim()
+      categoria =
+        IO.gets("Elija categoria: ")
+        |> String.trim()
 
-    id_equipo = usuario.id_equipo
+      id_equipo = usuario.id_equipo
 
-    proyecto =
-      NodoCliente.ejecutar(:crear_proyecto, [ "lib/hackaton/adapter/persistencia/proyecto.csv",
-        nombre,
-        descripcion,
-        categoria,
-        id_equipo])
+      proyecto =
+        NodoCliente.ejecutar(:crear_proyecto, [
+          "lib/hackaton/adapter/persistencia/proyecto.csv",
+          nombre,
+          descripcion,
+          categoria,
+          id_equipo
+        ])
 
-    case proyecto do
-      {:error, reason} ->
+      case proyecto do
+        {:error, reason} ->
+          IO.puts(reason)
 
-        IO.puts(reason)
-      {:ok, _proyecto} -> IO.puts("Se creo el proyecto exitosamente")
-    end
-
+        {:ok, _proyecto} ->
+          IO.puts("Se creo el proyecto exitosamente")
+      end
     end
   end
 
   def salir_hackaton(:participante) do
     usuario =
-      NodoCliente.ejecutar(:eliminar_usuario, [ "lib/hackaton/adapter/persistencia/usuario.csv", SesionGlobal.usuario_actual().id, :id])
+      NodoCliente.ejecutar(:eliminar_usuario, [
+        "lib/hackaton/adapter/persistencia/usuario.csv",
+        SesionGlobal.usuario_actual().id,
+        :id
+      ])
 
     case usuario do
       {:error, reason} -> IO.puts(reason)
@@ -228,7 +242,12 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
   def expulsar_usuario(:admin, user) do
     usuario =
-      NodoCliente.ejecutar(:eliminar_usuario, [ "lib/hackaton/adapter/persistencia/usuario.csv", user, :user])
+      NodoCliente.ejecutar(:eliminar_usuario, [
+        "lib/hackaton/adapter/persistencia/usuario.csv",
+        user,
+        :user
+      ])
+
     case usuario do
       {:error, reason} -> IO.puts(reason)
       :ok -> IO.puts("Se expulsó correctamente de la hackaton")
@@ -237,8 +256,10 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
   def teams(:admin) do
     IO.puts("------ Lista de equipos ------")
+
     equipos =
-    NodoCliente.ejecutar(:listar_equipos, [ "lib/hackaton/adapter/persistencia/equipo.csv"])
+      NodoCliente.ejecutar(:listar_equipos, ["lib/hackaton/adapter/persistencia/equipo.csv"])
+
     Enum.each(equipos, fn equipo ->
       IO.puts("#{equipo.nombre} — Tema: #{equipo.tema}")
     end)
@@ -253,16 +274,19 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
         nombre_equipo
       ])
 
-
     case ingreso do
-      {:error, reason} -> IO.puts(reason)
-      {:ok, u} -> IO.puts("Se ingresó al equipo correctamente")
-      SesionGlobal.iniciar_sesion(u)
+      {:error, reason} ->
+        IO.puts(reason)
+
+      {:ok, u} ->
+        IO.puts("Se ingresó al equipo correctamente")
+        SesionGlobal.iniciar_sesion(u)
     end
   end
 
   def mentores(:participante) do
-    mentores = NodoCliente.ejecutar(:obtener_mentores, [ "lib/hackaton/adapter/persistencia/usuario.csv"])
+    mentores =
+      NodoCliente.ejecutar(:obtener_mentores, ["lib/hackaton/adapter/persistencia/usuario.csv"])
 
     Enum.each(mentores, fn m ->
       IO.puts("""
@@ -285,7 +309,10 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
   def ver_comandos(_) do
     IO.puts("------ COMANDOS DISPONIBLES ------")
-    rol = if SesionGlobal.usuario_actual() != nil, do: SesionGlobal.usuario_actual().rol , else: nil
+
+    rol =
+      if SesionGlobal.usuario_actual() != nil, do: SesionGlobal.usuario_actual().rol, else: nil
+
     case rol do
       "ADMIN" ->
         Enum.each(@comandos_admin ++ @comandos_global_base, fn comando ->
@@ -307,15 +334,19 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-  def project(_,nombre) do
-
-    case NodoCliente.ejecutar(:obtener_proyecto_nombre, [ "lib/hackaton/adapter/persistencia/proyecto.csv", nombre]) do
+  def project(_, nombre) do
+    case NodoCliente.ejecutar(:obtener_proyecto_nombre, [
+           "lib/hackaton/adapter/persistencia/proyecto.csv",
+           nombre
+         ]) do
       {:error, reason} ->
         IO.puts(reason)
 
       {:ok, p} ->
-
-        case NodoCliente.ejecutar(:obtener_equipo_id, [ "lib/hackaton/adapter/persistencia/equipo.csv", p.id_equipo]) do
+        case NodoCliente.ejecutar(:obtener_equipo_id, [
+               "lib/hackaton/adapter/persistencia/equipo.csv",
+               p.id_equipo
+             ]) do
           {:error, reason} ->
             IO.puts(reason)
 
@@ -335,10 +366,12 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
-
   def my_team(:participante) do
     equipo =
-      NodoCliente.ejecutar(:obtener_equipo_id, [ "lib/hackaton/adapter/persistencia/equipo.csv", SesionGlobal.usuario_actual().id_equipo])
+      NodoCliente.ejecutar(:obtener_equipo_id, [
+        "lib/hackaton/adapter/persistencia/equipo.csv",
+        SesionGlobal.usuario_actual().id_equipo
+      ])
 
     case equipo do
       {:error, reason} -> IO.puts(reason)
@@ -352,7 +385,8 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       |> String.trim()
 
     actualizado =
-      NodoCliente.ejecutar(:actualizar_estado_proyecto, [ "lib/hackaton/adapter/persistencia/proyecto.csv",
+      NodoCliente.ejecutar(:actualizar_estado_proyecto, [
+        "lib/hackaton/adapter/persistencia/proyecto.csv",
         SesionGlobal.usuario_actual().id_equipo,
         nuevo_estado
       ])
@@ -363,79 +397,77 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  def actualizar_campo(_rol, tipo_campo, campo_nuevo) do
+    case NodoCliente.ejecutar(:actualizar_campo_usuario, [
+           "lib/hackaton/adapter/persistencia/usuario.csv",
+           SesionGlobal.usuario_actual().id,
+           campo_nuevo,
+           String.to_atom(tipo_campo)
+         ]) do
+      {:ok, _usuario} ->
+        IO.puts("Se actualizó el usuario correctamente")
 
-  def actualizar_campo(_, tipo_campo, campo_nuevo) do
-    case NodoCliente.ejecutar(:actualizar_campo_usuario, [ "lib/hackaton/adapter/persistencia/usuario.csv",
-        SesionGlobal.usuario_actual().id,
-        campo_nuevo, tipo_campo
-      ]) do
-        {:ok, _usuario} ->
-          IO.puts("Se actualizó el usuario correctamente")
-        {:error, reason} -> IO.puts(reason)
-      end
+      {:error, reason} ->
+        IO.puts(reason)
+    end
   end
 
+  #   # El atomo aridad es una idea, para que no se
+  # explote con funciones como registrarse y coja el atomo de la aridad de jhangod
+  # eso sí, tocaria ponerle el atomo a todas las funciones
+  # por ejepmlo:,
+  #
+  # project (:participante),
+  # crear_proyecto(:participante),
+  # enviar_comunicado(:admin)
+  # de modo que todas las funciones de este archivo adapter, inicien con el atomo del rol que la puede ejecutar,
+  # en caso de una funcion que hayan varios roles que la puedan ejecutar puedes decir tipo
+  # login(_), porque es indiferente del rol (el _ seria par funciones que los 3 puedan usar)
+  # para alguna donde hayan 2 roles que la puedan usar lo puedes hacer con guardas entonces
+  # de todos modos la validacion de los comandos disponibles ya esta en este metodo pero lo de la aridad con el atomo
+  # seria par solucionar lo de funciones como registrarse
+  # pd: te amo te quiero besar
 
+  def escuchar_comandos() do
+    IO.write("> ")
 
+    case IO.gets("") do
+      :eof ->
+        IO.puts("Saliendo...")
+        :ok
 
-#   # El atomo aridad es una idea, para que no se
-# explote con funciones como registrarse y coja el atomo de la aridad de jhangod
-# eso sí, tocaria ponerle el atomo a todas las funciones
-# por ejepmlo:,
-    #
-    # project (:participante),
-    # crear_proyecto(:participante),
-    # enviar_comunicado(:admin)
-#de modo que todas las funciones de este archivo adapter, inicien con el atomo del rol que la puede ejecutar,
-# en caso de una funcion que hayan varios roles que la puedan ejecutar puedes decir tipo
-# login(_), porque es indiferente del rol (el _ seria par funciones que los 3 puedan usar)
-# para alguna donde hayan 2 roles que la puedan usar lo puedes hacer con guardas entonces
-# de todos modos la validacion de los comandos disponibles ya esta en este metodo pero lo de la aridad con el atomo
-# seria par solucionar lo de funciones como registrarse
-# pd: te amo te quiero besar
+      input ->
+        input
+        |> String.trim()
+        |> procesar_entrada()
 
-
-
-def escuchar_comandos() do
-  IO.write("> ")
-
-  case IO.gets("") do
-    :eof ->
-      IO.puts("Saliendo...")
-      :ok
-
-    input ->
-      input
-      |> String.trim()
-      |> procesar_entrada()
-
-      escuchar_comandos()
+        escuchar_comandos()
+    end
   end
-end
 
-defp procesar_entrada(""), do: :ok
+  defp procesar_entrada(""), do: :ok
 
-defp procesar_entrada("/" <> resto) do
-  partes = String.split(resto, " ")
+  defp procesar_entrada("/" <> resto) do
+    partes = String.split(resto, " ")
 
-  comando =
-    partes
-    |> List.first()
-    |> String.to_atom()
+    comando =
+      partes
+      |> List.first()
+      |> String.to_atom()
 
-  args =
-    partes
-    |> tl()
+    args =
+      partes
+      |> tl()
 
-  ejecutar_comando(comando, args)
-end
+    ejecutar_comando(comando, args)
+  end
 
-defp procesar_entrada(_otro) do
-  IO.puts("Por favor escriba un comando válido que empiece con /")
-end
-
+  defp procesar_entrada(_otro) do
+    IO.puts("Por favor escriba un comando válido que empiece con /")
+  end
 
   def ejecutar_comando(comando, args) do
+
     if comando not in @comandos_global do
       IO.puts("El comando ingresado no existe")
     else
@@ -453,21 +485,34 @@ end
 
       if comando in comandos_disponibles do
         try do
-          apply(__MODULE__, comando, [atomo_aridad | args])
+          func_info = __MODULE__.__info__(:functions)
+
+          if {comando, length(args) + 1} in func_info do
+            apply(__MODULE__, comando, [atomo_aridad | args])
+          else
+            IO.puts(
+              "El comando '#{comando}' espera #{length(args) + 1} argumentos, tú pasaste #{length(args)}"
+            )
+          end
         rescue
           e in FunctionClauseError ->
             {_, _, aridad} = e.function
-            IO.puts("El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos")
+
+            IO.puts(
+              "El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos"
+            )
 
           e in UndefinedFunctionError ->
             {_, _, aridad} = e.function
-            IO.puts("El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos")
+
+            IO.puts(
+              "El comando '#{comando}' no se pudo ejecutar, se esperaban #{aridad} datos y tu ingresaste #{length(args)} cantidad de argumentos"
+            )
 
           _ ->
             IO.puts("Ocurrió un error inesperado al ejecutar el comando '#{comando}'.")
-      end
+        end
       end
     end
   end
-
 end

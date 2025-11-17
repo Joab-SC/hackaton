@@ -142,11 +142,13 @@ defmodule Hackaton.Services.ServicioUsuario do
   end
 
   def actualizar_campo(nombre_archivo, id_usuario, valor, tipo_campo) do
-    case obtener_usuario(nombre_archivo, id_usuario) do
-      {:ok, usuario} ->
+    case {obtener_usuario(nombre_archivo, id_usuario), Usuario.campo_valido(tipo_campo)} do
+      {{:ok, usuario}, {:ok, tipo_campo}} ->
         actualizado = Map.put(usuario, tipo_campo, valor)
         actualizar_usuario(nombre_archivo, actualizado)
-      {:error, reason} ->
+      {{:error, reason}, _} ->
+        {:error, reason}
+      {_, {:error, reason}} ->
         {:error, reason}
     end
   end

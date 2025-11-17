@@ -1,5 +1,6 @@
 defmodule Hackaton.Domain.Usuario do
   @roles ["PARTICIPANTE", "MENTOR", "ADMIN"]
+  @campos [:rol, :nombre, :apellido, :cedula, :correo, :telefono, :usuario, :contrasena]
   defstruct id: "",
             rol: "",
             nombre: "",
@@ -92,6 +93,14 @@ defmodule Hackaton.Domain.Usuario do
               {:ok, _} -> :ok
             end
         end
+    end
+  end
+
+  def campo_valido(campo) do
+    if campo in @campos do
+      {:ok, campo}
+    else
+      {:error, "No existe ningun campo llamado #{campo}"}
     end
   end
 
