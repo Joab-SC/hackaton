@@ -5,6 +5,7 @@
                         'Elixir.Hackaton.Adapter.BaseDatos.BdProyecto',
                         'Elixir.Hackaton.Adapter.BaseDatos.BdUsuario',
                         'Elixir.Hackaton.Adapter.Comandos',
+                        'Elixir.Hackaton.Adapter.Mensajes.ManejoMensajes',
                         'Elixir.Hackaton.AppCliente',
                         'Elixir.Hackaton.AppServidor',
                         'Elixir.Hackaton.Comunicacion.NodoCliente',
