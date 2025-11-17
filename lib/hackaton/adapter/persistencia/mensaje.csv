@@ -1,3 +1,5 @@
 id,Tipo_mensaje,Tipo_receptor,id_receptor,id_emisor,Contenido,id_equipo,Fecha,id_proyecto,Estado
 msg-9A12BC,retroalimentacion,,,mtr-40B606,El proyecto presenta una excelente estructura pero sería bueno mejorar la documentación técnica,,2025-02-12 14:33:20,pryt-99AD19,
-
+avance-4A5145,avance,nil,,ptc-4A83AC,se arma el domain,,2025-11-17T05:01:08.946539Z,pryt-99AD19,
+avance-C899E5,avance,nil,,ptc-4A83AC,Se documenta,,2025-11-17T05:01:35.824292Z,pryt-99AD19,
+retroalimentacion-6800F5,retroalimentacion,nil,,mtr-40B606,Le falta orden,,2025-11-17T05:02:32.611610Z,pryt-99AD19,

@@ -418,7 +418,10 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   end
 
   def mostrar_historial(:admin, nombre) do
-    proyecto = ServicioHackathon.obtener_proyecto_nombre("lib/hackaton/adapter/persistencia/proyecto.csv", nombre)
+    proyecto = NodoCliente.ejecutar(:obtener_proyecto_nombre, [
+           "lib/hackaton/adapter/persistencia/proyecto.csv",
+           nombre
+         ])
 
     case proyecto do
       {:error, reason} ->
@@ -426,7 +429,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
       {:ok, p} ->
         IO.puts("------ Historial de retroalimentaciones del proyecto #{p.nombre} ------")
-        retroalimentaciones = ServicioHackathon.obtener_retroalimentaciones_proyecto("lib/hackaton/adapter/persistencia/mensaje.csv", p.id)
+        retroalimentaciones = NodoCliente.ejecutar(:obtener_retroalimentaciones_proyecto, ["lib/hackaton/adapter/persistencia/proyecto.csv", "lib/hackaton/adapter/persistencia/mensaje.csv", p.id])
         case retroalimentaciones do
           {:error, reason} ->
             IO.puts(reason)
@@ -435,7 +438,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
             Enum.each(r, fn retroalimentacion ->
               IO.puts("""
               ----------------------------------------
-              De:            #{ServicioHackathon.obtener_usuario("lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.id_emisor)
+              De:            #{NodoCliente.ejecutar(:obtener_usuario, ["lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.id_emisor])
               |> case do
                 {:ok, u} -> u.nombre <> " " <> u.apellido
                 {:error, _} -> "Usuario desconocido"
@@ -451,7 +454,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   def mostrar_historial(:participante) do
     usuario = SesionGlobal.usuario_actual()
 
-    proyecto = ServicioHackathon.obtener_proyecto_id_equipo("lib/hackaton/adapter/persistencia/proyecto.csv", usuario.id_equipo)
+    proyecto = NodoCliente.ejecutar(:obtener_proyecto_id_equipo, ["lib/hackaton/adapter/persistencia/proyecto.csv", usuario.id_equipo])
 
     case proyecto do
       {:error, reason} ->
@@ -459,7 +462,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
       {:ok, p} ->
         IO.puts("------ Historial de retroalimentaciones del proyecto #{p.nombre} ------")
-        retroalimentaciones = ServicioHackathon.obtener_retroalimentaciones_proyecto("lib/hackaton/adapter/persistencia/proyecto.csv", "lib/hackaton/adapter/persistencia/mensaje.csv", p.id)
+        retroalimentaciones = NodoCliente.ejecutar(:obtener_retroalimentaciones_proyecto, ["lib/hackaton/adapter/persistencia/proyecto.csv", "lib/hackaton/adapter/persistencia/mensaje.csv", p.id])
         case retroalimentaciones do
           {:error, reason} ->
             IO.puts(reason)
@@ -468,7 +471,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
             Enum.each(r, fn retroalimentacion ->
               IO.puts("""
               ----------------------------------------
-              De:            #{ServicioHackathon.obtener_usuario("lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.id_emisor)
+              De:            #{NodoCliente.ejecutar(:obtener_usuario, ["lib/hackaton/adapter/persistencia/usuario.csv", retroalimentacion.id_emisor])
               |> case do
                 {:ok, u} -> u.nombre <> " " <> u.apellido
                 {:error, _} -> "Usuario desconocido"
@@ -489,8 +492,12 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       IO.puts(
         "No puedes crear un avance si no perteneces a un equipo"
       )
+    else
 
-    case ServicioHackathon.obtener_proyecto_id_equipo("lib/hackaton/adapter/persistencia/proyecto.csv", usuario.id_equipo) do
+    case NodoCliente.ejecutar(:obtener_proyecto_id_equipo, [
+           "lib/hackaton/adapter/persistencia/proyecto.csv",
+           usuario.id_equipo
+         ]) do
       {:error, reason} ->
         IO.puts(reason)
 
@@ -522,7 +529,10 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 end
 
   def crear_retroalimentacion(:mentor, nombre) do
-    ServicioHackathon.obtener_proyecto_nombre("lib/hackaton/adapter/persistencia/proyecto.csv", nombre)
+    NodoCliente.ejecutar(:obtener_proyecto_nombre, [
+           "lib/hackaton/adapter/persistencia/proyecto.csv",
+           nombre
+         ])
     |> case do
       {:error, reason} ->
         IO.puts(reason)
