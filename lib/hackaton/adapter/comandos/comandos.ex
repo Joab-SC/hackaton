@@ -29,7 +29,8 @@ defmodule Hackaton.Adapter.Comandos do
       abrir_chat: ["otro usuario"],
       chat_grupo: [],
       chat_grupo_mentor: ["user mentor"],
-      ver_avances: []
+      ver_avances: [],
+      entrar_sala: []
     },
     admin: %{
       expulsar_usuario: ["usuario"],

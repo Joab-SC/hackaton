@@ -767,6 +767,34 @@ defmodule Hackaton.Services.ServicioHackathon do
     )
   end
 
+  def crear_mensaje_sala(nombre_archivo, id_emisor, id_sala, contenido) do
+    ServicioMensaje.crear_mensaje(
+      nombre_archivo,
+      :chat,
+      :sala,
+      id_sala,
+      id_emisor,
+      contenido,
+      "",
+      "",
+      "pendiente"
+    )
+  end
+
+  def obtener_mensajes_sala(nombre_archivo, id_sala, _id_emisor) do
+    case ServicioMensaje.filtrar_mensaje_sala(nombre_archivo, id_sala) do
+      [] -> {:error, "El chat del equipo aún no tiene mensajes."}
+      mensajes -> {:ok, mensajes}
+    end
+  end
+
+  def obtener_mensajes_sala_pendiente(nombre_archivo, id_sala, _id_emisor) do
+    case ServicioMensaje.filtrar_mensaje_sala_pendiente(nombre_archivo, id_sala) do
+      [] -> {:error, "El chat del equipo aún no tiene mensajes."}
+      mensajes -> {:ok, mensajes}
+    end
+  end
+  
   def crear_consulta_equipo_mentor(nombre_archivo, id_mentor, _, id_equipo, contenido) do
     ServicioMensaje.crear_mensaje(
       nombre_archivo,

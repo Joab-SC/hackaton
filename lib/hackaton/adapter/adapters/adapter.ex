@@ -761,6 +761,33 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  def entrar_sala(:participante) do
+    tema =
+      IO.gets("Ingrese el tema de la sala a la que desea entrar: ")
+      |> String.trim()
+    usuario_actual = SesionGlobal.usuario_actual()
+
+    case NodoCliente.ejecutar(:obtener_sala_tema, [
+        "lib/hackaton/adapter/persistencia/sala.csv",
+        tema
+      ]) do
+        {:error, reason} -> IO.puts(reason)
+        {:ok, sala} ->
+          IO.puts("""
+      ┌──────────────────────────────────────────────────────────────┐
+      │ SALA DE DISCRUSION DE - #{tema} -                          |
+      └──────────────────────────────────────────────────────────────┘
+      """)
+          ManejoMensajes.chatear(
+          usuario_actual,
+          sala,
+          :crear_mensaje_sala,
+          :obtener_mensajes_sala,
+          :obtener_mensajes_sala_pendiente
+        )
+      end
+  end
+
   def consultar_proyecto_categoria(:admin, categoria) do
     proyectos =
       NodoCliente.ejecutar(:buscar_proyectos_por_categoria, [
