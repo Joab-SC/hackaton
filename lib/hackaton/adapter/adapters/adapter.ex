@@ -577,18 +577,19 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   end
 
   def abrir_chat(_, otro_usuario_user) do
+    usuario_actual = SesionGlobal.usuario_actual()
     case NodoCliente.ejecutar(:obtener_usuario_user, [
            "lib/hackaton/adapter/persistencia/usuario.csv",
            otro_usuario_user
          ]) do
       {:ok, otro_usuario} ->
-        IO.puts("""
+        cond do
+          usuario_actual.id_equipo == otro_usuario.id_equipo ->
+          IO.puts("""
         ┌──────────────────────────────────────────────────────────────┐
         │ CHAT PERSONAL CON #{otro_usuario.usuario}                    |
         └──────────────────────────────────────────────────────────────┘
         """)
-
-        usuario_actual = SesionGlobal.usuario_actual()
 
         ManejoMensajes.chatear(
           usuario_actual,
@@ -597,6 +598,10 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
           :obtener_mensajes_personal,
           :obtener_mensajes_personal_pendientes
         )
+        true -> IO.puts("No puedes chatear con el usuario #{otro_usuario_user} porque pertecene a otro equipo")
+        end
+      {:error, reason} ->
+        IO.puts(reason)
     end
   end
 
