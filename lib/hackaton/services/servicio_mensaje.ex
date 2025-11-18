@@ -126,4 +126,12 @@ defmodule Hackaton.Services.ServicioMensaje do
   def filtrar_consultas_equipo_mentor_pendiente(nombre_archivo, id_equipo, id_mentor) do
     BdMensaje.filtrar_consultas_equipo_mentor_pendiente(nombre_archivo, id_equipo, id_mentor)
   end
+
+  def filtrar_mensaje_sala(nombre_archivo, id_sala) do
+    BdMensaje.filtrar_mensajes_sala(nombre_archivo, id_sala)
+  end
+
+  def filtrar_mensaje_sala_pendiente(nombre_archivo, id_sala) do
+    BdMensaje.filtrar_mensajes_sala_pendiente(nombre_archivo, id_sala)
+  end
 end

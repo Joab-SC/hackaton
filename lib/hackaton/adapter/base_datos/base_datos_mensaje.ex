@@ -232,7 +232,18 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
     end)
   end
 
+  def filtrar_mensajes_sala(nombre_archivo, id_sala) do
+    Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
+      mensaje.id_receptor == id_sala
+    end)
+  end
 
+  def filtrar_mensajes_sala_pendiente(nombre_archivo, id_sala) do
+    Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
+      mensaje.id_receptor == id_sala and
+      mensaje.estado == "pendiente"
+    end)
+  end
 
 
 

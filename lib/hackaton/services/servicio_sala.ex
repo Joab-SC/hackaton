@@ -79,7 +79,7 @@ defmodule Hackaton.Services.ServicioSala do
     if is_nil(sala) do
       {:error, "No se pudo encontrar el equipo con el tema #{tema}"}
     else
-      {:ok, tema}
+      {:ok, sala}
     end
   end
 end
