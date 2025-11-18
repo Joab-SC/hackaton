@@ -794,7 +794,7 @@ defmodule Hackaton.Services.ServicioHackathon do
       mensajes -> {:ok, mensajes}
     end
   end
-  
+
   def crear_consulta_equipo_mentor(nombre_archivo, id_mentor, _, id_equipo, contenido) do
     ServicioMensaje.crear_mensaje(
       nombre_archivo,
@@ -1002,6 +1002,25 @@ defmodule Hackaton.Services.ServicioHackathon do
     end
   end
 
+  def enviar_anuncio(nombre_archivo, id_emisor, contenido) do
+    ServicioMensaje.crear_mensaje(
+      nombre_archivo,
+      :anuncio,
+      :todos,
+      "",
+      id_emisor,
+      contenido,
+      "",
+      "",
+      ""
+    )
+  end
 
-
+  def ver_anuncios(nombre_archivo) do
+    case ServicioMensaje.filtrar_por_tipo(nombre_archivo,:anuncio) do
+      [] ->
+        {:error, "Aún no hay ningun anuncio en la organización"}
+      anuncios -> {:ok, anuncios}
+    end
+  end
 end

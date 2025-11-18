@@ -578,6 +578,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
   def abrir_chat(_, otro_usuario_user) do
     usuario_actual = SesionGlobal.usuario_actual()
+
     case NodoCliente.ejecutar(:obtener_usuario_user, [
            "lib/hackaton/adapter/persistencia/usuario.csv",
            otro_usuario_user
@@ -585,21 +586,26 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       {:ok, otro_usuario} ->
         cond do
           usuario_actual.id_equipo == otro_usuario.id_equipo ->
-          IO.puts("""
-        ┌──────────────────────────────────────────────────────────────┐
-        │ CHAT PERSONAL CON #{otro_usuario.usuario}                    |
-        └──────────────────────────────────────────────────────────────┘
-        """)
+            IO.puts("""
+            ┌──────────────────────────────────────────────────────────────┐
+            │ CHAT PERSONAL CON #{otro_usuario.usuario}                    |
+            └──────────────────────────────────────────────────────────────┘
+            """)
 
-        ManejoMensajes.chatear(
-          usuario_actual,
-          otro_usuario,
-          :crear_mensaje_personal,
-          :obtener_mensajes_personal,
-          :obtener_mensajes_personal_pendientes
-        )
-        true -> IO.puts("No puedes chatear con el usuario #{otro_usuario_user} porque pertecene a otro equipo")
+            ManejoMensajes.chatear(
+              usuario_actual,
+              otro_usuario,
+              :crear_mensaje_personal,
+              :obtener_mensajes_personal,
+              :obtener_mensajes_personal_pendientes
+            )
+
+          true ->
+            IO.puts(
+              "No puedes chatear con el usuario #{otro_usuario_user} porque pertecene a otro equipo"
+            )
         end
+
       {:error, reason} ->
         IO.puts(reason)
     end
@@ -656,7 +662,6 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
             │ CHAT GRUPAL DE - #{equipo.nombre} -  CON EL MENTOR #{mentor.usuario}
             └─────────────────────────────────────────────────────────────────────┘
             """)
-
 
             ManejoMensajes.chatear(
               usuario_actual,
@@ -770,27 +775,31 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     tema =
       IO.gets("Ingrese el tema de la sala a la que desea entrar: ")
       |> String.trim()
+
     usuario_actual = SesionGlobal.usuario_actual()
 
     case NodoCliente.ejecutar(:obtener_sala_tema, [
-        "lib/hackaton/adapter/persistencia/sala.csv",
-        tema
-      ]) do
-        {:error, reason} -> IO.puts(reason)
-        {:ok, sala} ->
-          IO.puts("""
-      ┌──────────────────────────────────────────────────────────────┐
-      │ SALA DE DISCRUSION DE - #{tema} -                          |
-      └──────────────────────────────────────────────────────────────┘
-      """)
-          ManejoMensajes.chatear(
+           "lib/hackaton/adapter/persistencia/sala.csv",
+           tema
+         ]) do
+      {:error, reason} ->
+        IO.puts(reason)
+
+      {:ok, sala} ->
+        IO.puts("""
+        ┌──────────────────────────────────────────────────────────────┐
+        │ SALA DE DISCRUSION DE - #{tema} -                          |
+        └──────────────────────────────────────────────────────────────┘
+        """)
+
+        ManejoMensajes.chatear(
           usuario_actual,
           sala,
           :crear_mensaje_sala,
           :obtener_mensajes_sala,
           :obtener_mensajes_sala_pendiente
         )
-      end
+    end
   end
 
   def consultar_proyecto_categoria(:admin, categoria) do
@@ -850,6 +859,44 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
           ----------------------------------------
           """)
         end)
+    end
+  end
+
+  def enviar_anuncio(:admin) do
+    ver_anuncios(:nada)
+
+    anuncio =
+      IO.gets("- Nuevo anuncio: ")
+      |> String.trim()
+
+    NodoCliente.ejecutar(:enviar_anuncio, [
+      "lib/hackaton/adapter/persistencia/mensaje.csv",
+      SesionGlobal.usuario_actual().id,
+      anuncio
+    ])
+  end
+
+  def ver_anuncios(_) do
+    IO.puts("""
+    ┌──────────────────────────────────────────────────────────────┐
+    │                        ANUNCIOS                              |
+    └──────────────────────────────────────────────────────────────┘
+    """)
+
+    case NodoCliente.ejecutar(:ver_anuncios, [
+           "lib/hackaton/adapter/persistencia/mensaje.csv"]) do
+      {:ok, anuncios} ->
+        Enum.each(anuncios, fn anuncio ->
+          IO.puts("""
+          ----------------------------------------
+          Mensaje:        #{anuncio.contenido}
+          Fecha:          #{anuncio.fecha}
+          ----------------------------------------
+          """)
+        end)
+
+      {:error, reason} ->
+        IO.puts(reason)
     end
   end
 end

@@ -30,7 +30,8 @@ defmodule Hackaton.Adapter.Comandos do
       chat_grupo: [],
       chat_grupo_mentor: ["user mentor"],
       ver_avances: [],
-      entrar_sala: []
+      entrar_sala: [],
+      ver_anuncios: []
     },
     admin: %{
       expulsar_usuario: ["usuario"],
@@ -45,7 +46,9 @@ defmodule Hackaton.Adapter.Comandos do
       salir: [],
       crear_sala: [],
       consultar_proyecto_categoria: ["categoria"],
-      conultar_proyecto_estado: ["estado"]
+      conultar_proyecto_estado: ["estado"],
+      enviar_anuncio: [],
+      ver_anuncios: []
     },
     mentor: %{
       crear_retroalimentacion: ["nombre_proyecto"],
@@ -54,7 +57,8 @@ defmodule Hackaton.Adapter.Comandos do
       mi_info: [],
       help: [],
       salir: [],
-      chat_grupo: ["nombre_equipo"]
+      chat_grupo: ["nombre_equipo"],
+      ver_anuncios: []
     }
   }
 

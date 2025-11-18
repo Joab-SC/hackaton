@@ -139,7 +139,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
       }) do
     File.write(
       nombre_archivo,
-      "\n#{id},#{Atom.to_string(tipo_mensaje)},#{Atom.to_string(tipo_receptor)},#{id_receptor},#{id_emisor},#{contenido},#{id_equipo},#{fecha},#{id_proyecto},#{estado}",
+      "\n#{id},#{Atom.to_string(tipo_mensaje)},#{Atom.to_string(tipo_receptor)},#{id_receptor},#{id_emisor},#{String.replace(contenido, ",", "")},#{id_equipo},#{fecha},#{id_proyecto},#{estado}",
       [:append, :utf8]
     )
   end
@@ -217,7 +217,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
 
   def filtrar_consultas_equipo_mentor_pendiente(nombre_archivo, id_equipo, id_mentor) do
     Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
-      (mensaje.id_receptor == id_mentor or mensaje.id_emisor == id_mentor)  and
+      (mensaje.id_receptor == id_mentor or mensaje.id_emisor == id_mentor) and
         mensaje.id_equipo == id_equipo and
         mensaje.tipo_mensaje == :consulta and
         mensaje.estado == "pendiente"
@@ -241,20 +241,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
   def filtrar_mensajes_sala_pendiente(nombre_archivo, id_sala) do
     Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
       mensaje.id_receptor == id_sala and
-      mensaje.estado == "pendiente"
-    end)
-  end
-
-
-
-
-
-
-
-
-  def filtrar_mensajes(nombre_archivo, tipo_buscar, id_receptor_buscar) do
-    Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
-      mensaje.tipo_mensaje == tipo_buscar and mensaje.id_receptor == id_receptor_buscar
+        mensaje.estado == "pendiente"
     end)
   end
 
@@ -262,6 +249,12 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
       when tipo_buscar in [:avance, :chat, :consulta, :retroalimentacion, :anuncio] do
     Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
       mensaje.tipo_mensaje == tipo_buscar
+    end)
+  end
+
+  def filtrar_mensajes(nombre_archivo, tipo_buscar, id_receptor_buscar) do
+    Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
+      mensaje.tipo_mensaje == tipo_buscar and mensaje.id_receptor == id_receptor_buscar
     end)
   end
 

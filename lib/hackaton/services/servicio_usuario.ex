@@ -168,7 +168,10 @@ defmodule Hackaton.Services.ServicioUsuario do
   Obtiene participantes que pertenecen a un equipo específico.
   """
   def obtener_participantes_equipo(nombre_archivo, id_equipo_buscar) do
-    BdUsuario.leer_participantes_equipo(nombre_archivo, id_equipo_buscar)
+    case BdUsuario.leer_participantes_equipo(nombre_archivo, id_equipo_buscar) do
+      [] -> {:error, "No hay participantes en este equipo"}
+      participantes -> {:ok, participantes}
+    end
   end
 
   @doc """
