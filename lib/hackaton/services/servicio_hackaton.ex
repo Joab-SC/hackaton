@@ -699,6 +699,10 @@ defmodule Hackaton.Services.ServicioHackathon do
     end
   end
 
+
+
+
+
   def marcar_leidos(nombre_archivo, mensajes) do
     ServicioMensaje.marcar_leidos(nombre_archivo, mensajes)
   end
@@ -762,6 +766,74 @@ defmodule Hackaton.Services.ServicioHackathon do
       "pendiente"
     )
   end
+
+  def crear_consulta_equipo_mentor(nombre_archivo, id_mentor, _, id_equipo, contenido) do
+    ServicioMensaje.crear_mensaje(
+      nombre_archivo,
+      :consulta,
+      :equipo,
+      "",
+      id_mentor,
+      contenido,
+      id_equipo,
+      "",
+      "pendiente"
+    )
+
+  end
+
+  def crear_consulta_equipo(nombre_archivo, id_emisor, id_receptor, id_equipo , contenido) do
+    ServicioMensaje.crear_mensaje(
+      nombre_archivo,
+      :consulta,
+      :equipo,
+      id_receptor,
+      id_emisor,
+      contenido,
+      id_equipo,
+      "",
+      "pendiente"
+    )
+
+  end
+
+  def obtener_consultas_equipo_mentor(nombre_archivo, _, id_mentor, id_equipo) do
+    case ServicioMensaje.filtrar_consultas_equipo_mentor(nombre_archivo, id_equipo, id_mentor) do
+      [] -> {:error, "El chat del equipo con el mentor aún no tiene mensajes."}
+      mensajes -> {:ok, mensajes}
+    end
+  end
+
+  def obtener_consultas_equipo_mentor_pendientes(nombre_archivo,  _, id_mentor, id_equipo) do
+    case ServicioMensaje.filtrar_consultas_equipo_mentor_pendiente(nombre_archivo, id_equipo, id_mentor) do
+      [] -> {:error, "El chat del equipo con el mentor aún no tiene mensajes."}
+      mensajes -> {:ok, mensajes}
+    end
+  end
+
+  def obtener_consultas_equipo(nombre_archivo, id_mentor, _, id_equipo) do
+    case ServicioMensaje.filtrar_consultas_equipo_mentor(nombre_archivo, id_equipo, id_mentor) do
+      [] -> {:error, "El chat del equipo con el mentor aún no tiene mensajes."}
+      mensajes -> {:ok, mensajes}
+    end
+  end
+
+  def obtener_consultas_equipo_pendientes(nombre_archivo, id_mentor, _, id_equipo) do
+    case ServicioMensaje.filtrar_consultas_equipo_mentor_pendiente(nombre_archivo, id_equipo, id_mentor) do
+      [] -> {:error, "El chat del equipo con el mentor aún no tiene mensajes."}
+      mensajes -> {:ok, mensajes}
+    end
+  end
+
+    # :crear_consulta_equipo,
+    #           :obtener_consultas_equipo_mentor,
+    #           :obtener_consultas_equipo_mentor_pendientes
+
+
+
+
+
+
 
   @doc """
   Obtiene los participantes de un equipo dado su nombre.
@@ -901,4 +973,7 @@ defmodule Hackaton.Services.ServicioHackathon do
       proyectos -> {:ok, proyectos}
     end
   end
+
+
+
 end

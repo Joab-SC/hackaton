@@ -95,6 +95,9 @@ defmodule Hackaton.Services.ServicioMensaje do
 
 
   """
+
+
+
   def filtrar_por_receptor_y_tipo(nombre_archivo, tipo_mensaje, id_receptor) do
     BdMensaje.filtrar_mensajes(nombre_archivo, tipo_mensaje, id_receptor)
   end
@@ -113,5 +116,14 @@ defmodule Hackaton.Services.ServicioMensaje do
 
   def filtrar_mensajes_equipo_pendiente(nombre_archivo, id_equipo) do
     BdMensaje.filtrar_mensajes_equipo_pendiente(nombre_archivo, id_equipo)
+  end
+
+
+  def filtrar_consultas_equipo_mentor(nombre_archivo, id_equipo, id_mentor) do
+    BdMensaje.filtrar_consultas_equipo_mentor(nombre_archivo, id_equipo, id_mentor)
+  end
+
+  def filtrar_consultas_equipo_mentor_pendiente(nombre_archivo, id_equipo, id_mentor) do
+    BdMensaje.filtrar_consultas_equipo_mentor_pendiente(nombre_archivo, id_equipo, id_mentor)
   end
 end

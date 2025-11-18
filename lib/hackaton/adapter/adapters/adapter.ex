@@ -583,11 +583,12 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
          ]) do
       {:ok, otro_usuario} ->
         IO.puts("""
-      ┌──────────────────────────────────────────────────────────────┐
-      │ CHAT PERSONAL CON #{otro_usuario.usuario}                    |
-      └──────────────────────────────────────────────────────────────┘
-      """)
-      usuario_actual = SesionGlobal.usuario_actual()
+        ┌──────────────────────────────────────────────────────────────┐
+        │ CHAT PERSONAL CON #{otro_usuario.usuario}                    |
+        └──────────────────────────────────────────────────────────────┘
+        """)
+
+        usuario_actual = SesionGlobal.usuario_actual()
 
         ManejoMensajes.chatear(
           usuario_actual,
@@ -603,45 +604,115 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     usuario_actual = SesionGlobal.usuario_actual()
 
     case NodoCliente.ejecutar(:obtener_equipo_id, [
-        "lib/hackaton/adapter/persistencia/equipo.csv",
-        SesionGlobal.usuario_actual().id_equipo
-      ]) do
-        {:error, reason} -> IO.puts(reason)
-        {:ok, equipo} ->
-          IO.puts("""
-      ┌──────────────────────────────────────────────────────────────┐
-      │ CHAT GRUPAL DE - #{equipo.nombre} -                          |
-      └──────────────────────────────────────────────────────────────┘
-      """)
-          ManejoMensajes.chatear(
+           "lib/hackaton/adapter/persistencia/equipo.csv",
+           SesionGlobal.usuario_actual().id_equipo
+         ]) do
+      {:error, reason} ->
+        IO.puts(reason)
+
+      {:ok, equipo} ->
+        IO.puts("""
+        ┌──────────────────────────────────────────────────────────────┐
+        │ CHAT GRUPAL DE - #{equipo.nombre} -                          |
+        └──────────────────────────────────────────────────────────────┘
+        """)
+
+        ManejoMensajes.chatear(
           usuario_actual,
           equipo,
           :crear_mensaje_equipo,
           :obtener_mensajes_equipo,
           :obtener_mensajes_equipo_pendientes
         )
-      end
+    end
+  end
+
+  def chat_grupo_mentor(:participante, mentor_user) do
+    usuario_actual = SesionGlobal.usuario_actual()
+
+    case NodoCliente.ejecutar(:obtener_usuario_user, [
+           "lib/hackaton/adapter/persistencia/usuario.csv",
+           mentor_user
+         ]) do
+      {:error, reason} ->
+        IO.puts(reason)
+
+      {:ok, mentor} ->
+        case NodoCliente.ejecutar(:obtener_equipo_id, [
+               "lib/hackaton/adapter/persistencia/equipo.csv",
+               usuario_actual.id_equipo
+             ]) do
+          {:error, reason} ->
+            IO.puts(reason)
+
+          {:ok, equipo} ->
+            IO.puts("""
+            ┌─────────────────────────────────────────────────────────────────────┐
+            │ CHAT GRUPAL DE - #{equipo.nombre} -  CON EL MENTOR #{mentor.usuario}
+            └─────────────────────────────────────────────────────────────────────┘
+            """)
+
+
+            ManejoMensajes.chatear(
+              usuario_actual,
+              mentor,
+              equipo,
+              :crear_consulta_equipo,
+              :obtener_consultas_equipo,
+              :obtener_consultas_equipo_pendientes
+            )
+        end
+    end
+  end
+
+  def chat_grupo(:mentor, nombre_equipo) do
+    mentor = SesionGlobal.usuario_actual()
+
+    case NodoCliente.ejecutar(:obtener_equipo_nombre, [
+           "lib/hackaton/adapter/persistencia/equipo.csv",
+           nombre_equipo
+         ]) do
+      {:error, reason} ->
+        IO.puts(reason)
+
+      {:ok, equipo} ->
+        IO.puts("""
+        ┌─────────────────────────────────────────────────────────────────────┐
+        │ CHAT GRUPAL DE - #{equipo.nombre} -  CON EL MENTOR #{mentor.usuario}
+        └─────────────────────────────────────────────────────────────────────┘
+        """)
+
+        ManejoMensajes.chatear(
+          mentor,
+          equipo,
+          equipo,
+          :crear_consulta_equipo_mentor,
+          :obtener_consultas_equipo_mentor,
+          :obtener_consultas_equipo_mentor_pendientes
+        )
+    end
   end
 
   def ver_avances(:participante) do
-
     usuario = SesionGlobal.usuario_actual()
 
     if usuario.id_equipo == "" do
       IO.puts("No puedes ver avances si no perteneces a un equipo")
     else
       case NodoCliente.ejecutar(:obtener_proyecto_id_equipo, [
-        "lib/hackaton/adapter/persistencia/proyecto.csv",
-        usuario.id_equipo
-      ]) do
+             "lib/hackaton/adapter/persistencia/proyecto.csv",
+             usuario.id_equipo
+           ]) do
         {:error, reason} ->
           IO.puts(reason)
 
         {:ok, p} ->
           IO.puts("------ Avances del proyecto #{p.nombre} ------ ")
+
           avances =
             NodoCliente.ejecutar(:obtener_avances_proyecto, [
-              "lib/hackaton/adapter/persistencia/mensaje.csv", p.id
+              "lib/hackaton/adapter/persistencia/mensaje.csv",
+              p.id
             ])
 
           case avances do
@@ -749,6 +820,4 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
         end)
     end
   end
-
-
 end

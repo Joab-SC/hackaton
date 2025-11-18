@@ -28,6 +28,7 @@ defmodule Hackaton.Adapter.Comandos do
       salir: [],
       abrir_chat: ["otro usuario"],
       chat_grupo: [],
+      chat_grupo_mentor: ["user mentor"],
       ver_avances: []
     },
     admin: %{
@@ -51,7 +52,8 @@ defmodule Hackaton.Adapter.Comandos do
       actualizar_campo: ["campo", "valor"],
       mi_info: [],
       help: [],
-      salir: []
+      salir: [],
+      chat_grupo: ["nombre_equipo"]
     }
   }
 

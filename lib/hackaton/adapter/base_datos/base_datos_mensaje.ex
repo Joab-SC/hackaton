@@ -203,7 +203,6 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
   end
 
   def filtrar_mensajes_equipo(nombre_archivo, id_equipo) do
-    IO.inspect(id_equipo)
     Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
       mensaje.id_equipo == id_equipo
     end)
@@ -213,6 +212,23 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
     Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
       mensaje.id_equipo == id_equipo and
         mensaje.estado == "pendiente"
+    end)
+  end
+
+  def filtrar_consultas_equipo_mentor_pendiente(nombre_archivo, id_equipo, id_mentor) do
+    Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
+      (mensaje.id_receptor == id_mentor or mensaje.id_emisor == id_mentor)  and
+        mensaje.id_equipo == id_equipo and
+        mensaje.tipo_mensaje == :consulta and
+        mensaje.estado == "pendiente"
+    end)
+  end
+
+  def filtrar_consultas_equipo_mentor(nombre_archivo, id_equipo, id_mentor) do
+    Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
+      (mensaje.id_receptor == id_mentor or mensaje.id_emisor == id_mentor) and
+        mensaje.id_equipo == id_equipo and
+        mensaje.tipo_mensaje == :consulta
     end)
   end
 
