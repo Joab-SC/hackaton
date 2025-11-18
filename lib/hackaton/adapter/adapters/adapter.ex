@@ -1,8 +1,30 @@
 defmodule Hackaton.Adapter.Adapters.Adapter do
+
+  @moduledoc """
+  Módulo principal del *cliente local* encargado de interactuar con el usuario final.
+
+  Este módulo actúa como la capa de **adaptación de comandos**, recibiendo entradas desde
+  consola e invocando al nodo remoto (`NodoCliente`) para ejecutar acciones distribuidas.
+
+  Responsabilidades:
+    - Registro, autenticación y administración de usuarios.
+    - Creación y administración de equipos y proyectos.
+    - Comunicación en tiempo real mediante chats personales, grupales y con mentores.
+    - Gestión de salas temáticas.
+    - Despliegue de información: proyectos, avances, anuncios, historial, etc.
+    - Ejecución de comandos según el rol del usuario (ADMIN, PARTICIPANTE, MENTOR, INCOGNITO).
+  """
   alias Hackaton.Util.SesionGlobal
   alias Hackaton.Comunicacion.NodoCliente
   alias Hackaton.Adapter.Comandos
   alias Hackaton.Adapter.Mensajes.ManejoMensajes
+
+  @doc """
+  Permite que un usuario administrador registre un nuevo mentor.
+
+  El proceso solicita todos los datos por consola, los envía al nodo remoto
+  usando `:registrar_usuario` y muestra el resultado final.
+  """
 
   def registrar_mentor(:admin) do
     IO.puts("------ REGISTRANDO MENTOR------ ")
@@ -54,6 +76,11 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Permite que un usuario anónimo se registre como PARTICIPANTE.
+
+  """
+
   def registrarse(:incognito) do
     IO.puts("------ REGISTRANDO PARTICIPANTE------ ")
 
@@ -104,6 +131,10 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+   @doc """
+  Permite el inicio de sesión de un usuario en estado INCOGNITO.
+
+  """
   def login(:incognito) do
     IO.puts("------ INICIANDO SESIÓN ------ ")
 
@@ -132,6 +163,11 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+
+  @doc """
+  Permite que un PARTICIPANTE registre un nuevo equipo.
+
+  """
   def registrar_equipo(:participante) do
     IO.puts("------ REGISTRANDO EQUIPO ------ ")
 
@@ -156,6 +192,14 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+
+   @doc """
+  Permite que un PARTICIPANTE cree un proyecto para su equipo.
+
+  - Requiere que el usuario pertenezca a un equipo.
+  - Solicita nombre, descripción y categoría por consola.
+  - Llama al nodo remoto mediante `:crear_proyecto`.
+  """
   def crear_proyecto(:participante) do
     usuario = SesionGlobal.usuario_actual()
 
@@ -199,6 +243,11 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Permite que un PARTICIPANTE abandone la hackathon.
+
+  Elimina su registro en el archivo CSV usando `:eliminar_usuario`.
+  """
   def salir_hackaton(:participante) do
     usuario =
       NodoCliente.ejecutar(:eliminar_usuario, [
@@ -213,6 +262,11 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Permite que un ADMIN expulse un usuario del sistema mediante su *username*.
+
+  Se ejecuta usando `:eliminar_usuario` con bandera `:user`.
+  """
   def expulsar_usuario(:admin, user) do
     usuario =
       NodoCliente.ejecutar(:eliminar_usuario, [
@@ -227,6 +281,9 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Muestra todos los equipos registrados. Solo disponible para ADMIN.
+  """
   def teams(:admin) do
     IO.puts("------ Lista de equipos ------")
 
@@ -237,6 +294,12 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       IO.puts("#{equipo.nombre} — Tema: #{equipo.tema}")
     end)
   end
+
+  @doc """
+  Permite que un PARTICIPANTE se una a un equipo mediante su nombre.
+
+  Usa `NodoCliente.ejecutar(:unirse_por_nombre)` y actualiza la sesión.
+  """
 
   def join(:participante, nombre_equipo) do
     ingreso =
@@ -257,6 +320,10 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Lista todos los mentores registrados. Disponible para PARTICIPANTE.
+  """
+
   def mentores(:participante) do
     mentores =
       NodoCliente.ejecutar(:obtener_mentores, ["lib/hackaton/adapter/persistencia/usuario.csv"])
@@ -275,11 +342,24 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end)
   end
 
+  @doc """
+  Cierra la sesión actual sin eliminar al usuario del sistema.
+  """
+
   def log_out(_) do
     SesionGlobal.logout()
     IO.puts("Se cerró sesión correctamente")
   end
 
+  @doc """
+  Muestra los comandos disponibles según el rol actual del usuario.
+
+  Roles soportados:
+    - ADMIN
+    - PARTICIPANTE
+    - MENTOR
+    - INCOGNITO
+  """
   def help(_) do
     IO.puts("------ COMANDOS DISPONIBLES ------")
 
@@ -309,6 +389,11 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Muestra la información de un proyecto identificado por nombre.
+
+  Además, consulta el equipo asociado para desplegar más detalles.
+  """
   def project(_, nombre) do
     case NodoCliente.ejecutar(:obtener_proyecto_nombre, [
            "lib/hackaton/adapter/persistencia/proyecto.csv",
@@ -341,6 +426,9 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Muestra el equipo del participante actual.
+  """
   def my_team(:participante) do
     equipo =
       NodoCliente.ejecutar(:obtener_equipo_id, [
@@ -353,6 +441,10 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       {:ok, e} -> IO.puts("#{e.nombre} — Tema: #{e.tema}")
     end
   end
+
+  @doc """
+  Permite cambiar el estado del proyecto asociado al equipo del participante.
+  """
 
   def cambiar_estado_proyecto(:participante) do
     nuevo_estado =
@@ -372,6 +464,11 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Permite actualizar dinámicamente un campo del usuario actual.
+
+  Los cambios se delegan a `NodoCliente` usando `:actualizar_campo_usuario`.
+  """
   def actualizar_campo(_rol, tipo_campo, campo_nuevo) do
     case NodoCliente.ejecutar(:actualizar_campo_usuario, [
            "lib/hackaton/adapter/persistencia/usuario.csv",
@@ -386,6 +483,10 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
         IO.puts(reason)
     end
   end
+
+  @doc """
+  Muestra toda la información disponible del usuario actual, incluyendo su equipo.
+  """
 
   def mi_info(_rol) do
     usuario = SesionGlobal.usuario_actual()
@@ -412,11 +513,18 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     """)
   end
 
+  @doc """
+  Cierra el programa completamente.
+  """
+
   def salir(_rol) do
     IO.puts("Cerrando cliente...")
     System.halt(0)
   end
 
+   @doc """
+  Muestra el historial de retroalimentaciones asociado a un proyecto (ADMIN).
+  """
   def mostrar_historial(:admin, nombre) do
     proyecto =
       NodoCliente.ejecutar(:obtener_proyecto_nombre, [
@@ -459,6 +567,9 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Muestra el historial de retroalimentaciones del proyecto del equipo del PARTICIPANTE.
+  """
   def mostrar_historial(:participante) do
     usuario = SesionGlobal.usuario_actual()
 
@@ -503,6 +614,10 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Crea un avance sobre el proyecto del equipo del PARTICIPANTE.
+  """
+
   def crear_avance(:participante) do
     usuario = SesionGlobal.usuario_actual()
 
@@ -542,6 +657,9 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Permite que un MENTOR cree una retroalimentación para el proyecto indicado por nombre.
+  """
   def crear_retroalimentacion(:mentor, nombre) do
     NodoCliente.ejecutar(:obtener_proyecto_nombre, [
       "lib/hackaton/adapter/persistencia/proyecto.csv",
@@ -576,9 +694,13 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+   @doc """
+  Abre un chat personal entre el usuario actual y otro usuario.
+
+  Solo permite chatear si ambos pertenecen al mismo equipo.
+  """
   def abrir_chat(_, otro_usuario_user) do
     usuario_actual = SesionGlobal.usuario_actual()
-
     case NodoCliente.ejecutar(:obtener_usuario_user, [
            "lib/hackaton/adapter/persistencia/usuario.csv",
            otro_usuario_user
@@ -586,31 +708,29 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       {:ok, otro_usuario} ->
         cond do
           usuario_actual.id_equipo == otro_usuario.id_equipo ->
-            IO.puts("""
-            ┌──────────────────────────────────────────────────────────────┐
-            │ CHAT PERSONAL CON #{otro_usuario.usuario}                    |
-            └──────────────────────────────────────────────────────────────┘
-            """)
+          IO.puts("""
+        ┌──────────────────────────────────────────────────────────────┐
+        │ CHAT PERSONAL CON #{otro_usuario.usuario}                    |
+        └──────────────────────────────────────────────────────────────┘
+        """)
 
-            ManejoMensajes.chatear(
-              usuario_actual,
-              otro_usuario,
-              :crear_mensaje_personal,
-              :obtener_mensajes_personal,
-              :obtener_mensajes_personal_pendientes
-            )
-
-          true ->
-            IO.puts(
-              "No puedes chatear con el usuario #{otro_usuario_user} porque pertecene a otro equipo"
-            )
+        ManejoMensajes.chatear(
+          usuario_actual,
+          otro_usuario,
+          :crear_mensaje_personal,
+          :obtener_mensajes_personal,
+          :obtener_mensajes_personal_pendientes
+        )
+        true -> IO.puts("No puedes chatear con el usuario #{otro_usuario_user} porque pertecene a otro equipo")
         end
-
       {:error, reason} ->
         IO.puts(reason)
     end
   end
 
+  @doc """
+  Abre el chat grupal del equipo del PARTICIPANTE.
+  """
   def chat_grupo(:participante) do
     usuario_actual = SesionGlobal.usuario_actual()
 
@@ -638,6 +758,9 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Abre un chat grupal entre PARTICIPANTE y MENTOR designado.
+  """
   def chat_grupo_mentor(:participante, mentor_user) do
     usuario_actual = SesionGlobal.usuario_actual()
 
@@ -663,6 +786,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
             └─────────────────────────────────────────────────────────────────────┘
             """)
 
+
             ManejoMensajes.chatear(
               usuario_actual,
               mentor,
@@ -675,6 +799,9 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Abre el chat grupal donde un MENTOR se comunica con un equipo específico.
+  """
   def chat_grupo(:mentor, nombre_equipo) do
     mentor = SesionGlobal.usuario_actual()
 
@@ -703,6 +830,9 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Permite que un PARTICIPANTE visualice los avances de su proyecto.
+  """
   def ver_avances(:participante) do
     usuario = SesionGlobal.usuario_actual()
 
@@ -747,6 +877,9 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Permite a un ADMIN crear una nueva sala temática.
+  """
   def crear_sala(:admin) do
     IO.puts("------ CREANDO SALA ------ ")
 
@@ -771,37 +904,39 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Permite que un PARTICIPANTE entre a una sala temática existente.
+  """
   def entrar_sala(:participante) do
     tema =
       IO.gets("Ingrese el tema de la sala a la que desea entrar: ")
       |> String.trim()
-
     usuario_actual = SesionGlobal.usuario_actual()
 
     case NodoCliente.ejecutar(:obtener_sala_tema, [
-           "lib/hackaton/adapter/persistencia/sala.csv",
-           tema
-         ]) do
-      {:error, reason} ->
-        IO.puts(reason)
-
-      {:ok, sala} ->
-        IO.puts("""
-        ┌──────────────────────────────────────────────────────────────┐
-        │ SALA DE DISCRUSION DE - #{tema} -                          |
-        └──────────────────────────────────────────────────────────────┘
-        """)
-
-        ManejoMensajes.chatear(
+        "lib/hackaton/adapter/persistencia/sala.csv",
+        tema
+      ]) do
+        {:error, reason} -> IO.puts(reason)
+        {:ok, sala} ->
+          IO.puts("""
+      ┌──────────────────────────────────────────────────────────────┐
+      │ SALA DE DISCRUSION DE - #{tema} -                          |
+      └──────────────────────────────────────────────────────────────┘
+      """)
+          ManejoMensajes.chatear(
           usuario_actual,
           sala,
           :crear_mensaje_sala,
           :obtener_mensajes_sala,
           :obtener_mensajes_sala_pendiente
         )
-    end
+      end
   end
 
+  @doc """
+  Permite que un ADMIN consulte todos los proyectos por una categoría específica.
+  """
   def consultar_proyecto_categoria(:admin, categoria) do
     proyectos =
       NodoCliente.ejecutar(:buscar_proyectos_por_categoria, [
@@ -832,6 +967,9 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Permite que un ADMIN consulte proyectos según su estado.
+  """
   def conultar_proyecto_estado(:admin, estado) do
     proyectos =
       NodoCliente.ejecutar(:buscar_proyectos_por_estado, [
@@ -862,6 +1000,10 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     end
   end
 
+  @doc """
+  Permite que el ADMIN envíe un anuncio global a todos los usuarios.
+  """
+
   def enviar_anuncio(:admin) do
     ver_anuncios(:nada)
 
@@ -876,6 +1018,9 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
     ])
   end
 
+  @doc """
+  Muestra todos los anuncios del sistema.
+  """
   def ver_anuncios(_) do
     IO.puts("""
     ┌──────────────────────────────────────────────────────────────┐

@@ -65,7 +65,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
         |> Enum.filter(fn x -> x end)
 
       {:error, reason} ->
-        IO.puts("AMO A JOAB, PAPASOTE  RICO  #{reason}")
+        IO.puts("No se pudo realizar por  #{reason}")
         []
     end
   end
@@ -159,7 +159,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
         end
 
       {:error, reason} ->
-        IO.puts("AMO A JOAB, PAPASOTE  RICO  #{reason}")
+        IO.puts("No se pudo realizar por #{reason}")
         []
     end
   end
@@ -233,7 +233,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
         end
 
       {:error, reason} ->
-        IO.puts("AMO A JOAB, PAPASOTE  RICO  #{reason}")
+        IO.puts("No se pudo realizar por  #{reason}")
         []
     end
   end
@@ -372,7 +372,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
         |> Enum.filter(fn x -> x end)
 
       {:error, reason} ->
-        IO.puts("AMO A LAURA, MAMASOTA  RICA  #{reason}")
+        IO.puts("No se pudo realizar por #{reason}")
         []
     end
   end
