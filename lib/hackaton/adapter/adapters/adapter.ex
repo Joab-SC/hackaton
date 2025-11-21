@@ -217,9 +217,8 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
       descripcion =
         IO.gets("Ingrese la descripcion: ")
         |> String.trim()
-
       categoria =
-        IO.gets("Elija categoria: ")
+        IO.gets("Elija categoria (Web, Movil, Escritorio, Juegos, Productividad, Educacion, Analitica, Seguridad): ")
         |> String.trim()
 
       id_equipo = usuario.id_equipo
@@ -448,7 +447,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
 
   def cambiar_estado_proyecto(:participante) do
     nuevo_estado =
-      IO.gets("Ingrese el nuevo estado (proceso finalizado): ")
+      IO.gets("Ingrese el nuevo estado (Proceso, Finalizado): ")
       |> String.trim()
 
     actualizado =
@@ -476,8 +475,9 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
            campo_nuevo,
            String.to_atom(tipo_campo)
          ]) do
-      {:ok, _usuario} ->
+      {:ok, usuario} ->
         IO.puts("Se actualizó el usuario correctamente")
+        SesionGlobal.iniciar_sesion(usuario)
 
       {:error, reason} ->
         IO.puts(reason)
@@ -970,7 +970,7 @@ defmodule Hackaton.Adapter.Adapters.Adapter do
   @doc """
   Permite que un ADMIN consulte proyectos según su estado.
   """
-  def conultar_proyecto_estado(:admin, estado) do
+  def consultar_proyecto_estado(:admin, estado) do
     proyectos =
       NodoCliente.ejecutar(:buscar_proyectos_por_estado, [
         "lib/hackaton/adapter/persistencia/proyecto.csv",

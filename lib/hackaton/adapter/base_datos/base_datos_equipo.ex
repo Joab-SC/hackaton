@@ -106,7 +106,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdEquipo do
           |> Enum.filter(& &1)
 
         case lista_elem do
-          [equipo | _] -> IO.inspect(equipo)
+          [equipo | _] -> equipo
           [] -> nil
         end
 

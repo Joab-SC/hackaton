@@ -224,7 +224,13 @@ defmodule Hackaton.Services.ServicioUsuario do
   def actualizar_campo(nombre_archivo, id_usuario, valor, tipo_campo) do
     case {obtener_usuario(nombre_archivo, id_usuario), Usuario.campo_valido(tipo_campo)} do
       {{:ok, usuario}, {:ok, tipo_campo}} ->
-        actualizado = Map.put(usuario, tipo_campo, valor)
+        campo_actualizado =
+          if tipo_campo == :contrasena do
+            Encriptador.hash_contrasena(valor)
+          else
+            valor
+          end
+        actualizado = Map.put(usuario, tipo_campo, campo_actualizado)
         actualizar_usuario(nombre_archivo, actualizado)
 
       {{:error, reason}, _} ->

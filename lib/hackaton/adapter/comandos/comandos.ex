@@ -74,7 +74,7 @@ defmodule Hackaton.Adapter.Comandos do
       salir: [],
       crear_sala: [],
       consultar_proyecto_categoria: ["categoria"],
-      conultar_proyecto_estado: ["estado"],
+      consultar_proyecto_estado: ["estado"],
       enviar_anuncio: [],
       ver_anuncios: []
     },

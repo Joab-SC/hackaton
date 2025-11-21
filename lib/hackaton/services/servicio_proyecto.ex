@@ -28,8 +28,8 @@ defmodule Hackaton.Services.ServicioProyecto do
                 end),
                 nombre,
                 descripcion,
-                categoria,
-                "Nuevo",
+                String.capitalize(categoria),
+                "nuevo",
                 id_equipo,
                 DateTime.utc_now() |> Calendar.strftime("%Y-%m-%d %H:%M:%S")
               )
@@ -163,7 +163,7 @@ defmodule Hackaton.Services.ServicioProyecto do
   """
   def buscar_por_categoria(nombre_archivo, categoria) do
     listar_proyectos(nombre_archivo)
-    |> Enum.filter(fn %Proyecto{categoria: cat} -> cat == categoria end)
+    |> Enum.filter(fn %Proyecto{categoria: cat} -> cat == String.capitalize(categoria) end)
   end
 
   @doc """

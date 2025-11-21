@@ -118,10 +118,7 @@ defmodule Hackaton.Adapter.Mensajes.ManejoMensajes do
         funcion_obtener_mensajes_atomo,
         funcion_obtener_mensajes_pendientes_atomo
       ) do
-
-    IO.inspect(otro, label: "Otro Usuario")
-    IO.inspect(actual, label: "Usuario Actual")
-
+        
     case NodoCliente.ejecutar(funcion_obtener_mensajes_atomo, [
            "lib/hackaton/adapter/persistencia/mensaje.csv",
            otro.id,

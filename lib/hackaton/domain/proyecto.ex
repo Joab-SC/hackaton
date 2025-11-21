@@ -5,8 +5,8 @@ defmodule Hackaton.Domain.Proyecto do
 
   """
 
-  @tipos_estado ["proceso", "finalizado"]
-  @categorias ["educacion", "salud", "sostenibilidad", "productividad", "innovación"]
+  @tipos_estado ["Proceso", "Finalizado", "Nuevo"]
+  @categorias ["Web", "Movil","Escritorio","Juegos","Productividad", "Educacion","Analitica","Seguridad"]
 
   defstruct id: "",
             nombre: "",
@@ -50,7 +50,7 @@ defmodule Hackaton.Domain.Proyecto do
 
   """
   def validar_estado(estado) do
-    if estado in @tipos_estado do
+    if String.capitalize(estado) in @tipos_estado do
       :ok
     else
       {:error, "Estado no válido, los estados permitidos son: (proceso, finalizado)"}
@@ -63,10 +63,10 @@ defmodule Hackaton.Domain.Proyecto do
 
   """
   def validar_categoria(categoria) do
-    if categoria in @categorias do
+    if String.capitalize(categoria) in @categorias do
       :ok
     else
-      {:error, "Estado no válido, los estados permitidos son: (proceso, finalizado)"}
+      {:error, "Categoria no válida, las categorias permitidas son: (Web, Movil, Escritorio, Juegos, Productividad, Educacion, Analitica, Seguridad)"}
     end
   end
 end
