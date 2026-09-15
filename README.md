@@ -29,23 +29,45 @@ El sistema necesita **dos nodos**:
 ### Terminal 1 — Servidor
 
 ```bash
-elixir --sname nodoservidor --cookie hackaton -S mix run --no-halt lib/main_servidor.exs
+elixir --sname nodoservidor -S mix run --no-halt lib/main_servidor.exs
 ```
 
 ### Terminal 2 — Cliente
 
 ```bash
-elixir --sname nodocliente --cookie hackaton -S mix run lib/main.exs
+elixir --sname nodocliente -S mix run lib/main.exs
 ```
 
-> **Importante (`--cookie`)**: ambos nodos deben usar la **misma cookie** (`hackaton`);
-> si no coincide, la conexión distribuida falla.
+Y ya: **no hay que editar ningún archivo** para probar el programa en tu máquina.
 
-> **Importante (nombre del nodo)**: el nombre del servidor está *hardcodeado* como
-> `:nodoservidor@joab` (en `lib/main.exs` y en `lib/hackaton/comunicacion/nodo-cliente.ex`).
-> Con `--sname nodoservidor`, Erlang genera `nodoservidor@<hostname de tu máquina>`, así que
-> **debe coincidir**. Si tu máquina no se llama `joab`, edita esas dos constantes con tu
-> hostname, o arranca el servidor con `--name nodoservidor@joab`.
+> Ejecuta los comandos **desde la raíz del proyecto** (donde está `mix.exs`): la persistencia
+> en CSV se resuelve con rutas relativas, como `lib/hackaton/adapter/persistencia/usuario.csv`.
+
+- La **cookie** de Erlang se fija sola en tiempo de ejecución (`:hackaton`), así que no hace
+  falta pasar `--cookie`. Si quieres otra, define `HACKATON_COOKIE=mi_cookie` en ambos nodos.
+- El **nodo servidor se resuelve automáticamente**: el cliente asume que el servidor corre en
+  la misma máquina y busca `nodoservidor@<host de tu máquina>`. Todo eso vive en
+  `Hackaton.Comunicacion.Conexion`, no hay nombres *hardcodeados*.
+- Los dos nodos deben arrancarse **distribuidos** (`--sname` o `--name`). Si te olvidas del
+  flag, el programa te lo dice con instrucciones en vez de quedarse colgado.
+
+### Servidor en otra máquina (opcional)
+
+El servidor imprime su propio nombre al arrancar. Para que un cliente de otra máquina se
+conecte, pásale ese nombre en la variable `HACKATON_SERVIDOR`:
+
+```bash
+# Máquina del servidor
+elixir --sname nodoservidor -S mix run --no-halt lib/main_servidor.exs
+# => Nombre de este nodo: nodoservidor@mi-servidor
+
+# Máquina del cliente
+HACKATON_SERVIDOR=nodoservidor@mi-servidor elixir --sname nodocliente -S mix run lib/main.exs
+```
+
+Con `HACKATON_SERVIDOR=nodoservidor` (sin `@host`) se asume el host local.
+Requiere que los **hostnames se resuelvan** entre ambas máquinas y que el puerto `4369`
+(epmd) esté abierto.
 
 ### Uso
 
@@ -155,9 +177,9 @@ Capas:
 │       │       └── consulta.csv       #   archivo reservado
 │       │
 │       ├── comunicacion/       # #comunicacion — Nodos distribuidos de Erlang
+│       │   ├── conexion.ex       # Cookie + nodo servidor resueltos en runtime (nada hardcodeado)
 │       │   ├── nodo-servidor.ex  # Registra :servicio_hackaton y atiende el loop de peticiones
-│       │   ├── nodo-cliente.ex   # Envía peticiones al servicio remoto y espera la respuesta
-│       │   └── my_cookie         # Cookie de distribución usada por los nodos
+│       │   └── nodo-cliente.ex   # Envía peticiones al servicio remoto y espera la respuesta
 │       │
 │       └── util/
 │           ├── sesion.ex       # SesionGlobal (Agent): guarda el usuario logueado
@@ -297,9 +319,8 @@ dentro de los textos** que se guardan en los CSV.
 
 ## Notas y limitaciones conocidas
 
-- El nombre del nodo servidor y la cookie están fijos en el código (`:nodoservidor@joab` / `hackaton`).
+- Por defecto se asume que el servidor corre en la **misma máquina** que el cliente; para un
+  servidor remoto hay que definir `HACKATON_SERVIDOR` (ver "Cómo ejecutarlo").
 - No hay autenticación distribuida real: cualquier cliente con la cookie puede invocar
   cualquier función expuesta por el servicio.
-- `ServicioHackathon` tiene bloques duplicados (las mismas funciones definidas dos veces);
-  funciona porque Elixir usa la última definición, pero es candidato a limpieza.
 - No hay pruebas automatizadas ni pipeline de CI.
