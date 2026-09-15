@@ -1,0 +1,52 @@
+# =========================================================
+#  Hackaton — archivos que NO deben ir al repositorio
+# =========================================================
+
+# --- Artefactos de compilación de Elixir / Mix ---
+#  _build/ guarda los .beam, la cache de compilación y los
+#  archivos consolidados. Se regenera con `mix compile`.
+/_build/
+/_build/dev/
+/_build/test/
+
+# --- ElixirLS / extensiones del editor ---
+#  Carpeta generada por la extensión de Elixir para VSCode.
+#  Trae su propio .gitignore con "*" adentro.
+/.elixir_ls/
+/.lexical/
+/.vscode/
+/.idea/
+
+# --- Dependencias y documentación generada ---
+/deps/
+/doc/
+/cover/
+
+# --- Binarios y crashes de Erlang/OTP ---
+*.beam
+*.ez
+*.plt
+erl_crash.dump
+*.dump
+
+# --- Secretos y credenciales locales ---
+#  Cookie de distribución de Erlang (cada máquina tiene la suya).
+lib/hackaton/comunicacion/my_cookie
+/config/*.secret.exs
+*.pem
+*.key
+
+# --- Datos generados en tiempo de ejecución ---
+#  La persistencia en CSV se versiona porque es la "base de datos"
+#  inicial del proyecto; si prefieres no compartirla, descomenta:
+#/lib/hackaton/adapter/persistencia/*.csv
+
+# --- Estado local de herramientas ---
+/.freebuff/
+
+# --- Sistema operativo ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Nota: mix.lock SÍ debe versionarse (fija las versiones de las dependencias).

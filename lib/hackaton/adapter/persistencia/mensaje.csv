@@ -1,5 +1,47 @@
 id,Tipo_mensaje,Tipo_receptor,id_receptor,id_emisor,Contenido,id_equipo,Fecha,id_proyecto,Estado
-msg-9A12BC,retroalimentacion,,,mtr-40B606,El proyecto presenta una excelente estructura pero sería bueno mejorar la documentación técnica,,2025-02-12 14:33:20,pryt-99AD19,
 avance-4A5145,avance,nil,,ptc-4A83AC,se arma el domain,,2025-11-17T05:01:08.946539Z,pryt-99AD19,
 avance-C899E5,avance,nil,,ptc-4A83AC,Se documenta,,2025-11-17T05:01:35.824292Z,pryt-99AD19,
 retroalimentacion-6800F5,retroalimentacion,nil,,mtr-40B606,Le falta orden,,2025-11-17T05:02:32.611610Z,pryt-99AD19,
+chat-A7BFD4,chat,usuario,ptc-4A83AC,ptc-F0FDC4,hola,,2025-11-18T05:11:26.927000Z,,pendiente
+chat-2186AF,chat,equipo,,ptc-F0FDC4,hola muchachos,eqp-661398,2025-11-18T05:11:42.131000Z,,leido
+chat-5AC608,chat,equipo,,ptc-F0FDC4,como estan,eqp-661398,2025-11-18T05:11:51.130000Z,,leido
+chat-F1E54E,chat,equipo,,ptc-F0FDC4,los amos,eqp-661398,2025-11-18T05:11:55.830000Z,,leido
+chat-BFBE53,chat,equipo,,ptc-4A83AC,hola chiques,eqp-661398,2025-11-18T05:12:34.350000Z,,leido
+chat-79C767,chat,equipo,,ptc-4A83AC,los amo tambien,eqp-661398,2025-11-18T05:12:37.131000Z,,leido
+chat-2D1B0D,chat,equipo,,ptc-1E1250,hola equipo como estan?,eqp-D810A2,2025-11-20T17:20:41.470000Z,,leido
+chat-82A71C,chat,equipo,,ptc-1E1250,Aqui no hay nadie,eqp-D810A2,2025-11-20T17:20:46.977000Z,,leido
+anuncio-1A24FA,anuncio,todos,,adm-1A2B3C,Hola a todos como estan los amo,,2025-11-20T17:59:31.039000Z,,
+chat-D93427,chat,equipo,,ptc-F0FDC4,hola,eqp-661398,2025-11-20T18:06:04.214000Z,,leido
+chat-2A761C,chat,equipo,,ptc-1E1250,hola donde estan,eqp-D810A2,2025-11-20T18:06:18.559000Z,,leido
+chat-FCC6BB,chat,equipo,,ptc-4A83AC,por fin estoy aqui,eqp-661398,2025-11-20T18:07:13.359000Z,,leido
+chat-248DB9,chat,equipo,,ptc-F0FDC4,hay que terminar el proyectio,eqp-661398,2025-11-20T18:07:23.321000Z,,leido
+chat-840C14,chat,equipo,,ptc-1E1250,hola,eqp-D810A2,2025-11-20T18:18:05.156000Z,,leido
+chat-96469C,chat,equipo,,ptc-3A044D,hola jireh soy nuevo en el grupo,eqp-D810A2,2025-11-20T18:21:55.976000Z,,leido
+chat-2C6308,chat,equipo,,ptc-1E1250,esperen que daniel me escribio,eqp-D810A2,2025-11-20T18:24:29.972000Z,,leido
+chat-4EEB0F,chat,usuario,ptc-1E1250,ptc-A038A9,hola jirehc,,2025-11-20T18:23:51.349000Z,,leido
+chat-559CBA,chat,usuario,ptc-1E1250,ptc-A038A9,soy dani,,2025-11-20T18:23:53.845000Z,,leido
+chat-3D1A3A,chat,usuario,ptc-1E1250,ptc-A038A9,desde el chat grupal;,,2025-11-20T18:23:56.642000Z,,leido
+chat-40DE68,chat,usuario,ptc-1E1250,ptc-A038A9,me da pena escribir en el grupo,,2025-11-20T18:24:01.414000Z,,leido
+chat-BBCB2E,chat,usuario,ptc-1E1250,ptc-A038A9,chat personal me equivoque jasjsj,,2025-11-20T18:24:12.384000Z,,leido
+chat-CFC666,chat,usuario,ptc-A038A9,ptc-1E1250,no tenga miedo y escriba por el grupo,,2025-11-20T18:25:08.518000Z,,leido
+chat-B67CC2,chat,usuario,ptc-1E1250,ptc-A038A9,esta bien,,2025-11-20T18:25:35.905000Z,,pendiente
+chat-4EE1B2,chat,equipo,,ptc-A038A9,hola muchachos que pena es que soy timido,eqp-D810A2,2025-11-20T18:26:02.713000Z,,leido
+chat-EF8083,chat,equipo,,ptc-F0FDC4,este es el grupo jeif,eqp-661398,2025-11-20T18:26:35.365000Z,,leido
+chat-7CFCBA,chat,equipo,,ptc-A038A9,este es el grupo los rapidos,eqp-D810A2,2025-11-20T18:26:45.777000Z,,leido
+chat-BBEA02,chat,sala,sal-72A87B,ptc-4A83AC,hola sala de ia,,2025-11-20T18:45:42.647000Z,,leido
+chat-184C96,chat,sala,sal-72A87B,ptc-4A83AC,soy laura,,2025-11-20T18:45:45.141000Z,,leido
+chat-49E1B5,chat,sala,sal-72A87B,ptc-4A83AC,quiero discutir acerca de la ia,,2025-11-20T18:45:49.658000Z,,leido
+retroalimentacion-C402E5,retroalimentacion,nil,,mtr-6E2645,Muy bien pero faltan buenas practicas,,2025-11-20T18:47:36.901000Z,pryt-C89EA1,
+consulta-6D0D24,consulta,equipo,mtr-6E2645,ptc-1E1250,hola jhanca,eqp-D810A2,2025-11-20T18:48:53.118000Z,,leido
+consulta-51FA45,consulta,equipo,,mtr-6E2645,hola jeif,eqp-661398,2025-11-20T18:48:57.461000Z,,leido
+consulta-3334D1,consulta,equipo,mtr-6E2645,ptc-F0FDC4,hola jhan,eqp-661398,2025-11-20T18:49:27.486000Z,,leido
+consulta-04B26C,consulta,equipo,,mtr-6E2645,/saliur,eqp-661398,2025-11-20T18:49:44.486000Z,,leido
+consulta-16AD0F,consulta,equipo,,mtr-6E2645,hola rapidos],eqp-D810A2,2025-11-20T18:50:06.075000Z,,leido
+avance-43B2A4,avance,nil,,ptc-B56266,Se realizan los primeros cambios,,2025-11-20T21:41:18.463000Z,pryt-E1EE73,
+chat-76C39F,chat,usuario,ptc-1E1250,ptc-B56266,hola jireh como estas?,,2025-11-20T21:45:39.016000Z,,leido
+chat-DB8B5B,chat,usuario,ptc-B56266,ptc-1E1250,bien y tu,,2025-11-20T21:45:49.507000Z,,leido
+consulta-403517,consulta,equipo,mtr-0AF8F4,ptc-B56266,hola robin teniamos uuna pregunta,eqp-2A719E,2025-11-20T21:46:34.497000Z,,leido
+consulta-838590,consulta,equipo,mtr-0AF8F4,ptc-1E1250,hola soy jireh,eqp-2A719E,2025-11-20T21:47:14.733000Z,,leido
+consulta-DBA537,consulta,equipo,,mtr-0AF8F4,muchachos como estan?,eqp-2A719E,2025-11-20T21:47:26.424000Z,,leido
+chat-33D693,chat,sala,sal-AA2872,ptc-B56266,hola,,2025-11-20T21:49:18.078000Z,,leido
+chat-912FEE,chat,sala,sal-AA2872,ptc-F0FDC4,hola desde jeif con una f,,2025-11-20T21:49:50.450000Z,,leido

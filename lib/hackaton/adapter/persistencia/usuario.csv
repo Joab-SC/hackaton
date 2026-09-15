@@ -1,6 +1,12 @@
 id,Rol,Nombre,Apellido,Cedula,Correo,Telefono,Usuario,Contrasena,id_equipo
 adm-1A2B3C,ADMIN,Carlos,Gomez,1000000000,admin@hackathon.com,3000000000,admin,8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918,
-ptc-4A83AC,PARTICIPANTE,Laura,Duarte,1054863011,l@gmail.com,3177403834,lau123,b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79,eqp-661398
-ptc-F0FDC4,PARTICIPANTE,joabsito,suarez,1092457610,joab@gmail.com,3014750404,joabs,a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3,eqp-661398
 mtr-40B606,MENTOR,Carlos,Villa,10,caflores@gmail.com,3123456789,caflores,6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b,
 ptc-EDCEDB,PARTICIPANTE,Sharif,Giraldo,11,s@gmail.com,3987654321,sar,a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3,eqp-661398
+ptc-4A83AC,PARTICIPANTE,lauris,Duarte,1054863011,l@gmail.com,3177403834,lau123,b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79,eqp-661398
+ptc-F0FDC4,PARTICIPANTE,joab,suarez,1092457610,joab@gmail.com,3014750404,joabs,a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3,eqp-661398
+ptc-3A044D,PARTICIPANTE,Esteban,Martinez,4,es@gmail.com,3111111111,steve,6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b,eqp-D810A2
+ptc-A038A9,PARTICIPANTE,Daniel,Montes,6,da@gmail.com,3444444444,dani,6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b,eqp-D810A2
+mtr-6E2645,MENTOR,Jhan,Martinez,8,jhan@gmail.com,3000000000,jhancodigo,6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b,
+ptc-B56266,PARTICIPANTE,Danilo,Suarez,9,d@gmail.com,3000000000,danielito,6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b,eqp-2A719E
+ptc-1E1250,PARTICIPANTE,Jireh,Suarez,2,jireh@gmail.com,3123456789,jirehc,6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b,eqp-2A719E
+mtr-0AF8F4,MENTOR,Robinson,Arias,0,r@gmail.com,3000000000,robin,6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b,

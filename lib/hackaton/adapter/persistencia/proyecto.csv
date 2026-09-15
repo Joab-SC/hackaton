@@ -1,2 +1,5 @@
 id,Nombre,Descripcion,Categoria,Estado,id_equipo,Fecha_creacion
-pryt-99AD19,pro01,crear soluciones,salud,proceso,eqp-661398,2025-11-16 21:50:09
+pryt-99AD19,pro01,crear soluciones,Educacion,proceso,eqp-661398,2025-11-16 21:50:09
+pryt-C89EA1,pacman,Recreacion de pacman hecha en C,Juegos,proceso,eqp-D810A2,2025-11-20 17:36:43
+pryt-C89EA1,space invaders,Recreacion de space invaders hecha en C,Juegos,nuevo,eqp-D810A2,2025-11-20 17:36:43
+pryt-E1EE73,repetir_p3,Queremos pasar,Educacion,nuevo,eqp-2A719E,2025-11-20 21:40:28
