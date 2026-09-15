@@ -250,4 +250,9 @@ defmodule Hackaton.Adapter.Comandos do
         end
     end
   end
+
+
+  def autocompletar() do
+    
+  end
 end
