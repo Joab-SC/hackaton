@@ -4,13 +4,13 @@ defmodule Hackaton.Comunicacion.NodoServidor do
   peticiones enviadas por los clientes, despachando cada operación contra la fachada
   `Hackaton.Services.ServicioHackathon`.
   """
-  @nombre_servicio_local :servicio_hackaton
+  alias Hackaton.Comunicacion.Conexion
   alias Hackaton.Services.ServicioHackathon
 
   def main() do
     IO.puts("=== Nodo Servidor Iniciado ===")
 
-    registrar_servicio(@nombre_servicio_local)
+    registrar_servicio(Conexion.nombre_servicio())
     ejecutar_comandos()
   end
 
