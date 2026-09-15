@@ -1,6 +1,6 @@
 defmodule Hackaton.Main do
   alias Hackaton.Adapter.Comandos
-  @nodo_remoto :nodoservidor@localhost
+  @nodo_remoto :nodoservidor@joab
 
   def main do
     # Iniciar supervisor del cliente (incluye SesionGlobal)
@@ -12,9 +12,6 @@ defmodule Hackaton.Main do
         IO.puts("Escriba un comando para iniciar.\n")
         Comandos.escuchar_comandos()
       false -> IO.puts("No se pudo conectar con el servicio remoto")
-
-      false ->
-        IO.puts("No se pudo conectar con el servicio remoto")
     end
   end
 end
