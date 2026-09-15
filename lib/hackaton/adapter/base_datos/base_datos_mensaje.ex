@@ -85,80 +85,6 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
   end
 
   @doc """
-  Busca un único mensaje por su ID (`id_mensaje`).
-
-  - Lee todas las líneas del archivo.
-  - Convierte solo la coincidencia exacta en un struct `%Mensaje{}`.
-
-  """
-  def leer_mensaje(nombre_archivo, id_mensaje) do
-    case File.read(nombre_archivo) do
-      {:ok, lista} ->
-        lista_elem =
-          String.split(lista, "\n")
-          |> Enum.map(fn linea ->
-            case String.split(String.replace(linea, "\r", ""), ",") do
-              [
-                "id",
-                "Tipo_mensaje",
-                "Tipo_receptor",
-                "id_receptor",
-                "id_emisor",
-                "Contenido",
-                "id_equipo",
-                "Fecha",
-                "id_proyecto",
-                "Estado"
-              ] ->
-                nil
-
-              [
-                id,
-                tipo_mensaje,
-                tipo_receptor,
-                id_receptor,
-                id_emisor,
-                contenido,
-                id_equipo,
-                fecha,
-                id_proyecto,
-                estado
-              ] ->
-                if id == id_mensaje do
-                  %Mensaje{
-                    id: id,
-                    tipo_mensaje: String.to_atom(tipo_mensaje),
-                    tipo_receptor: String.to_atom(tipo_receptor),
-                    id_receptor: id_receptor,
-                    id_emisor: id_emisor,
-                    contenido: contenido,
-                    id_equipo: id_equipo,
-                    fecha: fecha,
-                    id_proyecto: id_proyecto,
-                    estado: estado
-                  }
-                else
-                  nil
-                end
-
-              _ ->
-                nil
-            end
-          end)
-          |> Enum.filter(& &1)
-
-        case lista_elem do
-          [mensaje | _] -> mensaje
-          [] -> nil
-        end
-
-      {:error, reason} ->
-        IO.puts("No se puedo realizar por  #{reason}")
-        nil
-    end
-  end
-
-  @doc """
   Escribe un nuevo mensaje en el archivo CSV.
 
   Se agrega una nueva línea con el formato:
@@ -331,8 +257,8 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
   end
 
   @doc """
-  Filtra mensajes según su tipo (`:avance`, `:chat`, :consulta`,
-  `:retroalimentacion`, `:anuncio`).
+  Filtra mensajes por tipo (`:avance`, `:chat`, `:consulta`, `:retroalimentacion`,
+  `:anuncio`) o por tipo de receptor (`:equipo`, `:sala`, `:usuario`, `:todos`).
   """
   def filtrar_mensajes(nombre_archivo, tipo_buscar)
       when tipo_buscar in [:avance, :chat, :consulta, :retroalimentacion, :anuncio] do
@@ -341,22 +267,11 @@ defmodule Hackaton.Adapter.BaseDatos.BdMensaje do
     end)
   end
 
-  @doc """
-  Filtra mensajes según el tipo de receptor (`:equipo`, `:sala`, `:usuario`, `:todos`).
-  """
+  # Misma función, segunda cláusula: filtra por tipo de receptor.
   def filtrar_mensajes(nombre_archivo, tipo_receptor)
       when tipo_receptor in [:equipo, :sala, :usuario, :todos] do
     Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
       mensaje.tipo_receptor == tipo_receptor
-    end)
-  end
-
-  @doc """
-  Filtra mensajes por tipo (`tipo_buscar`) y receptor (`id_receptor_buscar`).
-  """
-  def filtrar_mensajes(nombre_archivo, tipo_buscar, id_receptor_buscar) do
-    Enum.filter(leer_mensajes(nombre_archivo), fn mensaje ->
-      mensaje.tipo_mensaje == tipo_buscar and mensaje.id_receptor == id_receptor_buscar
     end)
   end
 end

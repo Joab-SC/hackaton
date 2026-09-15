@@ -1,12 +1,11 @@
 defmodule Hackaton.Comunicacion.NodoCliente do
+  @moduledoc """
+  Cliente distribuido: envía cada petición al servicio remoto `:servicio_hackaton`
+  del nodo servidor y espera su respuesta.
+  """
+
   @nodo_remoto :nodoservidor@joab
   @servicio_remoto {:servicio_hackaton, @nodo_remoto}
-
-
-  def main() do
-    IO.puts("=== Nodo Cliente Iniciado ===")
-    Hackaton.Adapter.Adapters.Adapter.escuchar_comandos()
-  end
 
   def ejecutar(funcion, args) do
     enviar_solicitud(funcion, args)

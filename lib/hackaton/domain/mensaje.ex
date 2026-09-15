@@ -64,10 +64,7 @@ defmodule Hackaton.Domain.Mensaje do
   end
 
 
-  @doc """
-  Valida que el tipo de mensaje pertenezca a los valores permitidos.
-
-  """
+  # Valida que el tipo de mensaje pertenezca a los valores permitidos.
   defp validar_tipo_mensaje(tipo_mensaje) do
     if tipo_mensaje in @tipos_mensaje,
       do: {:ok, tipo_mensaje},
@@ -75,12 +72,9 @@ defmodule Hackaton.Domain.Mensaje do
   end
 
 
-  @doc """
-  Valida el tipo de receptor solo cuando el mensaje no pertenece a los tipos
-  especiales `:avance` o `:retroalimentacion`, los cuales no requieren receptor explícito.
-
-  """
-  defp validar_tipo_receptor_si_necesario(tipo_mensaje, tipo_receptor)
+  # Valida el tipo de receptor solo cuando el mensaje no pertenece a los tipos
+  # especiales `:avance` o `:retroalimentacion`, los cuales no requieren receptor explícito.
+  defp validar_tipo_receptor_si_necesario(tipo_mensaje, _tipo_receptor)
        when tipo_mensaje in [:avance, :retroalimentacion], do: :ok
 
   defp validar_tipo_receptor_si_necesario(_tipo_mensaje, tipo_receptor) do
@@ -88,17 +82,4 @@ defmodule Hackaton.Domain.Mensaje do
       do: :ok,
       else: {:error, "Tipo de receptor inválido"}
   end
-
-
-  @doc """
-  Valida el campo `id_receptor` dependiendo del tipo de mensaje y del tipo de receptor.
-
-  """
-  defp validar_receptor_id(tipo_mensaje, _tipo_receptor, _id_receptor)
-       when tipo_mensaje in [:avance, :retroalimentacion], do: :ok
-
-  defp validar_receptor_id(_, :todos, _), do: :ok
-  defp validar_receptor_id(_, _, nil), do: {:error, "ID de receptor obligatorio"}
-  defp validar_receptor_id(_, _, ""), do: {:error, "ID de receptor obligatorio"}
-  defp validar_receptor_id(_, _, _), do: :ok
 end

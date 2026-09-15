@@ -71,18 +71,7 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
   end
 
   @doc """
-  Retorna únicamente los usuarios cuyo rol sea `"PARTICIPANTE"`.
-
-  """
-  def leer_participantes(nombre_archivo) do
-    leer_usuarios(nombre_archivo)
-    |> Enum.filter(fn usuario -> usuario.rol == "PARTICIPANTE" end)
-  end
-
-  @doc """
   Retorna únicamente los usuarios cuyo rol sea `"MENTOR"`.
-
-
   """
   def leer_mentores(nombre_archivo) do
     leer_usuarios(nombre_archivo)
@@ -318,62 +307,5 @@ defmodule Hackaton.Adapter.BaseDatos.BdUsuario do
   def actualizar_usuario(nombre_archivo, usuario) do
     borrar_usuario(nombre_archivo, usuario.id)
     escribir_usuario(nombre_archivo, usuario)
-  end
-
-  @doc """
-  Retorna todos los usuarios que pertenezcan a un equipo específico (`id_equipo_buscar`).
-
-  - Compara el campo `id_equipo`.
-  - Solo retorna usuarios cuyo id_equipo coincida.
-
-  """
-  def leer_participantes_equipo(nombre_archivo, id_equipo_buscar) do
-    case File.read(nombre_archivo) do
-      {:ok, lista} ->
-        String.split(lista, "\n")
-        |> Enum.map(fn linea ->
-          case String.split(String.replace(linea, "\r", ""), ",") do
-            [
-              "id",
-              "Nombre",
-              "Apellido",
-              "Cedula",
-              "Correo",
-              "Telefono",
-              "Usuario",
-              "Contrasena",
-              "id_equipo"
-            ] ->
-              nil
-
-            [id, nombre, apellido, cedula, correo, telefono, usuario, contrasena, id_equipo] ->
-              cond do
-                id_equipo == id_equipo_buscar ->
-                  %Usuario{
-                    id: id,
-                    nombre: nombre,
-                    apellido: apellido,
-                    cedula: cedula,
-                    correo: correo,
-                    telefono: telefono,
-                    usuario: usuario,
-                    contrasena: contrasena,
-                    id_equipo: id_equipo
-                  }
-
-                true ->
-                  nil
-              end
-
-            _ ->
-              nil
-          end
-        end)
-        |> Enum.filter(fn x -> x end)
-
-      {:error, reason} ->
-        IO.puts("No se pudo realizar por #{reason}")
-        []
-    end
   end
 end

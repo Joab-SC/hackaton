@@ -46,44 +46,6 @@ defmodule Hackaton.Adapter.BaseDatos.BdSala do
   end
 
   @doc """
-  Busca una sala específica por su ID (`id_sala`).
-
-  - Lee el archivo completo.
-  - Convierte cada línea en un struct Sala solo si el ID coincide.
-  - Filtra valores nulos.
-  - Retorna la primera coincidencia o `nil`.
-
-  """
-  def leer_sala(nombre_archivo, id_sala) do
-    case File.read(nombre_archivo) do
-      {:ok, lista} ->
-        lista_elem = String.split(lista, "\n")
-        |>Enum.map(fn linea ->
-        case String.split(String.replace(linea, "\r", ""), ",") do
-          ["id", "tema", "descripcion"]-> nil
-          [id, tema, descripcion] ->
-          if id == id_sala do
-            %Sala{id: id, tema: tema, descripcion: descripcion}
-          else
-            nil
-          end
-          _ -> nil
-        end
-      end)
-      |> Enum.filter(& &1)
-
-      case lista_elem do
-        [sala | _] -> sala
-        [] -> nil
-      end
-
-      {:error, reason} ->
-        IO.puts("No se pudo leer por   #{reason}")
-        []
-    end
-  end
-
-  @doc """
   Busca una sala por su tema (`tema_buscar`).
 
   - Compara el campo `tema` de cada registro.

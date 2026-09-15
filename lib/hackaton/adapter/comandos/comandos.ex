@@ -48,7 +48,6 @@ defmodule Hackaton.Adapter.Comandos do
       my_team: [],
       registrar_equipo: [],
       mostrar_historial: [],
-      crear_avance: [],
       log_out: [],
       actualizar_campo: ["campo", "valor"],
       mi_info: [],
@@ -249,10 +248,5 @@ defmodule Hackaton.Adapter.Comandos do
           end
         end
     end
-  end
-
-
-  def autocompletar() do
-    
   end
 end

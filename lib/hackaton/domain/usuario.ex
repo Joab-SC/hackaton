@@ -79,20 +79,6 @@ defmodule Hackaton.Domain.Usuario do
   end
 
   @doc """
-  Valida que un número telefónico tenga formato colombiano válido:
-  - Debe iniciar en `3`
-  - Debe tener 10 dígitos en total
-
-  """
-  def validar_telefono(telefono) do
-    if Regex.match?(~r/^3[0-5][0-9]{8}$/, telefono) do
-      {:ok, telefono}
-    else
-      {:error, "El numero de telefono debe iniciar en 3 y tener 10 digitos"}
-    end
-  end
-
-  @doc """
   Valida que el rol del usuario sea uno de los permitidos en `@roles`.
   """
   def validar_rol(rol) do

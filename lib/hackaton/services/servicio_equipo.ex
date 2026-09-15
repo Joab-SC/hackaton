@@ -40,9 +40,7 @@ defmodule Hackaton.Services.ServicioEquipo do
   end
 
 
-  @doc """
-  Valida que no exista un equipo con el mismo nombre (ignorando mayúsculas/minúsculas).
-  """
+  # Valida que no exista un equipo con el mismo nombre (ignorando mayúsculas/minúsculas).
   defp validar_nombre_unico(nombre_archivo, nombre) do
     equipos = BdEquipo.leer_equipos(nombre_archivo)
 
@@ -94,21 +92,6 @@ defmodule Hackaton.Services.ServicioEquipo do
   end
 
   @doc """
-  Elimina un equipo por su ID.
-
-  Primero valida que el equipo exista antes de solicitar su eliminación.
-
-  """
-  def eliminar_equipo(nombre_archivo, id) do
-    equipo = obtener_equipo(nombre_archivo, id)
-
-    case equipo do
-      {:error, reason} -> {:error, reason}
-      _ -> BdEquipo.borrar_equipo(nombre_archivo, id)
-    end
-  end
-
-  @doc """
   Actualiza un equipo existente.
 
   Flujo:
@@ -140,10 +123,7 @@ defmodule Hackaton.Services.ServicioEquipo do
     end
   end
 
-  @doc """
-  Valida unicidad del nombre al actualizar.
-
-  """
+  # Valida unicidad del nombre al actualizar.
   defp validar_nombre_id_unico_para_actualizacion(nombre_archivo, id_equipo, nombre) do
     equipos = BdEquipo.leer_equipos(nombre_archivo)
 

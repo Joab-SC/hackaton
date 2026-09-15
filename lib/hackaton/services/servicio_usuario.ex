@@ -103,9 +103,7 @@ defmodule Hackaton.Services.ServicioUsuario do
     end
   end
 
-  @doc """
-  Verifica que el nombre de usuario no esté registrado previamente.
-  """
+  # Verifica que el nombre de usuario no esté registrado previamente.
   defp validar_usuario_unico(nombre_archivo, usuario) do
     if Enum.any?(BdUsuario.leer_usuarios(nombre_archivo), fn u -> u.usuario == usuario end) do
       {:error, "El nombre de usuario ya está en uso."}
@@ -114,10 +112,7 @@ defmodule Hackaton.Services.ServicioUsuario do
     end
   end
 
-  @doc """
-  Valida que la cédula no esté registrada en otro usuario.
-
-  """
+  # Valida que la cédula no esté registrada en otro usuario.
   defp validar_cedula_unica(nombre_archivo, cedula) do
     if Enum.any?(BdUsuario.leer_usuarios(nombre_archivo), fn u -> u.cedula == cedula end) do
       {:error, "Ya existe un usuario con esa cédula."}
@@ -125,11 +120,6 @@ defmodule Hackaton.Services.ServicioUsuario do
       :ok
     end
   end
-
-  @doc """
-  Retorna todos los usuarios almacenados en el archivo.
-  """
-  def obtener_todos(nombre_archivo), do: BdUsuario.leer_usuarios(nombre_archivo)
 
   @doc """
   Obtiene un usuario por ID.
@@ -156,21 +146,6 @@ defmodule Hackaton.Services.ServicioUsuario do
       {:error, "No se pudo encontrar el usuario #{user}"}
     else
       {:ok, usuario}
-    end
-  end
-
-  @doc """
-  Obtiene todos los usuarios cuyo rol es PARTICIPANTE.
-  """
-  def obtener_participantes(nombre_archivo), do: BdUsuario.leer_participantes(nombre_archivo)
-
-  @doc """
-  Obtiene participantes que pertenecen a un equipo específico.
-  """
-  def obtener_participantes_equipo(nombre_archivo, id_equipo_buscar) do
-    case BdUsuario.leer_participantes_equipo(nombre_archivo, id_equipo_buscar) do
-      [] -> {:error, "No hay participantes en este equipo"}
-      participantes -> {:ok, participantes}
     end
   end
 

@@ -13,7 +13,7 @@ defmodule Hackaton.Services.ServicioSala do
     3. Genera un ID único usando `GeneradorID`.
     4. Crea la estructura de sala.
     5. La escribe en la base de datos.
-    6. Devuelve `{:ok, equipo}` si todo sale bien.
+    6. Devuelve `{:ok, sala}` si todo sale bien.
   """
   def registrar_sala(nombre_archivo, tema, descripcion) do
     with :ok <- Sala.validar_campos_vacios(tema, descripcion),
@@ -55,24 +55,8 @@ defmodule Hackaton.Services.ServicioSala do
   end
 
   @doc """
-  Obtiene la lista completa de salas almacenados en el archivo dado.
+  Obtiene una sala temática por su tema.
   """
-  def obtener_salas(nombre_archivo), do: BdSala.leer_salas(nombre_archivo)
-
-  @doc """
-  Obtiene una sala  por ID.
-  """
-  def obtener_sala(nombre_archivo, id) do
-    sala = BdSala.leer_sala(nombre_archivo, id)
-
-    if is_nil(sala) do
-      {:error, "No se pudo encontrar la sala con ese id"}
-    else
-      {:ok, sala}
-    end
-  end
-
-
   def obtener_sala_tema(nombre_archivo, tema) do
     sala = BdSala.leer_sala_tema(nombre_archivo, tema)
 

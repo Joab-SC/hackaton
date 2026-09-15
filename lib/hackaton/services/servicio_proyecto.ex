@@ -71,9 +71,7 @@ defmodule Hackaton.Services.ServicioProyecto do
     end
   end
 
-  @doc """
-  Valida que el nombre del proyecto no esté en uso dentro del archivo indicado.
-  """
+  # Valida que el nombre del proyecto no esté en uso dentro del archivo indicado.
   defp validar_nombre_unico(nombre_archivo, nombre) do
     if Enum.any?(BdProyecto.leer_proyectos(nombre_archivo), fn u -> u.nombre == nombre end) do
       {:error, "El nombre del proyecto ya está en uso."}
@@ -144,16 +142,6 @@ defmodule Hackaton.Services.ServicioProyecto do
             BdProyecto.actualizar_proyecto(nombre_archivo, proyecto_actualizado)
             {:ok, proyecto_actualizado}
         end
-    end
-  end
-
-  @doc """
-  Elimina un proyecto según su ID.
-  """
-  def eliminar_proyecto(nombre_archivo, id_proyecto) do
-    case BdProyecto.borrar_proyecto(nombre_archivo, id_proyecto) do
-      :ok -> :ok
-      {:error, reason} -> {:error, reason}
     end
   end
 
